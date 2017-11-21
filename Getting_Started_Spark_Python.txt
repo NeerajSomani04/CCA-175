@@ -1,0 +1,89 @@
+Notes:
+
+Tab 1 -- Getting started Tab
+1) Envirnment setup -- Make sure to check the setup and configuration of Cloudera VM machine for pySpark.
+File System Overview:-
+2) Run few hdfs commands, to verify environment.
+3) Run below command and correct metadata directory for VM
+      hdfs fsck /public/randomtextwriter -files -blocks -locations 
+   to get the information about metadata on directory /public/randomtextwriter in our lab
+
+4) YARN – Yet Another Resource Negotiator (Cloudera VM)
+     Always run pyspark shell with Yarn framework. This help spark to manage resources.
+     YARN mode you have to use --master yarn
+5) To avoid conflict for port number. Use below statement to configure specific port number (this should be less than 65535). 
+--conf spark.ui.port=five_digit_number 
+(eg: spark-shell --master yarn --conf spark.ui.port=54321)
+6) We can increase/decrease resources for running jobs using many run time control arguments while submitting the job such as
+--num-executors of spark-submit or spark-shell.
+7) Set up Dataset in Cloudera VM env
+    git clone https://github.com/dgadiraju/data.git
+    
+Full Command to launch Spark shell -->
+    for Scala --> spark-shell --master yarn --conf spark.ui.port=54321
+    for python --> pyspark --master yarn --conf spark.ui.port=54321
+    
+    
+
+Tab 2 -- Building blocks for Spark applications – Python
+    Very important to understand each and every word and there background.
+1) Parameter files and properties
+    Spark parameter files under /etc/spark/conf (standard) or $SPARK_HOME/conf
+    spark-env.sh contain environment variables to control run time behavior – such as memory, number of executors etc
+    spark-defaults.conf space separated by space have properties which are generally not environment variables
+    hive-site.xml --> so that Spark SQL can be run in hive context and access hive tables
+    
+   by default sparkContext is available as sc and SqlContext as sqlContext
+        example: sc.getConf.get("spark.ui.port") <-- This will give us spark port number
+    
+    pyspark --help command will give list of all available option for pyspark command
+    
+2) SparkConf and SparkContext
+      SparkContext will be automatically created when we launch pyspark from CLI.
+      However when we develop application to submit as a jar file, we need to create SparkConf object and then SparkContext in our code.
+          from pyspark import SparkConf,SparkContext
+          conf = SparkConf().setAppName("Spark Demo").setMaster("local")
+          sc = SparkContext(conf=conf)
+      set and get methods are used to override parameter values or environment variables.
+      Example: setAppName, setMaster, setExecutorEnv, set in general
+          conf = SparkConf.setAppName("Spark Demo").setMaster("yarn-client")
+      SparkContext tells how application should be run (based on default or SparkConf setMaster)
+        Example --> sc = SparkContext(conf=conf)
+     Code snippet to get all the properties – for i in sc.getConf.getAll: print(i)
+     
+     
+3) Reading data from files (local, HDFS, AWS, streaming data)
+
+    Reading Files:
+        Following are the APIs on SparkContext object (eg: sc) that can be used to read files
+            sc.textFile
+            sc.sequenceFile
+            sc.objectFile
+            sc.hadoopFile
+            sc.newAPIHadoopFile
+        We can read files from local file system using file:// protocol and HDFS using hdfs://
+        When executed, all the APIs will convert data from file into RDD
+     Writting Files:
+        Following are the APIs on SparkContext object (eg: rdd) that can be used to write files
+            rdd.saveAsTextFile
+            rdd.saveAsSequenceFile
+            rdd.saveAsObjectFile
+            rdd.saveAsHadoopFile
+            rdd.saveAsNewAPIHadoopFile
+            
+4) Resilient Distributed Datasets – RDD
+      resilient distributed dataset (RDD), which is a fault-tolerant collection of elements that can be operated on in 
+          distributed fashion.
+      it is similar to pythons collections:-- list, dict, set.
+      
+          
+          
+5) Core API – Transformations and Actions (various API functions)
+          DAG – Directed Acyclic Graph
+          Spark work as lazy evaluation. 
+6) Writing data back to files
+
+Make sure to note downb points about Job Execution life cycle
+
+
+    
