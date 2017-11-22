@@ -1,0 +1,7 @@
+Below are few things that I want to note down as part of my Cloudera Quickstart VM 5.12.0.0 experience:
+
+1) It comes with Eclipse IDE only
+2) It comes bydefault with Python 2.6.6
+    Below are steps how I installed python 3.x version using Anaconda.
+    
+
