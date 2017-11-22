@@ -1,0 +1,13 @@
+Below are the points one should remember Exam Day:
+
+a) Need to check first about python version and make proper environment settings to update and use python 3.x version. 
+
+b) Open 4 applications on CDH:
+    1) Sublim / any other text editor
+    2) Cloudera Manager
+    3) Terminal 
+        a) for Hive
+        b) for pyspark --> 2 terminal to work on 2 problems simultaneously. This is because code usually takes long time to run.
+        c) for mysql
+        d) sqoop
+        e) need to update from here if needed for flume/impala/
