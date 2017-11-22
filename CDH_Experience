@@ -1,7 +1,61 @@
 Below are few things that I want to note down as part of my Cloudera Quickstart VM 5.12.0.0 experience:
 
-1) It comes with Eclipse IDE only
-2) It comes bydefault with Python 2.6.6
-    Below are steps how I installed python 3.x version using Anaconda.
+1) It comes with Eclipse IDE only.
+        have to use CDI or some text editor.
+2) It comes by default with Python 2.6.6
+    Below are steps how I installed python 3.x version using Anaconda. The best way to install Python needed version is using 
+    Cloudra Manager parcels tool. This you can find in below link. you can also do this with CLI but its a lot of hassel and CDH Admin 
+    usually do that so we don't need to understand as part of this certification learning.
+    
+    Below are the articles, I followed to install python 3.x:
+        https://danieleriksson.net/2017/02/08/how-to-install-latest-python-on-centos/
+    
+    Below steps that used to install python 3.6.x
+        # Start by making sure your system is up-to-date:
+        yum update
+        # Compilers and related tools:
+        yum groupinstall -y "development tools"
+        # Libraries needed during compilation to enable all features of Python:
+        yum install -y zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel expat-devel
+        # If you are on a clean "minimal" install of CentOS you also need the wget tool:
+        yum install -y wget
+        # Below to download anaconda
+        wget https://repo.continuum.io/archive/Anaconda3-5.0.1-Linux-x86_64.sh
+        # Below to install anaconda
+        bash Anaconda3-5.0.1-Linux-x86_64.sh
+        # conda is added to by bash file. Need to activate it now in environment.
+        source ~/.bashrc
+        # conda is install now. Verify by below. It will list all packages installed.
+        conda list
+   
+    few articles:
+    1) for installing jupyter notebook for python 2.6
+    http://www.jbencina.com/blog/2017/04/08/installing-jupyter-notebook-cloudera-quickstart-vm/
+    2) set up python 2.7 or 3.3.3 on centOS 6.4
+    https://www.digitalocean.com/community/tutorials/how-to-set-up-python-2-7-6-and-3-3-3-on-centos-6-4
+    3) Anaconda blog for CDH
+     https://docs.anaconda.com/anaconda/user-guide/tasks/integration/cloudera
+    4) go to point where mentioned about Install and maintain python environment and follow till end.
+      https://www.cloudera.com/documentation/enterprise/5-5-x/topics/spark_python.html
+    
+    Once python and conda all set.
+    # Run below command to verify python interpreter working fine.
+    python  #this is prompt to python env
+    print('hello world') #this command will print hello world
+    
+    If you run the program through .py file make sure to specify location of the Python interpreter. For example:
+    #! usr/bin/local
+    # in my case it is #!/home/cloudera/anaconda3/bin/python
+    
+    --------------------------------
+    Need to work on below part
+    ---------------------------------
+    #Inorder to submit spark job you need to run job as stated below:
+    PYSPARK_PYTHON=/home/cloudera/anaconda3/bin/python spark-submit pyspark_script.py
+    
+    
+    
+    
+    
     
 
