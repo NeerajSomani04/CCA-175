@@ -1,0 +1,25 @@
+Notes from videos:
+
+From Sqoop command list and eval, video --
+
+1) ps -ef| grep -i manager --> this command will tell us resourceManager is up and running or not.
+
+Hadoop Certification -- sqoop import, video --
+1) hostname -f --> this will give hostname for any services that is running on it.
+
+Need to learn sqoop boundary variable related concepts of sqoop
+Need to understand --compress --compress-codec option of sqoop
+Need to understand Hive commands
+
+under the hive terminal you can write below command to understand the size of file
+1) dfs -du -s -h /user/hive/warehouse/order_items --> this will result combine file size under this directory
+
+Hadoop Certification -- CCA - Spark Introduction, video --
+
+Very important command --
+Below command is used to create a soft link in spark to connect to hive from spark. This needs to be done to use HiveContext fro spark.
+1) sudo ln -s /etc/hive/conf/hive-site.xml /etc/spark/conf/hive-site.xml
+
+
+
+
