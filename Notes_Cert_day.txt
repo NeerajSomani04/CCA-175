@@ -2,7 +2,10 @@ Below are the points one should remember Exam Day:
 
 a) Need to check first about python version and make proper environment settings to update and use python 3.x version. 
 
-b) Open 4 applications on CDH:
+b) you need to make sure about ip addresses and port number for differenet services running on CDH multinode cluster. 
+      In exam cluster mysql and hdfs could be at different node. means different servers (ip-addresses).
+      
+c) Open 4 applications on CDH:
     1) Sublim / any other text editor
     2) Cloudera Manager
     3) Terminal 
