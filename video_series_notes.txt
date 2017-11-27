@@ -27,6 +27,8 @@ Important command for mysql connector to install on environment --->
 
 Need to Understand fragmentation and defragmentation for mac/windows OS?? Contiguous???
 
+BigData Certification Workshop 08 - Getting started with Spark, video --
+
 hdfs fsdk "hdfs_file_path" -files -blocks --> this command will tell us how the file got distributed into different blocks.
 hdfs has some default blocksize, like 64 MB or 128 MB. It can be configured also.
 
@@ -35,6 +37,28 @@ core-site.xml file --> will have global properties
 hdfs-site.xml file --> datanode, namenode, blocksize, etc details in this file.
 
 replication factor and blocksize is 2 important things to understand from HDFS perspective.
+ 
+hdfs important blocks:
+DataNode --> (gateway nodes) software process to keep track of blocks at all time, incase of failure and all. So basically keeping data.
+NameNode --> keeps track of blocks associated with filename and location of blocks. MetaData of the files. Its a in-memory structure.
+      It know relationship between blocks, filename and location.
+SecondaryNameNode --> helper to NameNode.
+WorkerNode --> perform the job of storing the data and running computations. Based on configuaration it will have dataNode, or any other          processes, that can help perform the computation.
+GatewayNode submit the job to workerNode. this is to perfom the needed task.
+
+YARN --> Execution framework (Yet Anaother Resource nagotiator) -- Basically Resource Management.
+      Hadoop, Spark, etc can take care of processing the data
+
+few important yarn commands -->
+$ yarn application --list --> this will tell all the list of jobs running on cluster
+$ yarn application -help --> give list of all the commands
+$ yarn application -kill --> kill any specific application using applicationID
+
+
+BigData Certification Workshop 09 - Getting started with Spark, video --
+
+Building Blocks of Spark -->
+
 
 
 
