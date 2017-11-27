@@ -58,9 +58,19 @@ $ yarn application -kill --> kill any specific application using applicationID
 BigData Certification Workshop 09 - Getting started with Spark, video --
 
 Building Blocks of Spark -->
+SparkContext tells how application should be run (based on default or SparkConf setMaster)
+yarn-client --> conf = SparkConf.setAppName("Spark Demo").setMaster("yarn-client")
 
+pyspark and python framework difference ---> 
+python is single threaded framework vs pyspark is multithread and distributed framework. This is because of sprak framework API functionality.
 
+RDD --> Resilient Distributed DataSet
+1) It is an extension of python list collection. Major difference is it stores in-memory and distributed across cluster.
+2) Indexing is not supported in RDD.
 
+DAG --> Directed Acyclic Graph 
+
+RDD Persistance --> important concept
 
 
 
