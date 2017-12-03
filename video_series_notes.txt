@@ -72,6 +72,30 @@ DAG --> Directed Acyclic Graph
 
 RDD Persistance --> important concept
 
+BigData Certification Workshop 11 - Getting started with Spark, video --
+
+Difference between Transformation and action:
+    Transformation --> does lazy evaluation and generate DAG. 
+    Action --> execute the job. print results, save results, etc.
+
+How to debug and understand DAG details :
+    RDD_Object_Name.toDebugString() ---> this command will tell you DAG flow.
+    Example:- OrderItems.toDebugString().
+    
+How to read data from RDD:- in pyspark
+
+OrderItems.first() --> this will return first element of RDD
+OrderItems.take(10) --> this will return first 10 elements
+OrderItems.Collect() --> Convert RDD to Python list collection
+Orders.Paralalliz() --> convert python list or any collection to RDD
+
+Need to be very carefull with the usage of collection --> Because RDD is distributed/multithreaded in-memory collection. When you convert RDD to python list using Collect() function, it will convert RDD into single threaded in-memory collection. This will cause memory issues.
+
+When to use Collect() and when not to use -->
+ 1) Never use collect() function to read the data of RDD.
+ 
+ 2) You can only use Collect() API when you want to apply some function on data and that function is not available for RDD. For example, you have to use some punction from Pandas, Numpy, etc... then only convert RDD into python linear collection (list, array, dict..etc..)
+ 
 
 
 
