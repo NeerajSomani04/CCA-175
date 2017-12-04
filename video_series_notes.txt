@@ -96,6 +96,17 @@ When to use Collect() and when not to use -->
  
  2) You can only use Collect() API when you want to apply some function on data and that function is not available for RDD. For example, you have to use some punction from Pandas, Numpy, etc... then only convert RDD into python linear collection (list, array, dict..etc..)
  
+ Practice excercise for flatMap and ReduceByKey() function:
+  1) Revenue for each OrderId
+  2) Get order Items generating max quatity per id. (Get each order items for max quantity)
+  
+  
+BigData Certification Workshop 12 - Getting started with Spark, video --
+
+reduceByKey
+aggregateByKey
+groupByKey
+
 
 
 
