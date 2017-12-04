@@ -113,7 +113,7 @@ problem statement:-
 1) Get revenue as well as count of items for each order_id
 2) For each order_id get the revenue and max subtotal for that order_id (2, (549.98, 250.0))
 
-<b>Process of grouping and partitioning is called shuffling and process of computing intermediate results by mapper is called combining. In case of Spark – reduceByKey and aggregateByKey are used for aggregations. Both of them use combiner.</b>
+Process of grouping and partitioning is called shuffling and process of computing intermediate results by mapper is called combining. In case of Spark – reduceByKey and aggregateByKey are used for aggregations. Both of them use combiner.
 
 
 
