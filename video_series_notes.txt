@@ -107,6 +107,10 @@ reduceByKey
 aggregateByKey
 groupByKey
 
+BigData Certification Workshop 13 - Getting started with Spark, video --
+
+problem statement:- Get revenue as well as count of items for each order_id
+
 
 
 
