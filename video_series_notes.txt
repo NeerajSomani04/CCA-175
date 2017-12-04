@@ -109,8 +109,9 @@ groupByKey
 
 BigData Certification Workshop 13 - Getting started with Spark, video --
 
-problem statement:- Get revenue as well as count of items for each order_id
-
+problem statement:- 
+1) Get revenue as well as count of items for each order_id
+2) For each order_id get the revenue and max subtotal for that order_id (2, (549.98, 250.0))
 
 
 
