@@ -1,0 +1,7 @@
+Scala and Spark Live training - 01 - Overview of setting up environment and REPL
+
+sbt --> Simple Build tool
+Maven --> is also SBT. It is to solve dependencies.
+
+REPL is only usefull to validate your code. it is not used for running application.
+
