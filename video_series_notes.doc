@@ -115,5 +115,15 @@ problem statement:-
 
 Process of grouping and partitioning is called shuffling and process of computing intermediate results by mapper is called combining. In case of Spark – reduceByKey and aggregateByKey are used for aggregations. Both of them use combiner.
 
+BigData Certification Workshop 14 - Getting started with Spark, video --
 
+Problem Statement: Get Daily Revenue per customer.
+Some steps: 
+Join Order, OrderItems, and Customer
+First work on joining order and orderItems
+Get revenue per day per customer id
+join with Customers to get customer Details
+
+Final output: Date(tab)Customer_Name(tab)revenue
+Get customer_name by combining First_name and Last_name from customer.
 
