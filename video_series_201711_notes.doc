@@ -127,3 +127,10 @@ join with Customers to get customer Details
 Final output: Date(tab)Customer_Name(tab)revenue
 Get customer_name by combining First_name and Last_name from customer.
 
+BigData Certification Workshop 15 - Getting started with Spark, video --
+
+Instead of joining we can use look-ups to improve performance:-
+Broadcast variables / accumulators ---> its immutable (unchangable/can not change)
+
+
+
