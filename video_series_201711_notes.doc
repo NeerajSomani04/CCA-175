@@ -140,4 +140,7 @@ Its important to understand how program is executing things locally vs on cluste
   locally will be running on driver node.
   2) But all the pyspark related API for read, evaluate, actions, etcs... realted things will be running on workerNode.
   
-
+Some python API for Sorting and Ranking (for top 5, 10, 100, etc records):--
+Map --> SortByKey --> take
+Map --> top
+TakeOrdered
