@@ -132,5 +132,12 @@ BigData Certification Workshop 15 - Getting started with Spark, video --
 Instead of joining we can use look-ups to improve performance:-
 Broadcast variables / accumulators ---> its immutable (unchangable/can not change)
 
+BigData Certification Workshop 16 - Getting started with Spark, video --
 
+Its important to understand how program is executing things locally vs on cluster:--
+  basically how the spark achitecture works.
+  1) All the code where we used python code (not pyspark) to read, evalutate and perform any function that is happening 
+  locally will be running on driver node.
+  2) But all the pyspark related API for read, evaluate, actions, etcs... realted things will be running on workerNode.
+  
 
