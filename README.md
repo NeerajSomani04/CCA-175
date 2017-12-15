@@ -1,2 +1,2 @@
 # TempRepo
-This is for some temporary testing with python and spark
+This is for some temporary testing with python, scala and spark
