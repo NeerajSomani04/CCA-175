@@ -1,0 +1,24 @@
+Scala and Spark Live training - 01 - Overview of setting up environment and REPL
+
+sbt --> Simple Build tool
+Maven --> is also SBT. It is to solve dependencies.
+
+REPL is only usefull to validate your code. it is not used for running application.
+
+IDE --> Integrated Development Environment
+
+Scala and Spark Live training - 02 - Overview of setting up environment and REPL
+
+Basics of Scala --
+val is immutable
+var is mutable
+
+Tasks: 
+create val a that is an integer value 42 --> val a = 42
+create val b that is a long value 42 --> val b: Long = 42L
+create val c that is a float value 42.0 --> val c: Float = 42.0f
+create val d that is a double value as multiplication of a, b, c --> val d: Double  = a * b * c
+create val e that is a short value 42.0 --> val e: Short = 42
+create val f that is a byte value 42.0 --> val f: Byte = 42
+create val g that is a hex of number (42) in base 10 --> val g = 0x42 (result will print always in Int format because of OS)
+
