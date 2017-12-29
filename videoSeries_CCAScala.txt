@@ -1,0 +1,4 @@
+Video 01 - Scala Fundamentals --> Have instructions on scala setup on mac with intellij IDE
+Video 02 - Basic Scala Programming --> Var, val, loops
+Video 03 - Functions --> definiing functions and anaonymous funcs.
+Video 04 - OOPs concepts --> 
