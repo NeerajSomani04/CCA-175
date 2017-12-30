@@ -24,6 +24,20 @@ Video 07 - Scala Fundamentals --> Collection
       Set --> unique values
       Map --> (Key,value) pair
       
-Resume from below video
-video 08 Spark -- Getting Started -- HDFS Quick Preview
-
+MySql DB Details: (at time of certification, cloudera wouldn't allow to connect to mysql. we need to validate any mysql queries through sqoop)
+       users --> 
+              retail_user
+              hr_user
+              nyse_user
+       available databases -->
+              retail_db
+              hr_db
+              nyse_db
+       hostname --> ms.itversity.com
+       password --> itversity
+       Commands --> 
+              to connect to mysql --> mysql -u retail_user -h ms.itversity.com -p itversity
+              to see available databases --> show databases;
+              to connect to db --> use retail_db;
+              to see tables --> show tables;
+       
