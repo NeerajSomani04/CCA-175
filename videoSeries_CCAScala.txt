@@ -25,4 +25,5 @@ Video 07 - Scala Fundamentals --> Collection
       Map --> (Key,value) pair
       
 Resume from below video
-video 12 -- Scala Fundamentals - Development Cycle - Create program file
+video 08 Spark -- Getting Started -- HDFS Quick Preview
+
