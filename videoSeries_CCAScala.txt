@@ -1,3 +1,5 @@
+All the details are at Itversity.com website under specific courses
+       
 Video 01 - Scala Fundamentals --> Have instructions on scala setup on mac with intellij IDE
 Video 02 - Basic Scala Programming --> Var, val, loops
 Video 03 - Functions --> definiing functions and anaonymous funcs.
@@ -10,3 +12,17 @@ Video 04 - OOPs concepts --> Class
        If arguments are defined by Val (immutable), getter method will be available by constructor.
        If arguments are defined by Var (mutable), getter and setter method will be available by constructor.
 Video 05 - OOPs concepts --> Objects
+       Objects are singleton class, hence it can not be intitable more than once. 
+       There is no constructor for Objects.
+       Companion Objects:- Class name and Object name are same.
+Video 06 - OOPs concepts --> Case Classes
+      This basically gives you many functionality as a inbuilt, without writting much code.
+Video 07 - Scala Fundamentals --> Collection
+      Sequence --> hold number of elements
+          Array -->
+          List -->
+      Set --> unique values
+      Map --> (Key,value) pair
+      
+Resume from below video
+video 12 -- Scala Fundamentals - Development Cycle - Create program file
