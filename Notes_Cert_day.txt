@@ -14,3 +14,9 @@ c) Open 4 applications on CDH:
         c) for mysql
         d) sqoop
         e) need to update from here if needed for flume/impala/
+        
+d) There should be some UI in cloudera that provides information about Namenode. NameNode will give us information about many important components. Need to locate and understand core-site.xml, hdfs-site.xml, yarn-site.xml, spark-env.sh
+
+e) understand memory and cluster capacity will help to leverage cluster properly and run jobs in proper manner. This way we can execute jobs fast and save some time in exam.
+
+f) At time of certification, cloudera wouldn't allow us to connect to mysql. we need to validate any mysql queries through sqoop.
