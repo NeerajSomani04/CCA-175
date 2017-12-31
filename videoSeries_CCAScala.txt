@@ -41,3 +41,21 @@ MySql DB Details: (at time of certification, cloudera wouldn't allow to connect 
               to connect to db --> use retail_db;
               to see tables --> show tables;
        
+Sqoop commands:
+       how to build connection string for mysql database.
+              --> --connect jdbc:mysql://ms.iteversity.com:3306/retail_db
+                  where, hostname --> ms.itevrsity.com
+                         port --> 3306 (this is usually default port)
+                         db_name --> retails_db
+       Things to remember for --split-by option of sqoop command:
+              1) Column should be indexed
+              2) values should be sparse / or it should be sequentially generated or evenly incremented
+              3) it should not have null values
+              4) we need to use this always when we use --query aurgument
+              
+       --boundary-query aurgument is used for creating split while importing data.
+       --table aurgument should not be used with --query aurgument.
+       
+Need to start from below video
+video 44 -- apache sqoop -- sqoop import -- delimiters and handling nulls
+            
