@@ -58,4 +58,24 @@ Sqoop commands:
        
 Need to start from below video
 video 44 -- apache sqoop -- sqoop import -- delimiters and handling nulls
+Example Sqoop command:--
+            sqoop import \
+            --connect jdbc:mysql://ms.itversity.com:3306/hr_db \
+            --username hr_user \
+            --password itversity \
+            --table employees \
+            --warehouse-dir /user/dkothari/sqoop_import/hr_db \
+            --null-non-string -1 \
+            --fields-terminated-by "\t" \
+            --lines-terminated-by ":"
             
+video 47 -- Sqoop command for Hive import --
+       sqoop import \
+       --connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+            --username retail_user \
+            --password itversity \
+            --table order_items \
+            --hive-import \
+            --hive-database dkothari_sqoop_import \
+            --hive-table order_items \
+            --num-mappers 2
