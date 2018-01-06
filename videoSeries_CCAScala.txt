@@ -171,6 +171,92 @@ video 59 --> command to initiate the spark-shell
 video 60 --> Spark RDD (Resilient Distributed Dataset) -- lets rewatch it
        RDD --> extension of list dataset. It is in-memory and distributed dataset.
        
-       //creating RDD -- validating files from file system
+       //Validating files from HDFS file system
        hadoop fs -ls /user/dkothari/retail_db/orders
+       
+       //For simple dataset like list we use index to fetch the data at any specific location. for example, 
+              val l = (1 to 100).toList ---> this is a command to create list in scala
+              l(5) --> in this way we can fetch record at any specific location.
+              
+              Question:- 
+                     how to get range of values in scala list. 
+                     How to fetch last record in the list, if I don't know size. or How to get size of list.
+       
+      //Create RDD using spark-shell (for HDFS location)
+       val orders = sc.textFile("/user/dkothari/retail_db/orders") --> scala command to create RDD and fetch data from text files which is                                                                        located at HDFS location.
+       orders.first --> command to get first record from RDD
+       orders.take(10) --> command to get top 10 records from RDD
+       
+              Question:-
+                     how to get range of values in scala RDD. 
+                     How to fetch last record in the RDD, if I don't know size. or How to get size of RDD.
+       
+       
+                     
+       //Read data from local file system
+       val ProductsRaw = scala.io.Source.fromFile("/data/retail_db/products/part-00000").getLines.toList 
+       
+       --> above scala command is to read text file from local file system. "getLines" is the function to fetch each line from file and consider each line as one record. "toList" is function to convert it into scala list dataset.
+        
+        //Create RDD from local file system
+        val productsRDD = sc.parallelize(ProductsRaw) --> parallelize function convert scala list (serialize) into RDD (distributed).
+
+Video 61 --> DAG and Lazy Evaluation
+
+DAG --> Directed Acyclic Graph
+Lazy Evaluation --> spark will do lazy evaluation and create DAG till the program hit action. 
+
+its not good practice to use foreach function on RDD directly. foreach functio should be used on scala collection like Array or list.
+
+video 62 --> Reading different file format
+
+       In spark, sparkContext doesn't have any functions to read data directly from different file formats. Hence, we need to use sqlContext API and sqlContext provide various functions to read data from different file format. Although, sqlContext also doesn't support avro file format.
+       
+       //command to read data from different file format
+       sqlContext.read.json 
+       sqlContext.read.parquet
+       sqlContext.read.orc
+       
+       sqlContext.read and sqlContext.load --> both of these commands create spark Data Frame.
+       
+       // Difference between RDD and Dataframe is, RDD is just distributed dataset, while Dataframe is structured distribyted dataset.                     Dataframe is strctured more like a database table.
+       val ordersDF = sqlContext.read.json("/user/dkothari/retail_db_json/orders")
+       
+       //command to preview the data
+       ordersDF.show
+       // Some Spark Dataframe APIs
+       ordersDF.printSchema --> this will print dataframe columns names and datatype
+       ordersDF.select("order_id", "order_date").show
+       
+       //below command is same as sqlContext.read.json
+       sqlContext.load("/user/dkothari/reatil_db_json/orders", "json").show
+       
+video 64 --> spark transformations -- String manipulations
+       Need to make sure about data type of original data. 
+       Need to know how to type cast data. (toInt, toString, toDouble, etc are some APIs used to typecast)
+       
+       //below are few command to show how to do string manipulation
+       //Create RDD using spark-shell (for HDFS location)
+       val orders = sc.textFile("/user/dkothari/retail_db/orders")
+       val str = orders.first
+       val A = str.split(',')
+       val orderId = A(0).toInt
+       val orderDate = A(1)
+       val OrderCustID = A(2).toInt
+       
+       // Some other commands for string manipulation
+       A(1).contains("2013")
+       A(1).contains("2017")
+       A(1).substring(5)
+       A(1).substring(0, 9)
+       A(1).replace('07','JUL')
+       A(1).replace('-','/')
+       A(1).indexof("2",2)
+       A.length
+       
+       /Need to understand all these string manipulation function in more details
+
+video 65 --> Spark -- Row level transformations
+       
+       
        
