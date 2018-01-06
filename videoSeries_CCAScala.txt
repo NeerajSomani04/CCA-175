@@ -118,5 +118,59 @@ video 53 -->
               create table daily_revenue_dkothari_demo
               (revenue float, order_date varchar(30), description varchar(200));
      
-            
+      sqoop export command -->
+              --column aurgument is very important. The order of column names in column aurgument should be same as source table                                 structure (which hdfs directory or hive table). Below is example:
+              
+              sqoop export \
+                     --connect jdbc:mysql://ms.itversity.com:3306/retail_export \
+                     --username retail_user \
+                     --password itversity \
+                     --table daily_revenue_dkothari_demo \
+                     --export-dir /apps/hive/warehouse/dkothari_sqoop_import.db/daily_revenue \
+                     --columns order_date,revenue \
+                     --input-fields-terminated-by "\001" \
+                     --num-mappers 1
+
+video 54 --> sqoop update/ upsert/merge 
+video 59 --> command to initiate the spark-shell
+       spark-shell --master yarn --conf spark.ui.port=12654 (any 5 digit port no from 10000 to 65535)
+      
+       Some important spark-shell related aurguments:-->
+      
+      --executor-memory MEM       Memory per executor (e.g. 1000M, 2G) (Default: 1G).
+      
+      Spark standalone and YARN only:
+             --executor-cores NUM        Number of cores per executor. (Default: 1 in YARN mode,
+                              or all available cores on the worker in standalone mode)
+             --num-executors NUM         Number of executors to launch (Default: 2, in yarn mode).
+                              
+      hadoop / linux command to display size of data -->
+              hadoop fs -du -s -h /user/dkothari
+                     (here -s is to display size of files and -h is to show human readable format)
+              
+     spark-shell --master yarn \
+       --conf spark.ui.port=12654 \
+       --num-executors 1 \
+       --executor-memory 512M
+       
+      All above information fro defaults are available at below listed location:
+              under home directory (/user/dkothari)
+                     $ view /etc/spark/conf/spark-env.sh
+                     $ view /etc/spark/conf/spark-defaults.conf
                      
+ command to stop currently running sparkContext -->
+              sc.stop
+ to initialize or start a new sparkContext now --> //initialize programmatically
+       import.org.apache.spark.{sparkConf, sparkContext}
+       val conf = new sparkConf().setAppName("Daily Revenue").master("yarn-client")
+       val sc = new sparkContext(conf)
+ 
+ Once the spark is up and running --> Below is the command to get the environment related details:
+       sc.getConf.getAll.foreach(println)
+
+video 60 --> Spark RDD (Resilient Distributed Dataset) -- lets rewatch it
+       RDD --> extension of list dataset. It is in-memory and distributed dataset.
+       
+       //creating RDD -- validating files from file system
+       hadoop fs -ls /user/dkothari/retail_db/orders
+       
