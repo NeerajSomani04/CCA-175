@@ -187,9 +187,9 @@ video 60 --> Spark RDD (Resilient Distributed Dataset) -- lets rewatch it
        orders.first --> command to get first record from RDD
        orders.take(10) --> command to get top 10 records from RDD
        
-              Question:-
-                     how to get range of values in scala RDD. 
-                     How to fetch last record in the RDD, if I don't know size. or How to get size of RDD.
+        Question:-
+              how to get range of values in scala RDD. 
+              How to fetch last record in the RDD, if I don't know size. or How to get size of RDD.
        
        
                      
@@ -256,7 +256,143 @@ video 64 --> spark transformations -- String manipulations
        
        /Need to understand all these string manipulation function in more details
 
-video 65 --> Spark -- Row level transformations
+video 65 --> Spark -- Row level transformations (map function)
+        // few frequently used API for this:
+              map, flatMap, mapPartitions, mapPartitionsWithIndex
+        
+     Exercise:- Extract date from orders data (which is in "1,2013-07-25 00:00:00.0,11599,CLOSED" format) and convert "2013-07-25 00:00:00.0" date into 20130725 as Int format.
+     Solution:- //commands below
+       val orders = sc.textFile("/user/dkothari/retail_db/orders")
+       val orderDates = orders.map((str: String) => str.split(',')(1).substring(0,10).replace("-","").toInt)
        
+       val ordersPairRDD = orders.map( (order: String) => {
+                val o = order.split(',')
+                (o(0).toInt, o(1).substring(0,10).replace("-","").toInt)
+               })
+              
+        val orderItems = sc.textFile("/user/dkothari/retail_db/order_items")
+        val orderItemsPairRDD = orderItems.map ( orderItem => {
+              (orderItem.split(",")(1).toInt, orderItem)
+              })
+
+video 66 --> Spark -- Row level transformations (flatMap function)
+       // Need to create a scenario to perform this. Hence, creating a list of word count problem.
+       val l = List("Hello", "How are you doing", "let us perform word count", "As part of the word count problem", "we will see how many times each word repeat")
+       val l_rdd = sc.parallelize(l)
+       //Below command will split each record of RDD and then again split each record with " " (space char)) //
+       val l_flatMap = l_rdd.flatMap( ele => ele.split(" ")) //this command run on each input item and split them into one or more
+       val word_count = l_flatMap.map( word => (word,1)).countByKey
        
+       //try to run below command to understand the diffenece between map and flatMap
+       val l_map = l_rdd.map( ele => ele.split(" ")) //this command run on each input item and create each output
        
+video 67 -- spark -- filter function
+       // row level filtering:
+       val orderFiltered = orders.filter(order => order.split(",")(3) == "COMPLETE")
+       orderFiltered.count // this command is used to get the count of records in RDD
+       
+       Exercise:- Get all the orders of 2013-09 which are in closed or complete status
+       Solution:- val orderFiltered = orders.filter(order => ((order.split(",")(3) == "COMPLETE" || order.split(",")(3) == "CLOSED") && 
+                            order.split(",")(1).contains("2013-09"))
+                            )
+       orderFiltered.take(10).foreach(println)
+       orderFiltered.count
+       
+       //below is the command to get distinct values of order status
+       orders.map(order => order.split(",")(3).distinct
+       
+video 68 -- spark -- join function
+       // join also support leftOuterJoin , rightOuterJoin, fullOuterJoin
+       // joining orders and order_items data
+       val orders = sc.textFile("/user/dkothari/retail_db/orders")
+       val orderItems = sc.textFile("/user/dkothari/retail_db/order_items")
+       val ordersMap = orders.map(order => { 
+              (order.split(",")(0).toInt, order.split(",")(1).substring(0,10))
+              })
+       val orderItemsMap = orderItems.map( orderItem => {
+              (orderItem.split(",")(1).toInt, orderItem.split(",")(4).toFloat)
+              })
+       
+       // take(10).foreach(println)
+       val ordersJoin = ordersMap.join(orderItemsMap)
+
+video 69 -- spark -- join // outerJoin
+       Exercise: (problem statement) --> Get all the orders which do not have corresponding entries in order_items table
+       Solution: 
+       val orders = sc.textFile("/user/dkothari/retail_db/orders")
+       val orderItems = sc.textFile("/user/dkothari/retail_db/order_items")
+       val ordersMap = orders.map(order => { 
+              (order.split(",")(0).toInt, order)
+              })
+       val orderItemsMap = orderItems.map( orderItem => {
+              (orderItem.split(",")(1).toInt, orderItem)
+              })
+       val ordersLeftOuterJoin = ordersMap.leftOuterJoin(orderItemsMap)
+       val ordersLeftOuterJoinFilter = ordersLeftOuterJoin.filter( oi => oi._2._2 == None)
+       val ordersWithNoOrderItems = ordersLeftOuterJoinFilter.map( o => o._2._1)
+  
+video 71 -- spark -- Aggregations -- using Actions APIs
+      
+       Exercise statment:- get the count of orders by order status 
+       val orders = sc.textFile("/user/dkothari/retail_db/orders")
+       val ordersCountMap = orders.map( order => (order.split(",")(3), 1)).countByKey
+       ordersCountMap.take(10).foreach(println)
+       
+       Exercise:- compute revenue for the month of 2013-09
+       val orders = sc.textFile("/user/dkothari/retail_db/orders")
+       val orderItems = sc.textFile("/user/dkothari/retail_db/order_items")
+       val orderItemsRevenue = orderItems.map( oi => oi.split(",")(4).toFloat)
+       val orderItemsRevenueTotal = orderItemsRevenue.reduce((total, revenue) => total+revenue)
+       
+video 72 -- spark -- Aggregations -- combiner
+      // differenece between groupByKey, reduceByKey, aggregateByKey APIs
+      groupByKey --> it doesn't use combiner. Its performance is slower than reduceByKey and aggregateByKey
+              1, (1 to 1000) -- sum(1 to 1000) => 1 + 2 + 3 + 4...1000
+          
+      reduceByKey --> it uses concept of combiner. which means aggregating based on combining result from intermediate values. But we need                              to use reduceByKey only when logic for all the intermediate computation and final compunatation is same. for                              example: (sum, count, etc). as you can see in syntext of reduceByKey, it uses only one func as aurgument to                                   compute the result.
+              1, (1 to 1000) -- sum(1 to 1000) => (sum(1,250), sum(251,500), sum(501,750), sum(751,1000))
+      aggregateByKey --> it is same as reduceByKey, the only difference is you can use it even if the computation logic for intermediate                                stage is different. for example (average, complex computation). As you can see in syntext of aggregateByKey, it uses                                two func as aurgument, one for intermediate computation and one for final combining computation to compute                                the final result. 
+ 
+ video 73 -- spark -- groupByKey function
+       Exercise statement:- get revenue by order_id 
+       Solution:
+       val orders = sc.textFile("/user/dkothari/retail_db/orders")
+       val orderItems = sc.textFile("/user/dkothari/retail_db/order_items")
+       
+       val ordersMap = orders.map(order => { 
+              (order.split(",")(0).toInt, order)
+              })
+       val orderItemsMap = orderItems.map(orderItem => {
+              (orderItem.split(",")(1).toInt, orderItem.split(",")(4).toFloat)
+              })
+       val orderItemsGBK = orderItemsMap.groupByKey
+       val orderItemsRevenue = orderItemsGBK.map(rec => (rec._1,rec._2.toList.sum))
+       
+       Exercise statement:- Get data in descending order by order_item_subtotal for each order_id
+       val ordersSortedByRevenue = orderItemsGBK.flatMap(rec => {
+                                                       rec._2.toList.sortBy(o => -o).map(k => (rec._1, k))
+                                                    })
+                                                    
+video 74 -- Aggregations -- reduceByKey
+       val orders = sc.textFile("/user/dkothari/retail_db/orders")
+       val orderItems = sc.textFile("/user/dkothari/retail_db/order_items")
+       val orderItemsMap = orderItems.map(orderItem => {
+              (orderItem.split(",")(1).toInt, orderItem.split(",")(4).toFloat)
+              })
+       val RevenuePerOrderId = orderItemsMap.reduceByKey((total, revenue) => total+revenue)
+
+video 75 -- Aggregations -- aggregateByKey
+       val orders = sc.textFile("/user/dkothari/retail_db/orders")
+       val orderItems = sc.textFile("/user/dkothari/retail_db/order_items")
+       val orderItemsMap = orderItems.map(orderItem => {
+              (orderItem.split(",")(1).toInt, orderItem.split(",")(4).toFloat)
+              })
+       //input data format --> (order_id, order_item_subtotal)
+       //output data format --> (order_id, (order_revenue, order_item_subtotal))
+       
+       val revenueAndMaxPerOrderID = orderItemsMap.aggregateByKey((0.0f,0.0f))(
+       (inter, subtotal)=> (inter._1+subtotal, if(subtotal > inter._2) subtotal else inter._2,
+       (total, inter) => (total._1 + inter._1, if(total._2 > inter._2) total._2 else inter._2)
+       )
+       
+      Homework Exercise Statement:- calculate revenueAndMinPerOrderId by looking at above solution. there will be some tweak and                                        challanges. its not same as revenueAndMaxPerOrderID calculation.
