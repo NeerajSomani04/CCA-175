@@ -391,8 +391,29 @@ video 75 -- Aggregations -- aggregateByKey
        //output data format --> (order_id, (order_revenue, order_item_subtotal))
        
        val revenueAndMaxPerOrderID = orderItemsMap.aggregateByKey((0.0f,0.0f))(
-       (inter, subtotal)=> (inter._1+subtotal, if(subtotal > inter._2) subtotal else inter._2,
+       (inter, subtotal) => (inter._1+subtotal, if(subtotal > inter._2) subtotal else inter._2,
        (total, inter) => (total._1 + inter._1, if(total._2 > inter._2) total._2 else inter._2)
        )
        
       Homework Exercise Statement:- calculate revenueAndMinPerOrderId by looking at above solution. there will be some tweak and                                        challanges. its not same as revenueAndMaxPerOrderID calculation.
+
+video 76 -- Spark core API -- SortByKey
+       // Problem statement 1 -- Products Sorted by CategoryId
+        val products = sc.textFile("/user/dkothari/retail_db/products")
+        val productsMap = products.map(product => {
+              (product.split(",")(1).toInt, product)
+              })
+        val productsSorted = productsMap.sortByKey()
+        
+         // Problem statement 2 -- Products Sorted by composite key (product_categoryId, product_price
+         val products = sc.textFile("/user/dkothari/retail_db/products")
+         val productsMap = products.map(product => {
+              ((product.split(",")(1).toInt,product.split(",")(4).toFloat), product)
+              })
+         
+         While running the above Map command we found Error, (exception, NumberFormatException)
+         To understand the issue as explained in video we need to do the data analysis.
+         In video, below logic is one way to see the data and understand the reason for error:
+         
+         val productFilterForError = products.filter(product => product.split(",")(4) == "")
+         
