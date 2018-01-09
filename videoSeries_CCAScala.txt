@@ -496,3 +496,4 @@ video 81 -- spark -- core API -- Products per Category (continuation of above vi
        // Now we need to understand how we wants to get our output and based on that we need to decide which API we wants to use
        // spark map API will be used --> when you want to retrive RDD collection
        // spark flatMap API will be used --> when you want to retrive individual records 
+
