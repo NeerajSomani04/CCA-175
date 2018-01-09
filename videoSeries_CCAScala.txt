@@ -405,15 +405,94 @@ video 76 -- Spark core API -- SortByKey
               })
         val productsSorted = productsMap.sortByKey()
         
-         // Problem statement 2 -- Products Sorted by composite key (product_categoryId, product_price
+         // Problem statement 2 -- Products Sorted by composite key 
+                                   (ascending order by product_categoryId and descending order by product_price)
          val products = sc.textFile("/user/dkothari/retail_db/products")
          val productsMap = products.map(product => {
-              ((product.split(",")(1).toInt,product.split(",")(4).toFloat), product)
+              ((product.split(",")(1).toInt, product.split(",")(4).toFloat), product)
               })
          
          While running the above Map command we found Error, (exception, NumberFormatException)
          To understand the issue as explained in video we need to do the data analysis.
          In video, below logic is one way to see the data and understand the reason for error:
          
+         //so reason for error is, there is comma (,) in the 3rd data field itself. 
          val productFilterForError = products.filter(product => product.split(",")(4) == "")
          
+         // So, we need to filter this record
+         val productsMap = products.filter(product => product.split(",")(4) != "").
+                            map(product => {
+              ((product.split(",")(1).toInt, -product.split(",")(4).toFloat), product)
+              })
+         // In above statement if you see I neget the second part because its data type is float and we need product_price in decending order we can do it this way. but it cant be done with string data type. for string data type we need to use some other API logic like groupBy, etc.
+         //Below is the command to get only the data field and not the key
+         val productsSorted = productsMap.sortByKey().map(rec=> rec._2)
+         productsSorted.take(10).foreach(println)
+
+
+video 77 -- Spark -- API -- Ranking -- SortByKey and TakeOrdered
+         //problem statement -- Get details of top 10 products by Price
+         val products = sc.textFile("/user/dkothari/retail_db/products")
+         val productsMap = products.
+               filter(product => product.split(",")(4) != "").
+               map(product => (product.split(",")(4).toFloat, product))
+              
+         val productsSorted = productsMap.sortByKey(false)
+         
+         //Below solution done useing TakeOrdered API
+         val products = sc.textFile("/user/dkothari/retail_db/products")
+         val productsMap = products.
+               filter(product => product.split(",")(4) != "").
+               takeOrdered(10)(Ordering[Float].reverse.on(product => product.split(",")(4).toFloat))
+         val productsSortedByPrice = productsMap.foreach(println)
+         
+         Homework Problem statement:- Get details of top 10 products and get details of top 10 priced products. 
+              //(Hint:- top 10 priced product may have more than 10 records)
+
+video 78 -- spark -- core API - Ranking -- GroupByKey -- Products Per Category
+              // Get top N priced product within each category
+              val products = sc.textFile("/user/dkothari/retail_db/products")
+              val productsMap = products.
+                 filter(product => product.split(",")(4) != "").
+                 map(product => (product.split(",")(1).toInt, product))
+              val ProductsGrpByCategory = productsMap.groupByKey
+              
+video 79 -- spark -- core API -- Products per Category (continuation of above video) -- part 1 (getTopNPrices)
+       // Here to understand it more accurately, we are dividing complete problem into multiple steps 
+       //command to get first records collection inorder to understand data
+              val productsIterable = ProductsGrpByCategory.first._2
+              productsIterable.take(10).foreach(println) // this will show us all the products into that specific category
+              productsIterable.size() // this will give us no of products (size of iterable object) into that category
+       // By looking at result of above command, now we need to build logic to get top 5 products for that specific category
+           
+           //So, lets break our problem once again and get top 5 products prices first
+               val productPrices =  productsIterable.map(p => p.split(",")(4).toFloat).toSet 
+           // above command will retrive prices and we used set to remove duplicate value of prices
+           // Now to get top 5 product prices from above result
+              val topNProductPrices = productPrices.toList.sortBy(p => -p).take(5)
+           //we converted set collection again to list because we want to use SortBy API. 
+              
+video 80 -- spark -- core API -- Products per Category (continuation of above video) -- part 2 (getTopNPricesProducts)          
+           //Now, we need to get all the products in descending order by price
+           val productsSortedByPrice = productsIterable.toList.sortBy(product => -product.split(",")(4).toFloat)
+           val minOfTopNPrices = topNProductPrices.min
+           val topNPricedProducts = productsSortedByPrice.takeWhile(product => product.split(",")(4).toFloat >= minOfTopNPrices)
+           
+           // why we didn't use filter API in above statement. because our data is already sorted so we don't need to go through all the records. takeWhile API will stop iterating once it will reach the specified condition.
+           
+           
+           // Lets create a scala function to get top N product
+           
+           def getTopNProducts(productsIterable: Iterable[String], topN: Int): Iterable[String] = {
+                val productPrices =  productsIterable.map(p => p.split(",")(4).toFloat).toSet 
+                val topNProductPrices = productPrices.toList.sortBy(p => -p).take(topN)
+                val productsSortedByPrice = productsIterable.toList.sortBy(product => -product.split(",")(4).toFloat)
+                val minOfTopNPrices = topNProductPrices.min
+                val topNPricedProducts = productsSortedByPrice.takeWhile(product => product.split(",")(4).toFloat >= minOfTopNPrices)
+                topNPricedProducts
+           }
+   
+video 81 -- spark -- core API -- Products per Category (continuation of above video) -- part 2 (getTopNPricesProductsByCategory)
+       // Now we need to understand how we wants to get our output and based on that we need to decide which API we wants to use
+       // spark map API will be used --> when you want to retrive RDD collection
+       // spark flatMap API will be used --> when you want to retrive individual records 
