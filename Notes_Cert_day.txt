@@ -20,3 +20,17 @@ d) There should be some UI in cloudera that provides information about Namenode.
 e) understand memory and cluster capacity will help to leverage cluster properly and run jobs in proper manner. This way we can execute jobs fast and save some time in exam.
 
 f) At time of certification, cloudera wouldn't allow us to connect to mysql. we need to validate any mysql queries through sqoop.
+
+g) to get details about cluster, which is in Yarn mode.
+      cat /etc/hadoop/conf/yarn-site.xml
+      linux command --> once you open the file type "/yarn.resourcemanager" and hit enter. this command will serach matching pattern in file.
+      yarn.resourcemanager.webapp.address --> this is the property name that will give us information about yarn resource manager address.
+
+h) Durga sir mentioned that their will be different datasets and not only one like retail_db. Although, questions will be much simpler than what we are practicing in video series. 3 to 8 lines of code in 10 min for 1 question is the expectation. but don't completely rely on this statement.
+
+i) dont use tabs for typing in spark or sublime text for exam. Spark treats tab differently and can create some issues in exam. Instead use space twice, which is equal to one tab. (one tab == two space bars)
+
+j) some important questions:
+      1) How to sort String data into Ascending and Descending order
+      2) How to read multiple data files from local file system into spark and create RDD from it.
+      3) 
