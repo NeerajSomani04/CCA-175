@@ -492,8 +492,124 @@ video 80 -- spark -- core API -- Products per Category (continuation of above vi
                 topNPricedProducts
            }
    
-video 81 -- spark -- core API -- Products per Category (continuation of above video) -- part 2 (getTopNPricesProductsByCategory)
+video 81 -- spark -- core API -- Products per Category (continuation of above video) -- part 3 (getTopNPricesProductsByCategory)
        // Now we need to understand how we wants to get our output and based on that we need to decide which API we wants to use
        // spark map API will be used --> when you want to retrive RDD collection
        // spark flatMap API will be used --> when you want to retrive individual records 
 
+        val top3PricedProductsByCategory = ProductsGrpByCategory.flatMap( rec => (getTopNProducts(rec._2, 3))
+        
+video 82 -- spark -- core API -- setOperations
+      sets --> are the collection of elements with similar data types and unique values
+      set operations -->
+              unique --> all unique values of all sets
+              intersects --> common values betten sets
+              difference/ minus --> 
+              distinct --> 
+      
+      problem statement --> Get all customers who placed orders in Aug 2013 and Sep 2013
+      
+      val orders = sc.textFile("/user/dkothari/retail_db/orders")
+      val customers_201308 = orders.
+              filter(order => order.split(",")(1).contains("2013-08")).
+              map(order => order.split(",")(2).toInt)
+      
+      customers_201308.distinct.count // by this command we can see how many unique custmers placed orders in 201308.
+      
+      val customers_201309 = orders.
+              filter(order => order.split(",")(1).contains("2013-09")).
+              map(order => order.split(",")(2).toInt)
+      solution:
+      
+      val customers_201308_and_201309 = customers_201308.intersection(customers_201309)
+      
+      problem statement --> Get all unique customers who placed orders in Aug 2013 or Sep 2013
+      Solution: 
+      val customers_201308_union_201309 = customers_201308.union(customers_201309)
+      customers_201308_union_201309.distinct.count
+      
+      problem statement --> Get all unique customers who placed orders in Aug 2013 but not in Sep 2013
+      Solution:
+      val customers_201308_minus_201309 = customers_201308.map( c => (c,1)).
+              leftOuterJoin(customers_201309.map(c => (c,1))).
+              filter( rec => rec._2._2 == None).
+              map( rec => rec._1)
+              
+      customers_201308_minus_201309.distinct.count
+      customers_201308_minus_201309.take(10).foreach(println)
+
+video 83 -- spark -- core API -- save RDD in text File format and with delimiter
+       // save RDD back to HDFS
+       
+       val orders = sc.textFile("/user/dkothari/retail_db/orders")
+       val orderCountByStatus = orders.
+              map( order => (order.split(",")(3), 1)).countByKey // this will outpout scala map but it doesn't have saveAsTextFile API
+       
+       val orderCountByStatus = orders.
+              map(order => (order.split(",")(3), 1)).
+              reduceByKey((total,ele) => total+ele) // reduceByKey is used to so that we can use saveAsTextFile API.
+       
+       orderCountByStatus.saveAsTextFile("/user/dkothari/test_save_file/orders_count_by_status")
+       hadoop fs -cat /user/dkothari/test_save_file/orders_count_by_status/part-00000 // command to view data
+       
+       orderCountByStatus.
+              map(rec => rec._1 + "\t" + rec._2).
+              saveAsTextFile("/user/dkothari/test_save_file_1/orders_count_by_status") 
+              // this above is the same command as previous but with tab ("\t") as delimiter in the output file. We need to define delimilter only in the case of text file. for Json, parquet and other file we will see spark-sql.
+       
+       //Below is the command to preview the data
+       sc.textFile("/user/dkothari/test_save_file_1/orders_count_by_status").take(10).foreach(println)
+       
+video 84 -- spark -- core API -- save RDD in textFile format, delimiter and compression
+      orderCountByStatus.saveAsTextFile("/user/dkothari/test_save_file_compression/orders_count_by_status", classOf[org.apache.hadoop.io.compress.SnappyCodec])
+      
+      sc.textFile("/user/dkothari/test_save_file_compression/orders_count_by_status").take(10).foreach(println)
+      
+
+video 85 -- spark -- core API -- save RDD data in different file format
+       orc, json, parquet, avro
+       Steps below:
+              1) Data should be in spark Data Frame
+              2) use write or Save API to save data frame in different file format
+              3) we can also use compression algorithm if required
+      
+      val orderDF = sqlContext.read.json("/user/dkothari/retail_db_json/orders") //command to read json file and create data frame
+      orderDF.write.orc("/user/dkothari/orders_orc") //command to write data into orc file format
+      
+      val orderDF = sqlContext.load("/user/dkothari/retail_db_json/orders", "json") // this command can also be use to read json file and create DF
+      orderDF.save("/user/dkothari/orders_parquet", "parquet") //command to save data in parquet format
+      
+      sqlContext.load("/user/dkothari/orders_parquet", "parquet").show //command to view data after saving
+
+
+video 86 -- spark -- Practice Problem statement -- understanding
+       1) use retail_db
+       2) problem statement 
+              i) get daily revenue by product considering completed and closed orders
+              ii) data needs to be sorted in ascending order by order_date and then descending order by revenue computed for each product for each day
+              iii) data should be delimited by "," in this order --
+                       order_date, daily_revenue_per_product, product_name
+       3) data for orders and order_items are available in HDFS --
+              /public/retail_db/orders and /public/retail_db/order_items
+       4) data for products is available locally under --
+              /data/retail_db/products
+       5) Final output needs to be stored under --
+              HDFS location - avro format:
+              /user/dkothari/daily_revenue_avro_scala
+              HDFS location - text format:
+              /user/dkothari/daily_revenue_text_scala
+              Local location - text format:
+              /home/dkothari/daily_revenue_scala
+              Solution needs to be stored under;
+              /home/dkothari/daily_revenue_scala.txt
+ 
+ 
+ video 87 -- spark -- Solution Launch spark shell
+       // first lets see the size of data file
+       hadoop fs -ls -h /user/dkothari/retail_db/orders // 2.9 MB
+       hadoop fs -ls -h /user/dkothari/retail_db/order_items // 5.2 MB
+       
+       // now we need to understand the capacity of cluster, like number of executers, size of blocks, etc
+       //cloudera will provide resource manager web URL like (rm01.itversity.com:8088)
+       
+       
