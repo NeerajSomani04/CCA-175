@@ -597,9 +597,9 @@ video 86 -- spark -- Practice Problem statement -- understanding
               HDFS location - avro format:
               /user/dkothari/daily_revenue_avro_scala
               HDFS location - text format:
-              /user/dkothari/daily_revenue_text_scala
+              /user/dkothari/daily_revenue_txt_scala
               Local location - text format:
-              /home/dkothari/daily_revenue_scala
+              /home/dkothari/daily_revenue_txt_scala
               Solution needs to be stored under;
               /home/dkothari/daily_revenue_scala.txt
  
@@ -710,8 +710,45 @@ video 90 -- spark -- Solution -- read and join products data that is available a
                                      
                daily_revenue_per_product_id_Map.first //to preview the data
                
-               val dailyRevenuePerProductJoin = productsMap.join(daily_revenue_per_product_id_Map)
+               val dailyRevenuePerProductJoin = daily_revenue_per_product_id_Map.join(productsMap)
                
                dailyRevenuePerProductJoin.first //to view and verify data
+               
+ video 91 -- spark -- Solution -- Sort and save data is desired format
        9) sort the data in ascending order by order_date and daily_revenue_per_product in descending order
-               // "dailyRevenuePerProductJoin"  in this object 
+               // "dailyRevenuePerProductJoin"  this object is has data in below format
+               //(product_id, ((order_date, daily_revenue), product_name))
+               // but we need data in below format and it should be sorted properly
+               //(order_date, daily_revenue, product_name)
+               (24,((2013-07-25 00:00:00.0,319.96),Elevation Training Mask 2.0))
+               val dailyRevenuePerProductJoinMap = dailyRevenuePerProductJoin.
+                          map( rec => ((rec._2._1._1, -rec._2._1._2), (rec._2._1._1, rec._2._1._2, rec._2._2)))
+               val dailyRevenuePerProductJoinMapSorted = dailyRevenuePerProductJoinMap.sortByKey()
+               dailyRevenuePerProductJoinMapSorted.take(50).foreach(println)//to view data
+               
+       10) Get data in desired format -- order_date, daily_revenue, product_name
+              // "mkString" is the scala function that can be applied to any collection, to convert all element of each record into one single string and you can also apply delimiter while forming your string. As you can see below code.
+              // Below command will not work because it requires all the elements of the records in data type String. In our case, daily_revenue is of type Float. So, we need to do some changes in below code or use alternative approach.
+              
+              val dailyRevenuePerProduct = dailyRevenuePerProductJoinMapSorted.
+                            map( rec => rec._2.mkString(","))
+                            
+               
+               //As an alternative approach, we will use below code
+                val dailyRevenuePerProduct = dailyRevenuePerProductJoinMapSorted.
+                            map( rec => rec._2._1 + "," + rec._2._2 + "," + rec._2._3)
+                
+                dailyRevenuePerProduct.take(10).foreach(println)
+                
+      11) save data into HDFS location in text file format
+                 dailyRevenuePerProduct.saveAsTextFile("/user/dkothari/daily_revenue_txt_file")
+                 sc.textFile("/user/dkothari/daily_revenue_txt_file").take(10).foreach(println)
+      12) save data into local file system in text file format   
+            // below will copy all the files under specified directory
+                 hadoop fs -get /user/dkothari/daily_revenue_txt_file /home/dkothari/daily_revenue_txt_scala
+            //if the requirement is to copy entire directory then use below command
+            //first we need to make sure the required directory is available at specific location, if not create it
+               mkdir /home/dkothari/daily_revenue_scala_2
+               hadoop fs -get /user/dkothari/daily_revenue_txt_file /home/dkothari/daily_revenue_scala_2/daily_revenue_txt_scala
+                 
+ video 92 -- spark -- Spark SQL -- Different Interface               
