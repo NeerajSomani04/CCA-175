@@ -605,11 +605,113 @@ video 86 -- spark -- Practice Problem statement -- understanding
  
  
  video 87 -- spark -- Solution Launch spark shell
+ 
+ 
        // first lets see the size of data file
-       hadoop fs -ls -h /user/dkothari/retail_db/orders // 2.9 MB
-       hadoop fs -ls -h /user/dkothari/retail_db/order_items // 5.2 MB
+       hadoop fs -ls -h /public/retail_db/orders // 2.9 MB
+       hadoop fs -ls -h /public/retail_db/order_items // 5.2 MB
        
        // now we need to understand the capacity of cluster, like number of executers, size of blocks, etc
-       //cloudera will provide resource manager web URL like (rm01.itversity.com:8088)
+       //cloudera will provide resource manager web URL like itversity --> (rm01.itversity.com:8088)
+       Couple of thing to understand and remember before we launch the spark-shell. We need to understand teh resources available on cluster. Based on that we can decide and launch spark-shell with number of executors.
+       i) No of resources/executor available
+       ii) size of file that we are trying to process
        
+      once you are on resourcemanager web URL: look for 2 important properties:
+              1) Memory Total --> this is summation of multiplication of all Vcores and executor memory. [ sum( vcores * memory)]
+              2) VCores Total --> this means no of processors or executers.
+              3) executor memory allocation --> minimum and maximum allowable memory.
+      
+      1) Launch spark shell with proper configuration
+      spark-shell --master yarn \
+              --num-executors 12 \
+              --executor-memory 2G \
+              --conf spark.ui.port=12855 //this conf is only for itversity lab. for cloudera it might not be important.
+      
+video 88 -- spark -- Solution -- read, filter and join data    
+      2) Read data: 
+              val orders = sc.textFile("/public/retail_db/orders")
+              val orderItems = sc.textFile("/public/retail_db/order_items")
+           //its important to understand the data by previewing right away 
+              orders.first
+              orderItems.first
+              orders.take(10).foreach(println)
+              orderItems.take(10).foreach(println)
+          
+          // for exam day tip --> Durga sir mentioned that their will be different datasets and not only one like retail_db. Although, questions will be much simpler than what we are practicing in video series.
+
+    3) Filter data for completed and closed orders (as per requirement)
+          // when you apply any spark API, you need to make sure the datatype of RDD and its aurguments.
+          // So, to understand data better and different values of order_status, we use below command
+          orders.map(order => order.split(",")(3)).distinct.take(10).foreach(println)
+          
+       val ordersFiltered = orders.
+              filter( order => order.split(",")(3) == "COMPLETE" || order.split(",")(3) == "CLOSED")
+              
+       ordersFiltered.take(10).foreach(pirntln) //command to view the data
        
+      4) Convert both filtered orders and order_items into (key, value) pair, so that we can join both the dataset later
+          
+          val ordersMap = ordersFiltered.map( order => (order.split(",")(0).toInt, order.split(",")(1)))
+          
+          val orderItemsMap = orderItems.
+              map(orderItem => (orderItem.split(",")(1).toInt, (orderItem.split(",")(2).toInt, orderItem.split(",")(4).toFloat)))
+          
+          ordersMap.first
+          orderItemsMap.first
+          
+        5) join dataset to calculate revenue
+              val ordersJoin = ordersMap.join(orderItemsMap)
+              ordersJoin.first // to view data
+          //output of join will look like this (order_id, (order_date, (order_item_product_id, order_item_subtotal)))
+          
+video 89 -- spark -- Solution -- calculate daily revenue per product
+        6) calculate daily revenue per product_id
+             //In order to calculate this we need to transform data into below format
+             // ((order_date, order_item_product_id), order_item_subtotal)
+             // ((order_date, order_item_product_id), daily_revenue_per_product_id) //here we did calculation
+             //below is the code to get desired output here
+             
+             val ordersJoinMap = ordersJoin.
+                                   map( rec => ((rec._2._1, rec._2._2._1), rec._2._2._2))
+             val daily_revenue_per_product_id = ordersJoinMap.
+                                                   reduceByKey((revenue, order_item_subtotal) => revenue + order_item_subtotal)
+             daily_revenue_per_product_id.first // to view the data
+             daily_revenue_per_product_id.count // to get the count of data items
+             
+video 90 -- spark -- Solution -- read and join products data that is available at local file system
+
+         7) read products data from local file system and create RDD
+              // sc.parallelize -- is used to create RDD from local files
+              // when we use scala.io API to read the file from local file system, we need to give fully qualified path of each file. It is not possible to read all the files under one specific directory by just giving directory name. 
+              // file path should be given like this ("/data/retail_db/products/part-00000")
+              // we have read each file seperately, update the collection and use sc.parallelize to create RDD.
+              
+              import scala.io.Source
+              val productsRaw = Source.fromFile("/data/retail_db/products/part-00000").getLines
+              
+              //now you can see "productsRaw" object is of type Iterator[String]
+              //Also, sc.parallelize() can not convert Iterator object into RDD. 
+              //sc.parallelize() requires object of type sequence, (like List, Set, etc.)
+              //below are the commands
+              
+               val productsRaw = Source.fromFile("/data/retail_db/products/part-00000").getLines.toList
+               val products = sc.parallelize(productsRaw)
+               //below are the commands to preview data
+               products.first
+               products.count
+               products.take(10).foreach(println)
+       8) join daily_revenue_per_product_id with products to get daily_revenue_per_product (by name)
+               val productsMap = products.
+                                     map( product => (product.split(",")(0).toInt, product.split(",")(2)))
+               
+               val daily_revenue_per_product_id_Map = daily_revenue_per_product_id.
+                                     map( rec => (rec._1._2, (rec._1._1, rec._2)))
+                                     
+               daily_revenue_per_product_id_Map.first //to preview the data
+               
+               val dailyRevenuePerProductJoin = productsMap.join(daily_revenue_per_product_id_Map)
+               
+               dailyRevenuePerProductJoin.first //to view and verify data
+       9) sort the data in ascending order by order_date and daily_revenue_per_product in descending order
+               // "dailyRevenuePerProductJoin"  in this object 
