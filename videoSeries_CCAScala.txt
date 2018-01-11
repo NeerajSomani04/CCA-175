@@ -1015,6 +1015,121 @@ video 103 -- spark -- Spark SQL -- Aggregation in queries
       select o.order_id, o.order_date, sum(oi.order_item_subtotal) as order_revenue
       from orders o join order_items oi
       on o.order_id=oi.order_item_order_id
+      where o.order_status in ('COMPLETE', 'CLOSED')
       group by o.order_id, o.order_date
       having sum(oi.order_item_subtotal)>=1000;
       
+      //Problem statement --> Get revenue for each date
+      select o.order_date, round(sum(oi.order_item_subtotal), 2) as daily_revenue
+      from orders o join order_items oi
+      on o.order_id=oi.order_item_order_id
+      where o.order_status in ('COMPLETE', 'CLOSED')
+      group by o.order_date;
+      
+video 104 -- spark -- Spark SQL -- Sorting in queries
+     //Problem statement --> Get revenue for each order and sorted by order_date and then order_revenue
+      select o.order_id, o.order_date,o.order_status, sum(oi.order_item_subtotal) as order_revenue
+      from orders o join order_items oi
+      on o.order_id=oi.order_item_order_id
+      where o.order_status in ('COMPLETE', 'CLOSED')
+      group by o.order_id, o.order_date, o.order_status
+      having sum(oi.order_item_subtotal)>=1000
+      order by o.order_date, order_revenue desc;
+      
+      //Problem statement --> on which day which order has generated highest revenue. Means highest revenue of each day.
+      select o.order_id, o.order_date,o.order_status, sum(oi.order_item_subtotal) as order_revenue
+      from orders o join order_items oi
+      on o.order_id=oi.order_item_order_id
+      where o.order_status in ('COMPLETE', 'CLOSED')
+      group by o.order_id, o.order_date, o.order_status
+      having sum(oi.order_item_subtotal)>=1000
+      distribute by o.order_date sort by o.order_date, order_revenue desc;
+
+video 105 -- spark -- Spark SQL -- Hive queries -- set Operations in queries
+      // Difference between join and set:
+              join can be perform on any two tables or dataset by having a common key in them
+              but set operations are performed only on similar kind of datasets. means unique and uniform structure.
+              means same datatype and no duplicate values.
+     
+     // below is some example:
+     //Below query will print result with all values, means Hello 2 times:
+              select 1, "Hello"
+              union all
+              select 1, "World"
+              union all
+              select 2, "Hello"
+              union all
+              select 1, "world";
+              
+     //Below query will print result with all unique values, means Hello 1 time only:     
+              select 1, "Hello"
+              union 
+              select 1, "World"
+              union 
+              select 2, "Hello"
+              union 
+              select 1, "world";
+              
+video 106 -- spark -- Spark SQL -- Hive Queries -- Analytics functions -- aggregation
+ 
+         //Problem statement --> Get revenue for each order and  how much percentatge of each order toward revenue.Also, sorted by order_date and then order_revenue
+         Solution:-
+            select o.order_id, o.order_date, o.order_status, oi.order_item_subtotal, 
+            round(sum(oi.order_item_subtotal) over (partition by o.order_id),2) as order_revenue,
+            round(oi.order_item_subtotal/round(sum(oi.order_item_subtotal) over (partition by o.order_id), 2), 2) as pct_revenue
+            from orders o join order_items oi
+            on o.order_id=oi.order_item_order_id
+            where o.order_status in ('COMPLETE', 'CLOSED')
+            order by o.order_date, order_revenue desc;
+            
+ //Problem statement --> Get revenue for each order and  how much percentatge of each order toward revenue.Also, sorted by order_date and then order_revenue. Also, we need only those orders that has order_revenue greater than 1000.
+ Solution:-
+            select * from (select o.order_id, o.order_date, o.order_status, oi.order_item_subtotal, 
+            round(sum(oi.order_item_subtotal) over (partition by o.order_id),2) as order_revenue,
+            round(oi.order_item_subtotal/round(sum(oi.order_item_subtotal) over (partition by o.order_id), 2), 2) as pct_revenue
+            from orders o join order_items oi
+            on o.order_id=oi.order_item_order_id
+            where o.order_status in ('COMPLETE', 'CLOSED')) q
+            where order_revenue >= 1000
+            order by order_date, order_revenue desc;
+ 
+ video 107 -- spark -- Spark SQL -- Hive Queries -- Analytics functions -- ranking
+        
+        //Problem statement --> used multiple analytics functions. Learn defination of all functions from hive language documentation.
+        Solution:-
+            select * from (select o.order_id, o.order_date, o.order_status, oi.order_item_subtotal, 
+            round(sum(oi.order_item_subtotal) over (partition by o.order_id),2) as order_revenue,
+            round(oi.order_item_subtotal/round(sum(oi.order_item_subtotal) over (partition by o.order_id), 2), 2) as pct_revenue,
+            round(avg(oi.order_item_subtotal) over (partition by o.order_id), 2) as avg_revenue,
+            rank() over (partition by o.order_id order by oi.order_item_subtotal desc) as rnk_revenue,
+            dense_rank() over (partition by o.order_id order by oi.order_item_subtotal desc) as dense_rnk_revenue,
+            percent_rank() over (partition by o.order_id order by oi.order_item_subtotal desc) as pct_rnk_revenue,
+            row_number() over (partition by o.order_id order by oi.order_item_subtotal desc) as rn_orderby_revenue,
+            row_number() over (partition by o.order_id) as rn_revenue
+            from orders o join order_items oi
+            on o.order_id=oi.order_item_order_id
+            where o.order_status in ('COMPLETE', 'CLOSED')) q
+            where order_revenue >= 1000
+            order by order_date, order_revenue desc, rnk_revenue;
+            
+            
+  video 108 -- spark -- Spark SQL -- Hive Queries -- Windowing functions
+  
+  //Problem statement --> used multiple windowing functions. Learn defination of all functions from hive language documentation.
+        Solution:-
+            select * from (select o.order_id, o.order_date, o.order_status, oi.order_item_subtotal, 
+            round(sum(oi.order_item_subtotal) over (partition by o.order_id),2) as order_revenue,
+            round(oi.order_item_subtotal/round(sum(oi.order_item_subtotal) over (partition by o.order_id), 2), 2) as pct_revenue,
+            round(avg(oi.order_item_subtotal) over (partition by o.order_id), 2) as avg_revenue,
+            lead(oi.order_item_subtotal) over (partition by o.order_id order by oi.order_item_subtotal desc) as lead_ios,
+            lag(oi.order_item_subtotal) over (partition by o.order_id order by oi.order_item_subtotal desc) as lag_ois,
+            first_value(oi.order_item_subtotal) over (partition by o.order_id order by oi.order_item_subtotal desc) as fv_ois,
+            last_value(oi.order_item_subtotal) over (partition by o.order_id order by oi.order_item_subtotal desc) as lv_ois 
+            from orders o join order_items oi
+            on o.order_id=oi.order_item_order_id
+            where o.order_status in ('COMPLETE', 'CLOSED')) q
+            where order_revenue >= 1000
+            order by order_date, order_revenue desc;
+            
+            
+  
