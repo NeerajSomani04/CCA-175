@@ -752,3 +752,174 @@ video 90 -- spark -- Solution -- read and join products data that is available a
                hadoop fs -get /user/dkothari/daily_revenue_txt_file /home/dkothari/daily_revenue_scala_2/daily_revenue_txt_scala
                  
  video 92 -- spark -- Spark SQL -- Different Interface               
+           // many tools available for spark SQL in different cluster environment.
+            //Below is the command. this command will work in labs.itversity.com or HortonWorks. Not in Cloudera.
+            
+           1)  spark-sql --master yarn --conf spark.ui.port=12876
+            show databases; //command to view all available data bases.
+            //In spark-sql query will compile into spark framework.
+           
+           2) // Hive is another tool
+              hive --> just this command will lauch hive tool.
+              //in the query will compile in map-reduce framework.
+              
+  video 93 -- spark -- Spark SQL -- Create Hive table and load data from and to Text File Format
+          1) Create Database dkothari_retail_db_txt
+          2) Create orders and Order_items table in dkothari_retail_db_txt database
+          3) Load data into tables -- Data needs to be preformatted as per the table structure defined
+          
+          create database dkothari_retail_db_txt; 
+          use dkothari_retail_db_txt;
+          dfs -ls; // this command is equivalent to hadoop fs -ls in hive
+          set hive.metastore.warehouse.dir; //this command is used to verify hive base dir path
+          // hive.metastore.warehouse.dir=/apps/hive/warehouse
+          
+          dfs -ls /apps/hive/warehouse; // to list all available databases under hive.
+          
+           // In hive we don't use indexes or primary key. Its not reliable.
+           
+           create table orders (
+              order_id int,
+              order_date string,
+              order_customer_id int,
+              order_status string) row format delimited fields terminated by ','
+              stored as textfile;
+              
+          // textfile is default file format.
+          show tables; //to list all available tables in db.
+          select * from orders limit 10; //to sleect first 10 records from table.
+             
+          describe formatted orders; //this is a command to see defination of table
+          
+          // to load data from text file at local file system to hive table, below is the commmand
+          load data local inpath '/data/retail_db/orders' into table orders;
+          
+          // to load data from text file at HDFS file system location to hive table, below is the commmand
+          load data inpath '<hdfs file path location>' into table orders;
+         
+         // we need to be very careful with load command as it doesn't perform any cross validation.
+         
+          dfs -ls /apps/hive/warehouse/dkothari_retail_db_txt.db/orders;
+          
+          create table order_items (
+              order_item_id int,
+              order_item_order_id int,
+              order_item_product_id int,
+              order_item_quantity int,
+              order_item_subtotal float,
+              order_item_product_price float) row format delimited fields terminated by ','
+              stored as textfile;
+          
+          load data local inpath '/data/retail_db/order_items' into table orders_items;
+
+video 94 -- spark -- Spark SQL -- create database, tables and load data in ORC File Format
+       
+       create database dkothari_retail_db_orc; 
+       use dkothari_retail_db_orc;
+       
+       create table orders (
+              order_id int,
+              order_date string,
+              order_customer_id int,
+              order_status string)
+              stored as textfile;
+              
+       create table order_items (
+              order_item_id int,
+              order_item_order_id int,
+              order_item_product_id int,
+              order_item_quantity int,
+              order_item_subtotal float,
+              order_item_product_price float)
+              stored as textfile;
+              
+       // now inorder to load data from local text file format to orc table in Hive, it will be 2 step process.
+             // 1) Insert data in Hive table (call it as stage table) into the same format as of input text file format.
+             // 2) copy data from this stage hive table to needed target orc table format.
+       //below is one way of doing so
+       
+       insert into table dkothari_retail_db_orc.orders select * from dkothari_retail_db_txt.orders;
+       insert into table dkothari_retail_db_orc.order_items select * from dkothari_retail_db_txt.order_items;
+       
+       select * from dkothari_retail_db_orc.orders limit 10;
+       select * from dkothari_retail_db_orc.order_items limit 10;
+
+video 95 -- spark -- Spark SQL -- Using spark-shell
+       // we can write same queries that we used in Hive interface using spark-shell as well.
+       // below are the syntext
+       launch spark-shell --> spark-shell --master yarn --conf spark.ui.port=12876
+       sqlContext.sql("any valid hive query")
+       sqlContext.sql("select * from orders limit 10").show // show will print the result onto consol
+ 
+video 96 -- spark -- Spark SQL -- Hive Functions
+       show functions; // command to see some functions.
+      // like  Aggregate functions (sum, count, min, max, etc)
+      // String functions (substr/subString, instr, rlike, like, length, lcase or lower, ucase or upper, trim, ltrim, rtrim, lpad, rpad, cast, split etc)
+      // date functions 
+      
+      describe function length; // this command will show syntext and defination of function
+      select length('Hello World'); // this is the way to use the function.
+      select length(order_status) from orders limit 10; // this is to use function on table
+      select order_status, length(order_status) from orders limit 10;
+      
+video 97 -- spark -- Spark SQL -- Hive Functions -- manipulating strings
+       // lets first create customer table in hive
+       create table customers (
+          customer_id int,
+          customer_fname varchar(45),
+          customer_lname varchar(45),
+          customer_email varchar(45),
+          customer_password varchar(45),
+          customer_street varchar(45),
+          customer_city varchar(45),
+          customer_state varchar(45),
+          customer_zipcode varchar(45)) row format delimited fields terminated by ','
+          stored as textfile;
+      
+      load data local inpath '/data/retail_db/customers' into table customers;
+      
+      select substring('Hello World, How are you', 14);
+      select substring('Hello World, How are you', 7, 5); // result is string 'World'
+      select substr('Hello World, How are you', -3); //print last 3 char 'you'
+      select substr('Hello World, How are you', -7, 3); // result will be 'are'
+      select instr('Hello World, How are you', ' '); // 6 index position number
+      select like('Hello World, How are you', 'Hello'); // this is a wrong syntext, below is correct one
+      select 'Hello World, How are you' like 'Hello%'; // similar to data base commands
+      select lower('Hello World');
+      select lcase('Hello World');
+      select initcap('hello world'); // this function will intialize every string will capital letter
+      select trim(' hello world '); // it will trim left and right space charachter.
+      select lpad(12, 3, '0'); // result will be 012
+      select cast('12' as int); //it type cast any sting value
+      select cast(substr(order_date, 6, 2) as int) from orders limit 10;
+      select split('Hello World, how are you', ' '); // create array by spliting data
+      select index(split('Hello World, how are you', ' '), 4); // access value of split data
+
+
+video 98 -- spark -- Spark SQL -- Hive Functions -- manipulating Date 
+      Below are few Hive Date functions:
+      current_date --> select current_date;
+      current_timestamp --> 
+      date_add --> select date_add('2017-05-23', 1);
+      date_format --> select date_format('2017-05-23', 'y');
+      date_sub
+      datediff
+      day / dayofmonth
+      to_date
+      to_unix_timestamp
+      to_utc_timestamp
+      from_unixtime
+      from_utc_timestamp
+      minute
+      month
+      months_between
+      next_day
+ 
+ video 99 -- spark -- Spark SQL -- Hive Functions -- Aggregate functions
+          // the difference between these agg functions and what we have seen in spark is, here is take multiple record as input and one record as output. while in spark or scala agg function can take one record per group as input and one record per group as ouput.
+       Below are few aggregate functions:
+       count --> select count(*) from orders;
+       sum --> select sum(order_item_subtotal) from order_items;
+       avg --> 
+       min -->
+       max --> 
