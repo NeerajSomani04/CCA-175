@@ -915,7 +915,7 @@ video 98 -- spark -- Spark SQL -- Hive Functions -- manipulating Date
       months_between
       next_day
  
- video 99 -- spark -- Spark SQL -- Hive Functions -- Aggregate functions
+video 99 -- spark -- Spark SQL -- Hive Functions -- Aggregate functions
           // the difference between these agg functions and what we have seen in spark is, here is take multiple record as input and one record as output. while in spark or scala agg function can take one record per group as input and one record per group as ouput.
        Below are few aggregate functions:
        count --> select count(*) from orders;
@@ -923,3 +923,98 @@ video 98 -- spark -- Spark SQL -- Hive Functions -- manipulating Date
        avg --> 
        min -->
        max --> 
+
+video 100 -- spark -- Spark SQL -- Hive Functions -- CASE / NVL
+       CASE --> is a function of Hive, which is used for if-else condition statements in Hive SQL. as SQL doesn't support if-else statements.
+       Lets understand this by an example:
+       problem statement:- company wants to group similar kind of order_status from orders table. In order to create such groups we can use case ststements.
+       solution:- 
+       //lets fist see different values of order_status.
+       select distinct order_status from orders limit 10;
+       //Below is the solution when you want to compare equal operators:
+       
+       select order_status, 
+                    case order_status 
+                       when 'COMPLETE' then 'No Action'
+                       when 'CLOSED' then 'No Action'
+                       when 'ON_HOLD' then 'Pending Action'
+                       when 'PAYMENT_REVIEW' then 'Pending Action'
+                       when 'PENDING' then 'Pending Action'
+                       when 'PROCESSING' then 'Pending Action'
+                       when 'PENDING_PAYMENT' then 'Pending Action'
+                       else 'Risky'
+                     end from orders limit 10;
+          
+           //Below is the solution when you want to compare non-equal operators:
+                select order_status, 
+                    case  
+                       when order_status IN ('COMPLETE', 'CLOSED') then 'No Action'
+                       when order_status IN ('ON_HOLD', 'PAYMENT_REVIEW', 'PENDING', 'PENDING_PAYMENT', 'PROCESSING') then 'Pending      Action'  
+                       else 'Risky'
+                     end from orders limit 10;
+             
+            // NVL function --> this function is used to handle "NULL" values in hive database.
+            select nvl(order_status, 'Status Missing') from orders limit 10;
+            // or we can write same thing with CASE
+            select case when order_status is null then 'Status Missing' else order_status from orders limit 10;
+            
+
+video 101 -- spark -- Spark SQL -- Row level Transformations
+      for example: Data Cleansing, Data Standarization
+      
+      //Below is one example:- 
+      select concat(substr(order_date, 1, 4), substr(order_date, 6,2)) from orders limit 10;
+      //convert above query result into int datatype
+      select cast(concat(substr(order_date, 1, 4), substr(order_date, 6,2)) as int) from orders limit 10;
+      //better way of writting same 
+      select date_format(order_date, 'YYYYMM') from orders limit 10;
+      select case(date_format(order_date, 'YYYYMM') as int) from orders limit 10;
+ 
+video 102 -- spark -- Spark SQL -- Joining data from multiple tables
+
+      //Below is old way of writting join statement
+      select o.*, c.* from orders o, customers c 
+      where o.order_customer_id = c.customer_id 
+      limit 10;
+      
+      //Below is better and latest way of writting joins
+      select o.*, c.* from orders o join customers c 
+      on o.order_customer_id = c.customer_id 
+      limit 10;
+      
+      //Below is query for left outer join
+      select o.*, c.* from customers c left outer join orders o
+      on o.order_customer_id = c.customer_id 
+      limit 10;
+      
+      //Below is query for right outer join
+      select o.*, c.* from orders o right outer join customers c
+      on o.order_customer_id = c.customer_id 
+      limit 10;
+      
+      //Another way of writting same queries // Perfomance is slow with below query
+      select * from customers where customer_id not in (select distinct order_customer_id from orders) limit 10;
+      
+      //query to count the records
+      select count(1) from orders o join customers c 
+      on o.order_customer_id = c.customer_id;
+      
+      select count(1) from customers c left outer join orders o
+      on o.order_customer_id = c.customer_id;
+
+video 103 -- spark -- Spark SQL -- Aggregation in queries
+      select order_status, count(1) as order_count from orders group by order_status;
+      
+      //Problem statement --> Get revenue for each order
+      select o.order_id, o.order_date, sum(oi.order_item_subtotal) as order_revenue
+      from orders o join order_items oi
+      on o.order_id=oi.order_item_order_id
+      group by o.order_id, o.order_date;
+      
+      //Problem statement --> Get revenue for each order for revenue greater than 1000
+      select o.order_id, o.order_date, sum(oi.order_item_subtotal) as order_revenue
+      from orders o join order_items oi
+      on o.order_id=oi.order_item_order_id
+      group by o.order_id, o.order_date
+      having sum(oi.order_item_subtotal)>=1000;
+      
