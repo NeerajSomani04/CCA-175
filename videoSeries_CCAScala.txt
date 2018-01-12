@@ -1355,4 +1355,17 @@ video 117 -- spark -- Streaming Analytics -- Flume -- Defining Source
     //by running above command we are seeing data from logger
     
 
-video 118 -- spark -- Streaming Analytics -- Flume -- 
+video 118 -- spark -- Streaming Analytics -- Flume -- Sink Introcustion
+       //now lets change the sink name to hd
+       :%s/k1/hd
+       //add below lines in the sinks defination in conf file
+       # Describe the sink
+       wh.sinks.hd.type = hdfs
+       wh.sinks.hd.hdfs.path = hdfs://nn01.itversity.com:8020/user/dkothari/flume_demo
+       //the above hdfs path ca be found at this location : /etc/hadoop/conf/core-site.xml
+       
+       //now once we launch flume agent, it will be storing in Hdfs
+       flume-ng agent -n wh -f /home/dkothari/flume_demo/wslogstohdfs/wshdfs.conf
+       
+       
+       
