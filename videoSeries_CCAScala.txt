@@ -1,7 +1,7 @@
 All the details are at Itversity.com website under specific courses
        
 Video 01 - Scala Fundamentals --> Have instructions on scala setup on mac with intellij IDE
-Video 02 - Basic Scala Programming --> Var, val, loops
+Video 02 - Basic Scala Programming --> Var --> mutable, val --> immutable, loops (for loop, while loop, if-else, etc)
 Video 03 - Functions --> definiing functions and anaonymous funcs.
 Video 04 - OOPs concepts --> Class
      below command is used to set Java_Home environment path, so that we can use :javap command of scala.
