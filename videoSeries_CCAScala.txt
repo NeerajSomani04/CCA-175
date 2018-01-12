@@ -2,17 +2,17 @@ All the details are at Itversity.com website under specific courses
        
 Video 01 - Scala Fundamentals --> Have instructions on scala setup on mac with intellij IDE
 Video 02 - Basic Scala Programming --> Var --> mutable, val --> immutable, loops (for loop, while loop, if-else, etc)
-Video 03 - Functions --> definiing functions and anaonymous funcs.
+Video 03 - Functions --> defining functions and anaonymous funcs.
 Video 04 - OOPs concepts --> Class
      below command is used to set Java_Home environment path, so that we can use :javap command of scala.
         export JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk
     Few Important points for Scala Class:
-       Scala Class defination by default generate default constructor.
+       Scala Class definition by default generate default constructor.
        If there is any argumnet of class with Val or Var, then those will be only argument of class and not variable of class.
        If arguments are defined by Val (immutable), getter method will be available by constructor.
        If arguments are defined by Var (mutable), getter and setter method will be available by constructor.
 Video 05 - OOPs concepts --> Objects
-       Objects are singleton class, hence it can not be intitable more than once. 
+       Objects are singleton class, hence it can not be initiatable more than once. 
        There is no constructor for Objects.
        Companion Objects:- Class name and Object name are same.
 Video 06 - OOPs concepts --> Case Classes
