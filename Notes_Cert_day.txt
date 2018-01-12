@@ -34,3 +34,12 @@ j) some important questions:
       1) How to sort String data into Ascending and Descending order
       2) How to read multiple data files from local file system into spark and create RDD from it.
       3) 
+
+k) List details of all configuartion files related to each technology. This will help us find any configuartion related details at the time of certification:
+
+1) Hadoop conf file --> cat /etc/hadoop/conf/core-site.xml
+2) yarn conf file --> cat /opt/yarn/conf/yarn-site.xml
+3) spark conf file -->
+4) mysql db conf related details --> like jdbc url connection url, etc..
+5) Hive warehouse details on cluster -->
+6) 
