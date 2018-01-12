@@ -1236,3 +1236,33 @@ video 110 -- spark -- Spark SQL application --  Process Data
        //Below command is used to save data into Hive in form of file system specification. //Need to explore, below command is not working
        2) daily_revenue_per_product.write.text
             
+video 112 -- spark -- Spark SQL application -- DataFrame operations
+       below are few:
+              show
+              filter
+              select
+              join
+       
+       daily_revenue_per_product.save("/user/dkothari/daily_revenue_json_hiveDF_Command", "json")
+       daily_revenue_per_product.write.json("/user/dkothari/daily_revenue_json_hiveDF_Command_write")
+       //incase you need to convert dataframe to RDD below is the command
+       daily_revenue_per_product.rdd
+       //below is the command just to select few columns from data frame
+       daily_revenue_per_product.select("order_date").show
+       daily_revenue_per_product.filter(daily_revenue_per_product("order_date") === "2013-07-25 00:00:00.0").show
+       daily_revenue_per_product.filter(daily_revenue_per_product("order_date") === "2013-07-25 00:00:00.0").count
+       // limit function creates a subset of original dataframe
+       val daily_revenue_per_product_limit = daily_revenue_per_product.limit(10)
+
+Data Ingestion:--
+
+video 113 -- spark -- Streaming Analytics (Flume, Kafka, Spark-streaming)
+       //Sqoop is used only for batch oprations (like, nightly once a day or something like that)
+       // sqoop is used to transfer data from RDBMS to HDFS and vice-versa
+       // While flume or kafka is used for Ingesting real time or near real-time streaming data into HDFS. like, server logs
+       // process real-time streaming data as it is ingested onto cluster
+       
+video 114 -- spark -- Streaming Analytics -- Flume -- Documentation and example
+       
+       
+       
