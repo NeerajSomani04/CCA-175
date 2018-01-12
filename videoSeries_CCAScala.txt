@@ -1263,6 +1263,96 @@ video 113 -- spark -- Streaming Analytics (Flume, Kafka, Spark-streaming)
        // process real-time streaming data as it is ingested onto cluster
        
 video 114 -- spark -- Streaming Analytics -- Flume -- Documentation and example
+       create a directory for our example:
+       mkdir flume_demo
+       //create a file in this directory
+       vi flume_example //Below is the content of the file
+       # example.conf: A single-node Flume configuration
+
+       # Name the components on this agent
+       a1.sources = r1
+       a1.sinks = k1
+       a1.channels = c1
+
+       # Describe/configure the source
+       a1.sources.r1.type = netcat
+       a1.sources.r1.bind = localhost
+       a1.sources.r1.port = 44444
+
+       # Describe the sink
+       a1.sinks.k1.type = logger
+
+       # Use a channel which buffers events in memory
+       a1.channels.c1.type = memory
+       a1.channels.c1.capacity = 1000
+       a1.channels.c1.transactionCapacity = 100
+
+       # Bind the source and sink to the channel
+       a1.sources.r1.channels = c1
+       a1.sinks.k1.channel = c1
        
+       //Below is the command to launch flume
+       flume-ng agent --name a1 --conf-file /home/dkothari/flume_demo/example.conf
        
+       //Below are the steps to explore flume more
+       Launch another terminal window and connect to itversity lab
+       //below is the command to communicate to flume agent
+       telnet localhost 44444
+       //Now whatever you are going to type here and hit enter, you can see that on the other terminal window where flume agent is running
        
+video 115 -- spark -- Streaming Analytics -- Flume -- Get data from web server logs to HDFS
+       source -- exec
+       sink -- HDFS
+       channel -- memory
+       //In this video Only explanation of documentation and concepts 
+       
+video 116 -- spark -- Streaming Analytics -- Flume -- Setting up data
+       //there is a good python tool available at cloudera QVM and labs for logs, "gen_logs" 
+       location --> cd /opt/gen_logs
+       //we are going to process logs that will be available by running below command
+       tail -F /opt/gen_logs/logs/access.log
+       
+video 117 -- spark -- Streaming Analytics -- Flume -- Defining Source
+        mkdir wslogstohdfs
+        cp example.conf wslogstohdfs/
+        cd wslogstohdfs/
+        mv example.conf wshdfs.conf
+        vi wshdfs.conf
+        //by using below command, we are changing a1 agent name to wh as agent name. in the file wshdfs.conf
+        :%s/a1/wh
+        //by using below command, we are changing r1 to ws
+        :%s/r1/ws
+        //by using below command, we are changing c1 to mem
+         :%s/c1/mem
+        
+       //So now the file "wshdfs.conf" content looks like below:
+       #example.conf: A single-node Flume configuration
+
+       # Name the components on this agent
+       wh.sources = ws
+       wh.sinks = k1
+       wh.channels = mem
+
+       # Describe/configure the source
+       wh.sources.ws.type = exec
+       wh.sources.ws.command = tail -F /opt/gen_logs/logs/access.log
+
+       # Describe the sink
+       wh.sinks.k1.type = logger
+
+       # Use a channel which buffers events in memory
+       wh.channels.mem.type = memory
+       wh.channels.mem.capacity = 1000
+       wh.channels.mem.transactionCapacity = 100
+
+       # Bind the source and sink to the channel
+       wh.sources.ws.channels = mem
+       wh.sinks.k1.channel = mem
+       
+        
+    //now we can start the flume agent
+    flume-ng agent -n wh -f /home/dkothari/flume_demo/wslogstohdfs/wshdfs.conf
+    //by running above command we are seeing data from logger
+    
+
+video 118 -- spark -- Streaming Analytics -- Flume -- 
