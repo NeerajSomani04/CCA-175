@@ -1,5 +1,38 @@
+Scala Questions:
 1) Create functions for Sum of Numbers, 
 2) Sum of Square of num, 
 3) cubes of nums, 
 4) sum of range of multiples of 2s of numbers
-5) 
+
+Sqoop Questions:
+-->  sqoop-import ------
+1) Import data from mysql, compress it in snappy codec, and save file in both HDFS and Hive table in different file format.
+2) Import data using sql query for same above sinario, with split-by, boundary-query clause.
+3) Differnce between usage of warehouse-dir and target-dir aurgument.
+4) How to handle null while importing or exporting.
+5) usage of --fields-terminated-by "\t" and --lines-terminated-by ":" clause.
+6) sqoop command for hive import.
+-->  sqoop-export ------
+1) practice few examples of sqoop-export scenarios.
+2) 
+
+Hive Questions:
+1) Create new hive table by using available tables in hive or hdfs files.
+2) 
+
+Mysql question:
+1) At time of exam how cloudera is going to provide details for mysql connection. 
+Like mysql host address or how can we figure it out by ourself. 
+I understand there would be definitely some details about user_name and password. 
+
+HDFS questions:
+1) How to find HDFS location of cluster.
+cat /etc/hadoop/conf/core-site.xml
+cat /opt/yarn/conf/yarn-site.xml
+2) 
+
+Spark Questions:
+1) How to get basic configuration details of spark on cluster.
+under local cluster home directory (/home/dkothari). (need to check local and hdfs dir for cloudera)
+         $ view /etc/spark/conf/spark-env.sh
+         $ view /etc/spark/conf/spark-defaults.conf
