@@ -183,13 +183,13 @@ video 60 --> Spark RDD (Resilient Distributed Dataset) -- imp to understand RDD
        
        //For simple dataset like list we use index to fetch the data at any specific location. for example, 
               val l = (1 to 100).toList ---> this is a command to create list in scala
-              l(5) --> in this way we can fetch record at any specific location.
+              l(5) --> in this way we can fetch record at any specific location in list.
               
               Question:- 
                      how to get range of values in scala list. 
                      How to fetch last record in the list, if I don't know size. or How to get size of list.
        
-      //Create RDD using spark-shell (for HDFS location)
+      //Create RDD using spark-shell (for HDFS file location)
        val orders = sc.textFile("/user/dkothari/retail_db/orders") --> scala command to create RDD and fetch data from text files which is                                                                        located at HDFS location.
        orders.first --> command to get first record from RDD
        orders.take(10) --> command to get top 10 records from RDD
@@ -201,19 +201,19 @@ video 60 --> Spark RDD (Resilient Distributed Dataset) -- imp to understand RDD
        
                      
        //Read data from local file system
-       val ProductsRaw = scala.io.Source.fromFile("/data/retail_db/products/part-00000").getLines.toList 
+       val productsRaw = scala.io.Source.fromFile("/data/retail_db/products/part-00000").getLines.toList 
        
        --> above scala command is to read text file from local file system. "getLines" is the function to fetch each line from file and consider each line as one record. "toList" is function to convert it into scala list dataset.
         
         //Create RDD from local file system
-        val productsRDD = sc.parallelize(ProductsRaw) --> parallelize function convert scala list (serialize) into RDD (distributed).
+        val productsRDD = sc.parallelize(ProductsRaw) --> parallelize function convert scala serializable collections (ex. list, seq)  into RDD collection (distributed).
 
 Video 61 --> DAG and Lazy Evaluation
 
 DAG --> Directed Acyclic Graph
 Lazy Evaluation --> spark will do lazy evaluation and create DAG till the program hit action. 
 
-its not good practice to use foreach function on RDD directly. foreach functio should be used on scala collection like Array or list.
+its not good practice to use foreach function on RDD directly. foreach function should be used on scala collection like Array or list.
 
 video 62 --> Reading different file format
 
@@ -226,11 +226,12 @@ video 62 --> Reading different file format
        
        sqlContext.read and sqlContext.load --> both of these commands create spark Data Frame.
        
-       // Difference between RDD and Dataframe is, RDD is just distributed dataset, while Dataframe is structured distribyted dataset.                     Dataframe is strctured more like a database table.
+       // Difference between RDD and Dataframe is, RDD is just distributed dataset, while Dataframe is structured distributed dataset.                     Dataframe is strctured more like a database table.
        val ordersDF = sqlContext.read.json("/user/dkothari/retail_db_json/orders")
        
        //command to preview the data
        ordersDF.show
+       
        // Some Spark Dataframe APIs
        ordersDF.printSchema --> this will print dataframe columns names and datatype
        ordersDF.select("order_id", "order_date").show
