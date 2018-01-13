@@ -3,6 +3,8 @@ Scala Questions:
 2) Sum of Square of num, 
 3) cubes of nums, 
 4) sum of range of multiples of 2s of numbers
+5) how to get range of values in scala list. 
+6) How to fetch last record in the list, if I don't know size. or How to get size of list.
 
 Sqoop Questions:
 -->  sqoop-import ------
@@ -36,3 +38,9 @@ Spark Questions:
 under local cluster home directory (/home/dkothari). (need to check local and hdfs dir for cloudera)
          $ view /etc/spark/conf/spark-env.sh
          $ view /etc/spark/conf/spark-defaults.conf
+2) how to get range of values in scala RDD. 
+3) How to fetch last record in the RDD, if I don't know size. or How to get size of RDD.
+4) How to read data from local file system and text file has line delimiter as tab "\t" and field terminated as comma ",".
+5) practice by creating RDD from both local and hdfs file system.
+6) remember to prepare for avro file format. Both read and write. (SparkContext and SqlContext doesn't support Avro directly).
+7) 
