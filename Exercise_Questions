@@ -43,4 +43,30 @@ under local cluster home directory (/home/dkothari). (need to check local and hd
 4) How to read data from local file system and text file has line delimiter as tab "\t" and field terminated as comma ",".
 5) practice by creating RDD from both local and hdfs file system.
 6) remember to prepare for avro file format. Both read and write. (SparkContext and SqlContext doesn't support Avro directly).
-7) 
+
+Some excercise questions from video:
+video 66 --> Work on word count problem from scratch. means, creating data by usself and get the count of words.
+video 67 --> Get all the orders of 2013-09 which are in closed or complete status
+video 69 --> Get all the orders which do not have corresponding entries in order_items table
+video 71 --> 
+         1) get the count of orders by order status
+         2) compute revenue for the month of 2013-09. and then compute monthly revenue.
+video 73 --> (using GroupByKey API) Get revenue by order and sort the data in descending order by revenue. Final dataset should save at 
+local file system directory in parquet format. Data should have columns -- (revenue, order_id) 
+Homework Excercise: Learn how to sort string data type column in ascending or descending order. 
+         For example, sort data in descending order by order_status.
+video 74 --> same above excercise with reduceByKey.
+video 75 --> (using AggregateByKey API) but output should be revenue, maxPerOrderID (max order_item_subtotal), order_id
+//output data format --> (order_id, (order_revenue, order_item_subtotal)) saved in parquent format.
+Homework Exercise Statement:- calculate revenueAndMinPerOrderId by looking at above solution. there will be some tweak and
+challanges. its not same as revenueAndMaxPerOrderID calculation.
+video 76 --> 
+         1) Products Sorted by CategoryId
+         2) Products Sorted by composite key 
+                                   (ascending order by product_categoryId and descending order by product_price)
+video 77 --> (SortByKey or TakeOrdered)
+         1) Get details of top 10 products by Price
+video 78, 79, 80, 81 --> Get top N priced product within each category. (try this with GroupByKey, reduceByKey and even with AggregateByKey)
+         we need to get all the products in descending order by price. 
+         Output should have same structure as products table data but just top 5 records by price for each category.
+         
