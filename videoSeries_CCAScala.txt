@@ -34,6 +34,7 @@ MySql DB Details: (at time of certification, cloudera wouldn't allow to connect 
               hr_db
               nyse_db
        hostname --> ms.itversity.com
+       
        password --> itversity
        Commands --> 
               to connect to mysql --> mysql -u retail_user -h ms.itversity.com -p itversity
