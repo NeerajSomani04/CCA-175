@@ -262,7 +262,7 @@ video 64 --> spark transformations -- String manipulations
        A(1).indexof("2",2)
        A.length
        
-       /Need to understand all these string manipulation function in more details
+       //Need to understand all these string manipulation function in more details
 
 video 65 --> Spark -- Row level transformations (map function)
         // few frequently used API for this:
@@ -307,7 +307,7 @@ video 67 -- spark -- filter function
        orderFiltered.count
        
        //below is the command to get distinct values of order status
-       orders.map(order => order.split(",")(3).distinct
+       orders.map(order => order.split(",")(3)).distinct
        
 video 68 -- spark -- join function
        // join also support leftOuterJoin , rightOuterJoin, fullOuterJoin
