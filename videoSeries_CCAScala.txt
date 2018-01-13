@@ -359,7 +359,7 @@ video 72 -- spark -- Aggregations -- combiner
           
       reduceByKey --> it uses concept of combiner. which means aggregating based on combining result from intermediate values. But we need                              to use reduceByKey only when logic for all the intermediate computation and final compunatation is same. for                              example: (sum, count, etc). as you can see in syntext of reduceByKey, it uses only one func as aurgument to                                   compute the result.
               1, (1 to 1000) -- sum(1 to 1000) => (sum(1,250), sum(251,500), sum(501,750), sum(751,1000))
-      aggregateByKey --> it is same as reduceByKey, the only difference is you can use it even if the computation logic for intermediate                                stage is different. for example (average, complex computation). As you can see in syntext of aggregateByKey, it uses                                two func as aurgument, one for intermediate computation and one for final combining computation to compute                                the final result. 
+      aggregateByKey --> it is same as reduceByKey, the only difference is you can use it even if the computation logic for intermediate                                stage is different. for example (average, complex computation). As you can see in syntext of aggregateByKey, it uses two func as aurgument, one for intermediate computation and one for final combining computation to compute the final result. 
  
  video 73 -- spark -- groupByKey function
        Exercise statement:- get revenue by order_id 
@@ -432,7 +432,7 @@ video 76 -- Spark core API -- SortByKey
                             map(product => {
               ((product.split(",")(1).toInt, -product.split(",")(4).toFloat), product)
               })
-         // In above statement if you see I neget the second part because its data type is float and we need product_price in decending order we can do it this way. but it cant be done with string data type. for string data type we need to use some other API logic like groupBy, etc.
+         // In above statement if you see I neget the second part because its data type is float and we need product_price in decending order we can do it this way. but it can't be done with string data type. for string data type we need to use some other API logic like groupBy, etc.
          //Below is the command to get only the data field and not the key
          val productsSorted = productsMap.sortByKey().map(rec=> rec._2)
          productsSorted.take(10).foreach(println)
@@ -447,15 +447,12 @@ video 77 -- Spark -- API -- Ranking -- SortByKey and TakeOrdered
               
          val productsSorted = productsMap.sortByKey(false)
          
-         //Below solution done useing TakeOrdered API
+         //Below solution done using TakeOrdered API
          val products = sc.textFile("/user/dkothari/retail_db/products")
          val productsMap = products.
                filter(product => product.split(",")(4) != "").
                takeOrdered(10)(Ordering[Float].reverse.on(product => product.split(",")(4).toFloat))
          val productsSortedByPrice = productsMap.foreach(println)
-         
-         Homework Problem statement:- Get details of top 10 products and get details of top 10 priced products. 
-              //(Hint:- top 10 priced product may have more than 10 records)
 
 video 78 -- spark -- core API - Ranking -- GroupByKey -- Products Per Category
               // Get top N priced product within each category
@@ -487,8 +484,7 @@ video 80 -- spark -- core API -- Products per Category (continuation of above vi
            val topNPricedProducts = productsSortedByPrice.takeWhile(product => product.split(",")(4).toFloat >= minOfTopNPrices)
            
            // why we didn't use filter API in above statement. because our data is already sorted so we don't need to go through all the records. takeWhile API will stop iterating once it will reach the specified condition.
-           
-           
+            
            // Lets create a scala function to get top N product
            
            def getTopNProducts(productsIterable: Iterable[String], topN: Int): Iterable[String] = {
