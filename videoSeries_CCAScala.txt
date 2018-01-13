@@ -57,7 +57,6 @@ Sqoop commands:
        --boundary-query aurgument is used for creating split while importing data.
        --table aurgument should not be used with --query aurgument.
        
-Need to start from below video
 video 44 -- apache sqoop -- sqoop import -- delimiters and handling nulls
 Example Sqoop command:--
             sqoop import \
@@ -83,27 +82,31 @@ video 47 -- Sqoop command for Hive import --
 
 
 sqoop import \
-       --connect jdbc:mysql://ms.itversity.com:3306/retail_db \
-            --username retail_user \
-            --password itversity \
-            --table orders \
-            --hive-import \
-            --hive-database dkothari_sqoop_import \
-            --hive-table orders \
-            --hive-overwrite \
-            --num-mappers 2
+     --connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+     --username retail_user \
+     --password itversity \
+     --table orders \
+     --hive-import \
+     --hive-database dkothari_sqoop_import \
+     --hive-table orders \
+     --hive-overwrite \
+     --num-mappers 2
             
 video 50 -->
        Question : Create Hive table "Daily_Revenue". based on the data fetched from other tables.
        Command: --> 
-              create table daily_revenue as
+              create table daily_revenue_test as
               select order_date, sum(order_item_subtotal) daily_revenue
-              from orders join order_items on 
-              order_id = order_item_order_id
+              from orders o join order_items oi on 
+              o.order_id = oi.order_item_order_id
               where order_date like '2013-07%'
               group by order_date;
+
+       Notes:--> In above query where clause works fine in hive with Group By clause. But recommendation is to use having clause with Group By clause.
+
 video 51 --> Sqoop export -- create hive table
-       mysql command for creating table in retail_export --> create table daily_revenue_dkothari
+       mysql command for creating table in retail_export --> 
+              create table daily_revenue_dkothari
               (order_date varchar(30), revenue float);
      
        sqoop export command-->
@@ -114,6 +117,9 @@ video 51 --> Sqoop export -- create hive table
                      --table daily_revenue_dkothari \
                      --export-dir /apps/hive/warehouse/dkothari_sqoop_import.db/daily_revenue \
                      --input-fields-terminated-by "\001"  
+
+Notes:--> Here, input field of hdfs file is terminated by ASCII char "\001". This is used to identify each field for export.
+
 video 53 --> 
        mysql demo table --> 
               create table daily_revenue_dkothari_demo
@@ -128,7 +134,7 @@ video 53 -->
                      --password itversity \
                      --table daily_revenue_dkothari_demo \
                      --export-dir /apps/hive/warehouse/dkothari_sqoop_import.db/daily_revenue \
-                     --columns order_date,revenue \
+                     --columns order_date, revenue \
                      --input-fields-terminated-by "\001" \
                      --num-mappers 1
 
@@ -154,8 +160,8 @@ video 59 --> command to initiate the spark-shell
        --num-executors 1 \
        --executor-memory 512M
        
-      All above information fro defaults are available at below listed location:
-              under home directory (/user/dkothari)
+      All above information for defaults are available at below listed location:
+              under home directory (/home/dkothari)
                      $ view /etc/spark/conf/spark-env.sh
                      $ view /etc/spark/conf/spark-defaults.conf
                      
@@ -169,7 +175,7 @@ video 59 --> command to initiate the spark-shell
  Once the spark is up and running --> Below is the command to get the environment related details:
        sc.getConf.getAll.foreach(println)
 
-video 60 --> Spark RDD (Resilient Distributed Dataset) -- lets rewatch it
+video 60 --> Spark RDD (Resilient Distributed Dataset) -- imp to understand RDD
        RDD --> extension of list dataset. It is in-memory and distributed dataset.
        
        //Validating files from HDFS file system
