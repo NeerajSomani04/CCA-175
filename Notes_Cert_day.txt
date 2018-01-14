@@ -42,4 +42,3 @@ k) List details of all configuartion files related to each technology. This will
 3) spark conf file -->
 4) mysql db conf related details --> like jdbc url connection url, etc..
 5) Hive warehouse details on cluster -->
-6) 
