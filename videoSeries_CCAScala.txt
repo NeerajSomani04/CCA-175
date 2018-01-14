@@ -507,9 +507,8 @@ video 82 -- spark -- core API -- setOperations
       sets --> are the collection of elements with similar data types and unique values
       set operations -->
               unique --> all unique values of all sets
-              intersects --> common values betten sets
-              difference/ minus --> 
-              distinct --> 
+              intersects --> common values within sets
+              difference/minus --> for example, A - B = All elements of A that are not in B. 
       
       problem statement --> Get all customers who placed orders in Aug 2013 and Sep 2013
       
@@ -544,14 +543,13 @@ video 82 -- spark -- core API -- setOperations
 
 video 83 -- spark -- core API -- save RDD in text File format and with delimiter
        // save RDD back to HDFS
-       
        val orders = sc.textFile("/user/dkothari/retail_db/orders")
        val orderCountByStatus = orders.
               map( order => (order.split(",")(3), 1)).countByKey // this will outpout scala map but it doesn't have saveAsTextFile API
        
        val orderCountByStatus = orders.
               map(order => (order.split(",")(3), 1)).
-              reduceByKey((total,ele) => total+ele) // reduceByKey is used to so that we can use saveAsTextFile API.
+              reduceByKey((total,ele) => total+ele) // reduceByKey is used so that we can use saveAsTextFile API.
        
        orderCountByStatus.saveAsTextFile("/user/dkothari/test_save_file/orders_count_by_status")
        hadoop fs -cat /user/dkothari/test_save_file/orders_count_by_status/part-00000 // command to view data
@@ -559,7 +557,7 @@ video 83 -- spark -- core API -- save RDD in text File format and with delimiter
        orderCountByStatus.
               map(rec => rec._1 + "\t" + rec._2).
               saveAsTextFile("/user/dkothari/test_save_file_1/orders_count_by_status") 
-              // this above is the same command as previous but with tab ("\t") as delimiter in the output file. We need to define delimilter only in the case of text file. for Json, parquet and other file we will see spark-sql.
+              // this above is the same command as previous but with tab ("\t") as delimiter in the output file. We need to define delimilter only in the case of text file. for Json, parquet and other file we will see spark-sql (sqlContext).
        
        //Below is the command to preview the data
        sc.textFile("/user/dkothari/test_save_file_1/orders_count_by_status").take(10).foreach(println)
@@ -567,8 +565,7 @@ video 83 -- spark -- core API -- save RDD in text File format and with delimiter
 video 84 -- spark -- core API -- save RDD in textFile format, delimiter and compression
       orderCountByStatus.saveAsTextFile("/user/dkothari/test_save_file_compression/orders_count_by_status", classOf[org.apache.hadoop.io.compress.SnappyCodec])
       
-      sc.textFile("/user/dkothari/test_save_file_compression/orders_count_by_status").take(10).foreach(println)
-      
+      sc.textFile("/user/dkothari/test_save_file_compression/orders_count_by_status").take(10).foreach(println)    
 
 video 85 -- spark -- core API -- save RDD data in different file format
        orc, json, parquet, avro
@@ -580,11 +577,10 @@ video 85 -- spark -- core API -- save RDD data in different file format
       val orderDF = sqlContext.read.json("/user/dkothari/retail_db_json/orders") //command to read json file and create data frame
       orderDF.write.orc("/user/dkothari/orders_orc") //command to write data into orc file format
       
-      val orderDF = sqlContext.load("/user/dkothari/retail_db_json/orders", "json") // this command can also be use to read json file and create DF
+      val orderDF = sqlContext.load("/user/dkothari/retail_db_json/orders", "json") //this command can also be use to read json file and create DF
       orderDF.save("/user/dkothari/orders_parquet", "parquet") //command to save data in parquet format
       
       sqlContext.load("/user/dkothari/orders_parquet", "parquet").show //command to view data after saving
-
 
 video 86 -- spark -- Practice Problem statement -- understanding
        1) use retail_db
@@ -607,17 +603,15 @@ video 86 -- spark -- Practice Problem statement -- understanding
               Solution needs to be stored under;
               /home/dkothari/daily_revenue_scala.txt
  
- 
  video 87 -- spark -- Solution Launch spark shell
- 
  
        // first lets see the size of data file
        hadoop fs -ls -h /public/retail_db/orders // 2.9 MB
        hadoop fs -ls -h /public/retail_db/order_items // 5.2 MB
        
-       // now we need to understand the capacity of cluster, like number of executers, size of blocks, etc
+       // now we need to understand the capacity of cluster, like number of executers, size of blocks, etc.
        //cloudera will provide resource manager web URL like itversity --> (rm01.itversity.com:8088)
-       Couple of thing to understand and remember before we launch the spark-shell. We need to understand teh resources available on cluster. Based on that we can decide and launch spark-shell with number of executors.
+       Couple of thing to understand and remember before we launch the spark-shell. We need to understand the resources available on cluster. Based on that we can decide and launch spark-shell with number of executors.
        i) No of resources/executor available
        ii) size of file that we are trying to process
        
@@ -667,7 +661,7 @@ video 88 -- spark -- Solution -- read, filter and join data
         5) join dataset to calculate revenue
               val ordersJoin = ordersMap.join(orderItemsMap)
               ordersJoin.first // to view data
-          //output of join will look like this (order_id, (order_date, (order_item_product_id, order_item_subtotal)))
+            //output of join will look like this (order_id, (order_date, (order_item_product_id, order_item_subtotal)))
           
 video 89 -- spark -- Solution -- calculate daily revenue per product
         6) calculate daily revenue per product_id
@@ -686,7 +680,7 @@ video 89 -- spark -- Solution -- calculate daily revenue per product
 video 90 -- spark -- Solution -- read and join products data that is available at local file system
 
          7) read products data from local file system and create RDD
-              // sc.parallelize -- is used to create RDD from local files
+              // sc.parallelize -- is used to create RDD from serialized scala collections (like, list, set, etc).
               // when we use scala.io API to read the file from local file system, we need to give fully qualified path of each file. It is not possible to read all the files under one specific directory by just giving directory name. 
               // file path should be given like this ("/data/retail_db/products/part-00000")
               // we have read each file seperately, update the collection and use sc.parallelize to create RDD.
@@ -697,14 +691,16 @@ video 90 -- spark -- Solution -- read and join products data that is available a
               //now you can see "productsRaw" object is of type Iterator[String]
               //Also, sc.parallelize() can not convert Iterator object into RDD. 
               //sc.parallelize() requires object of type sequence, (like List, Set, etc.)
-              //below are the commands
               
+              //below are the commands
                val productsRaw = Source.fromFile("/data/retail_db/products/part-00000").getLines.toList
                val products = sc.parallelize(productsRaw)
+               
                //below are the commands to preview data
                products.first
                products.count
                products.take(10).foreach(println)
+               
        8) join daily_revenue_per_product_id with products to get daily_revenue_per_product (by name)
                val productsMap = products.
                                      map( product => (product.split(",")(0).toInt, product.split(",")(2)))
@@ -759,7 +755,8 @@ video 90 -- spark -- Solution -- read and join products data that is available a
            // many tools available for spark SQL in different cluster environment.
             //Below is the command. this command will work in labs.itversity.com or HortonWorks. Not in Cloudera.
             
-           1)  spark-sql --master yarn --conf spark.ui.port=12876
+           1)  spark-shell --master yarn --conf spark.ui.port=12876
+               then launch hive
             show databases; //command to view all available data bases.
             //In spark-sql query will compile into spark framework.
            
@@ -780,7 +777,7 @@ video 90 -- spark -- Solution -- read and join products data that is available a
           
           dfs -ls /apps/hive/warehouse; // to list all available databases under hive.
           
-           // In hive we don't use indexes or primary key. Its not reliable.
+           // In hive we don't use indexes or primary key. Its not reliable so far (01-01-2018).
            
            create table orders (
               order_id int,
@@ -793,7 +790,7 @@ video 90 -- spark -- Solution -- read and join products data that is available a
           show tables; //to list all available tables in db.
           select * from orders limit 10; //to sleect first 10 records from table.
              
-          describe formatted orders; //this is a command to see defination of table
+          describe formatted orders; //this is a command to see definition of table
           
           // to load data from text file at local file system to hive table, below is the commmand
           load data local inpath '/data/retail_db/orders' into table orders;
@@ -920,7 +917,7 @@ video 98 -- spark -- Spark SQL -- Hive Functions -- manipulating Date
       next_day
  
 video 99 -- spark -- Spark SQL -- Hive Functions -- Aggregate functions
-          // the difference between these agg functions and what we have seen in spark is, here is take multiple record as input and one record as output. while in spark or scala agg function can take one record per group as input and one record per group as ouput.
+          // the difference between these agg functions and what we have seen in spark is, here it take multiple record as input and one record as output. while in spark or scala agg function can take one record per group as input and one record per group as ouput.
        Below are few aggregate functions:
        count --> select count(*) from orders;
        sum --> select sum(order_item_subtotal) from order_items;
@@ -933,7 +930,7 @@ video 100 -- spark -- Spark SQL -- Hive Functions -- CASE / NVL
        Lets understand this by an example:
        problem statement:- company wants to group similar kind of order_status from orders table. In order to create such groups we can use case ststements.
        solution:- 
-       //lets fist see different values of order_status.
+       //lets first see different values of order_status.
        select distinct order_status from orders limit 10;
        //Below is the solution when you want to compare equal operators:
        
@@ -1015,7 +1012,7 @@ video 103 -- spark -- Spark SQL -- Aggregation in queries
       on o.order_id=oi.order_item_order_id
       group by o.order_id, o.order_date;
       
-      //Problem statement --> Get revenue for each order for revenue greater than 1000
+      //Problem statement --> Get revenue for each completed and closed orders and revenue greater than 1000.
       select o.order_id, o.order_date, sum(oi.order_item_subtotal) as order_revenue
       from orders o join order_items oi
       on o.order_id=oi.order_item_order_id
@@ -1050,7 +1047,7 @@ video 104 -- spark -- Spark SQL -- Sorting in queries
       distribute by o.order_date sort by o.order_date, order_revenue desc;
 
 video 105 -- spark -- Spark SQL -- Hive queries -- set Operations in queries
-      // Difference between join and set:
+      // Difference between join and set Operations:
               join can be perform on any two tables or dataset by having a common key in them
               but set operations are performed only on similar kind of datasets. means unique and uniform structure.
               means same datatype and no duplicate values.
@@ -1076,7 +1073,7 @@ video 105 -- spark -- Spark SQL -- Hive queries -- set Operations in queries
               
 video 106 -- spark -- Spark SQL -- Hive Queries -- Analytics functions -- aggregation
  
-         //Problem statement --> Get revenue for each order and  how much percentatge of each order toward revenue.Also, sorted by order_date and then order_revenue
+         //Problem statement --> Get revenue for each order and how much percentage of each order toward revenue. Also, sorted by order_date and then order_revenue
          Solution:-
             select o.order_id, o.order_date, o.order_status, oi.order_item_subtotal, 
             round(sum(oi.order_item_subtotal) over (partition by o.order_id),2) as order_revenue,
@@ -1086,7 +1083,7 @@ video 106 -- spark -- Spark SQL -- Hive Queries -- Analytics functions -- aggreg
             where o.order_status in ('COMPLETE', 'CLOSED')
             order by o.order_date, order_revenue desc;
             
- //Problem statement --> Get revenue for each order and  how much percentatge of each order toward revenue.Also, sorted by order_date and then order_revenue. Also, we need only those orders that has order_revenue greater than 1000.
+ //Problem statement --> Get revenue for each order and  how much percentatge of each order toward revenue. Also, sorted by order_date and then order_revenue. Also, we need only those orders that has order_revenue greater than 1000.
  Solution:-
             select * from (select o.order_id, o.order_date, o.order_status, oi.order_item_subtotal, 
             round(sum(oi.order_item_subtotal) over (partition by o.order_id),2) as order_revenue,
@@ -1099,7 +1096,7 @@ video 106 -- spark -- Spark SQL -- Hive Queries -- Analytics functions -- aggreg
  
  video 107 -- spark -- Spark SQL -- Hive Queries -- Analytics functions -- ranking
         
-        //Problem statement --> used multiple analytics functions. Learn defination of all functions from hive language documentation.
+        //Problem statement --> used multiple analytics functions. Learn definition of all functions from hive language documentation.
         Solution:-
             select * from (select o.order_id, o.order_date, o.order_status, oi.order_item_subtotal, 
             round(sum(oi.order_item_subtotal) over (partition by o.order_id),2) as order_revenue,
@@ -1185,7 +1182,7 @@ video 110 -- spark -- Spark SQL application --  Process Data
         sqlContext.sql("use dkothari_retail_db_txt")
         
         3) Need to read products data from local file system and create temp table for products
-        val productsRaw = scala.io.Source.fromFile("/data/retail_db/products/part-00000").getLines.toList
+            val productsRaw = scala.io.Source.fromFile("/data/retail_db/products/part-00000").getLines.toList
             val productsRDD = sc.parallelize(productsRaw)
             val productsDF = productsRDD.map( product => {
                      (product.split(",")(0).toInt, product.split(",")(2))
@@ -1218,7 +1215,7 @@ video 110 -- spark -- Spark SQL application --  Process Data
               "(order_date string, product_name string, daily_revenue float) " +
               "STORED AS orc")
               
-              // remember here we are running below query on "dkothari_retail_db_txt" database as we have all needed tables in that db.
+              //remember here we are running below query on "dkothari_retail_db_txt" database as we have all needed tables in that db.
               
               val daily_revenue_per_product = sqlContext.sql("SELECT o.order_date, p.product_name, sum(oi.order_item_subtotal) as daily_revenue_per_product " +
         "from orders o join order_items oi " +
@@ -1255,7 +1252,7 @@ video 112 -- spark -- Spark SQL application -- DataFrame operations
        daily_revenue_per_product.select("order_date").show
        daily_revenue_per_product.filter(daily_revenue_per_product("order_date") === "2013-07-25 00:00:00.0").show
        daily_revenue_per_product.filter(daily_revenue_per_product("order_date") === "2013-07-25 00:00:00.0").count
-       // limit function creates a subset of original dataframe
+       //limit function creates a subset of original dataframe
        val daily_revenue_per_product_limit = daily_revenue_per_product.limit(10)
 
 Data Ingestion:--
