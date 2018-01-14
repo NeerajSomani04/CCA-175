@@ -21,6 +21,25 @@ Sqoop Questions:
 Hive Questions:
 1) Create new hive table by using available tables in hive or hdfs files.
 2) 
+video 93 --> (spark-sql and Hive)
+         1) copy files from local file system to hdfs hive table and vice-versa from hive table to local file system. 
+         (for ex:- copy orders file to orders table in hive, create table also if not exsits)
+video 94 -->
+         2) copy files in different file format, for ex:- from textFile to ORC, ORC to Parquet, and vice-versa.
+video 100 -->
+         1) group similar kind of order_status from orders table. In order to create such groups we can use case ststements.
+         2) How will you handle if there will be "NULL" values in the order_status column.
+video 103 -->
+         1) Get revenue for each order using Hive.
+         2) Get revenue for each completed and closed orders and revenue greater than 1000.
+         3) Get daily revenue for each order.
+video 104 --> 
+         1) Get revenue for each order and sorted by order_date and then order_revenue
+         2) on which day which order has generated highest revenue. Means highest revenue of each day.
+video 106 -->
+         1) Get revenue for each order and how much percentage of each order toward revenue. Also, sorted by order_date and then order_revenue.
+         2) Get revenue for each order and  how much percentatge of each order toward revenue. Also, sorted by order_date and then order_revenue. 
+                Also, we need only those orders that has order_revenue greater than 1000.
 
 Mysql question:
 1) At time of exam how cloudera is going to provide details for mysql connection. 
@@ -41,7 +60,8 @@ under local cluster home directory (/home/dkothari). (need to check local and hd
 2) how to get range of values in scala RDD. 
 3) How to fetch last record in the RDD, if I don't know size. or How to get size of RDD.
 4) How to read data from local file system and text file has line delimiter as tab "\t" and field terminated as comma ",".
-5) practice by creating RDD from both local and hdfs file system.
+5) practice by creating RDD from both local and hdfs file system. Since, sparkContext (sc) supports only saveAstextFile API,
+ its better to use sqlContext always. As we can handle any file format by sqlContext.
 6) remember to prepare for avro file format. Both read and write. (SparkContext and SqlContext doesn't support Avro directly).
 
 Some excercise questions from video:
@@ -66,7 +86,37 @@ video 76 -->
                                    (ascending order by product_categoryId and descending order by product_price)
 video 77 --> (SortByKey or TakeOrdered)
          1) Get details of top 10 products by Price
-video 78, 79, 80, 81 --> Get top N priced product within each category. (try this with GroupByKey, reduceByKey and even with AggregateByKey)
+         
+video 78, 79, 80, 81 --> Get top N priced product within each category.(try this with GroupByKey, reduceByKey and even with AggregateByKey)
          we need to get all the products in descending order by price. 
          Output should have same structure as products table data but just top 5 records by price for each category.
          
+Video 82 -->  
+         1) Get all customers who placed orders in Aug 2013 and Sep 2013.
+         2) Get all unique customers who placed orders in Aug 2013 or Sep 2013
+         3) Get all unique customers who placed orders in Aug 2013 but not in Sep 2013
+
+Video 86 to 91 --> Solve below problem with both as a seperate solution (sc and sqlContext). RDD, spark DF and Spark SQL.
+      video 86 to 91 --> using sparkContext API, RDD
+      video 109 to 112 --> using sqlContext, spark DF. (In this we can save data as both options - Hive table and hdfs files)
+       1) use retail_db
+       2) problem statement 
+              i) get daily revenue by product considering completed and closed orders
+              ii) data needs to be sorted in ascending order by order_date and then descending order by revenue computed for each product for each day
+              iii) data should be delimited by "," in this order --
+                       order_date, daily_revenue_per_product, product_name
+       3) data for orders and order_items are available in HDFS --
+              /public/retail_db/orders and /public/retail_db/order_items
+       4) data for products is available locally under --
+              /data/retail_db/products
+       5) Final output needs to be stored under --
+              HDFS location - avro format:
+              /user/dkothari/daily_revenue_avro_scala
+              HDFS location - text format:
+              /user/dkothari/daily_revenue_txt_scala
+              Local location - text format:
+              /home/dkothari/daily_revenue_txt_scala
+              Solution needs to be stored under;
+              /home/dkothari/daily_revenue_scala.txt
+
+video 92 --> 
