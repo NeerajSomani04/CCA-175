@@ -5,6 +5,14 @@ Scala Questions:
 4) sum of range of multiples of 2s of numbers
 5) how to get range of values in scala list. 
 6) How to fetch last record in the list, if I don't know size. or How to get size of list.
+7) Develop a program which will print factorial of a given number.
+8) Develop a program which will generate number of elements in a Fibonacci series
+9) Develop a function which will return factorial of a given number recursively
+10) Given 2 arguments n and r compute nCr (n! / ((n-r)! * r!))
+11) Exercise – isFibonacci
+Given 1 argument which takes an integer return true if the number belongs to fibonacci series else return false.
+(eg: isFibonacci(13) should return true and isFibonacci(24) should return false)
+12) start from here tomorrow: -- Higher order and Anonymous functions
 
 Sqoop Questions:
 -->  sqoop-import ------
