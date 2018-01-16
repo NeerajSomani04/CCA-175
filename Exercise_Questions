@@ -1,8 +1,4 @@
 Scala Questions:
-1) Create functions for Sum of Numbers, 
-2) Sum of Square of num, 
-3) cubes of nums, 
-4) sum of range of multiples of 2s of numbers
 5) how to get range of values in scala list. 
 6) How to fetch last record in the list, if I don't know size. or How to get size of list.
 7) Develop a program which will print factorial of a given number.
@@ -12,7 +8,16 @@ Scala Questions:
 11) Exercise – isFibonacci
 Given 1 argument which takes an integer return true if the number belongs to fibonacci series else return false.
 (eg: isFibonacci(13) should return true and isFibonacci(24) should return false)
-12) start from here tomorrow: -- Higher order and Anonymous functions
+12) start from here tomorrow: -- Higher order and Anonymous functions.
+1) Create functions for Sum of Numbers, 
+2) Sum of Square of num, 
+3) cubes of nums, 
+4) sum of range of multiples of 2s of numbers
+13) Creating object to invoke nCr
+14) Create class for each of the tables in retail_db data model. Also, create these classes in a package called "retail". 
+Make sure to incorporate some important concepts like "require method", object defination and declaration.
+15) 
+
 
 Sqoop Questions:
 -->  sqoop-import ------
