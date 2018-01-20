@@ -132,4 +132,5 @@ Video 86 to 91 --> Solve below problem with both as a seperate solution (sc and 
               Solution needs to be stored under;
               /home/dkothari/daily_revenue_scala.txt
 
-video 92 --> 
+imp topic --> spark - avro tutorial
+https://github.com/databricks/spark-avro
