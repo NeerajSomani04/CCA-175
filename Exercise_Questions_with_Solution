@@ -1,0 +1,169 @@
+Scala Questions:
+1) how to get range of values in scala list. 
+Solution:
+    val a = (1 to 100).toList
+    a.slice(10,15)
+2) How to fetch last record in the list, if I don't know size. or How to get size of list.
+Solution: 
+    to get size of list --> a.size
+    to get last record in the list --> a.last
+3) Develop a program which will print factorial of a given number.
+Solution: 
+  def fact(a: Int): Int = {
+  var res = 1
+  for (i <- 1 to a) {
+    res = res * i
+  }
+  res
+  }
+4) Develop a program which will generate number of elements in a Fibonacci series. Assumption, person will enter only valid fibonacci no.
+Solution: fibonacci series: 0 1 1 2 3 5 8 13 21 34 55. 
+//Here "a" represents number of elements for fibonacci series to print.
+    def fibo(a: Int) = {
+      var pre = 0
+      var curr = 1
+      var res = 0
+      print(pre + "\t" + curr)
+      for (i <- 2 to a-1) {
+        res = pre + curr
+        pre = curr
+        curr = res
+        print("\t" + res)
+      }
+    }
+  
+5) Develop a function which will return factorial of a given number recursively.
+Solution:
+  def factr(i: Int): Int = if(i==1) 1 else i * factr(i-1)
+  
+6) Given 2 arguments n and r compute nCr = (n! / ((n-r)! * r!))
+Solution: 
+  def combination(n: Int, r: Int): Int = {
+    
+  }
+7) Exercise – isFibonacci
+Given 1 argument which takes an integer return true if the number belongs to fibonacci series else return false.
+(eg: isFibonacci(13) should return true and isFibonacci(24) should return false)
+Solution:
+  
+8) Create functions for Sum of Numbers.
+9) Sum of Square of num. 
+10) cubes of nums.
+11) sum of range of multiples of 2s of numbers
+12) Creating object to invoke nCr
+13) Create class for each of the tables in retail_db data model. Also, create these classes in a package called "retail". 
+Make sure to incorporate some important concepts like "require method", object defination and declaration. 
+
+
+Sqoop Questions:
+-->  sqoop-import ------
+1) Import data from mysql, compress it in snappy codec, and save file in both HDFS and Hive table in different file format.
+2) Import data using sql query for same above sinario, with split-by, boundary-query clause.
+3) Differnce between usage of warehouse-dir and target-dir aurgument.
+4) How to handle null while importing or exporting.
+5) usage of --fields-terminated-by "\t" and --lines-terminated-by ":" clause.
+6) sqoop command for hive import.
+-->  sqoop-export ------
+1) practice few examples of sqoop-export scenarios.
+2) 
+
+Hive Questions:
+1) Create new hive table by using available tables in hive or hdfs files.
+2) 
+video 93 --> (spark-sql and Hive)
+         1) copy files from local file system to hdfs hive table and vice-versa from hive table to local file system. 
+         (for ex:- copy orders file to orders table in hive, create table also if not exsits)
+video 94 -->
+         2) copy files in different file format, for ex:- from textFile to ORC, ORC to Parquet, and vice-versa.
+video 100 -->
+         1) group similar kind of order_status from orders table. In order to create such groups we can use case ststements.
+         2) How will you handle if there will be "NULL" values in the order_status column.
+video 103 -->
+         1) Get revenue for each order using Hive.
+         2) Get revenue for each completed and closed orders and revenue greater than 1000.
+         3) Get daily revenue for each order.
+video 104 --> 
+         1) Get revenue for each order and sorted by order_date and then order_revenue
+         2) on which day which order has generated highest revenue. Means highest revenue of each day.
+video 106 -->
+         1) Get revenue for each order and how much percentage of each order toward revenue. Also, sorted by order_date and then order_revenue.
+         2) Get revenue for each order and  how much percentatge of each order toward revenue. Also, sorted by order_date and then order_revenue. 
+                Also, we need only those orders that has order_revenue greater than 1000.
+
+Mysql question:
+1) At time of exam how cloudera is going to provide details for mysql connection. 
+Like mysql host address or how can we figure it out by ourself. 
+I understand there would be definitely some details about user_name and password. 
+
+HDFS questions:
+1) How to find HDFS location of cluster.
+cat /etc/hadoop/conf/core-site.xml
+cat /opt/yarn/conf/yarn-site.xml
+2) 
+
+Spark Questions:
+1) How to get basic configuration details of spark on cluster.
+under local cluster home directory (/home/dkothari). (need to check local and hdfs dir for cloudera)
+         $ view /etc/spark/conf/spark-env.sh
+         $ view /etc/spark/conf/spark-defaults.conf
+2) how to get range of values in scala RDD. 
+3) How to fetch last record in the RDD, if I don't know size. or How to get size of RDD.
+4) How to read data from local file system and text file has line delimiter as tab "\t" and field terminated as comma ",".
+5) practice by creating RDD from both local and hdfs file system. Since, sparkContext (sc) supports only saveAstextFile API,
+ its better to use sqlContext always. As we can handle any file format by sqlContext.
+6) remember to prepare for avro file format. Both read and write. (SparkContext and SqlContext doesn't support Avro directly).
+
+Some excercise questions from video:
+video 66 --> Work on word count problem from scratch. means, creating data by usself and get the count of words.
+video 67 --> Get all the orders of 2013-09 which are in closed or complete status
+video 69 --> Get all the orders which do not have corresponding entries in order_items table
+video 71 --> 
+         1) get the count of orders by order status
+         2) compute revenue for the month of 2013-09. and then compute monthly revenue.
+video 73 --> (using GroupByKey API) Get revenue by order and sort the data in descending order by revenue. Final dataset should save at 
+local file system directory in parquet format. Data should have columns -- (revenue, order_id) 
+Homework Excercise: Learn how to sort string data type column in ascending or descending order. 
+         For example, sort data in descending order by order_status.
+video 74 --> same above excercise with reduceByKey.
+video 75 --> (using AggregateByKey API) but output should be revenue, maxPerOrderID (max order_item_subtotal), order_id
+//output data format --> (order_id, (order_revenue, order_item_subtotal)) saved in parquent format.
+Homework Exercise Statement:- calculate revenueAndMinPerOrderId by looking at above solution. there will be some tweak and
+challanges. its not same as revenueAndMaxPerOrderID calculation.
+video 76 --> 
+         1) Products Sorted by CategoryId
+         2) Products Sorted by composite key 
+                                   (ascending order by product_categoryId and descending order by product_price)
+video 77 --> (SortByKey or TakeOrdered)
+         1) Get details of top 10 products by Price
+         
+video 78, 79, 80, 81 --> Get top N priced product within each category.(try this with GroupByKey, reduceByKey and even with AggregateByKey)
+         we need to get all the products in descending order by price. 
+         Output should have same structure as products table data but just top 5 records by price for each category.
+         
+Video 82 -->  
+         1) Get all customers who placed orders in Aug 2013 and Sep 2013.
+         2) Get all unique customers who placed orders in Aug 2013 or Sep 2013
+         3) Get all unique customers who placed orders in Aug 2013 but not in Sep 2013
+
+Video 86 to 91 --> Solve below problem with both as a seperate solution (sc and sqlContext). RDD, spark DF and Spark SQL.
+      video 86 to 91 --> using sparkContext API, RDD
+      video 109 to 112 --> using sqlContext, spark DF. (In this we can save data as both options - Hive table and hdfs files)
+       1) use retail_db
+       2) problem statement 
+              i) get daily revenue by product considering completed and closed orders
+              ii) data needs to be sorted in ascending order by order_date and then descending order by revenue computed for each product for each day
+              iii) data should be delimited by "," in this order --
+                       order_date, daily_revenue_per_product, product_name
+       3) data for orders and order_items are available in HDFS --
+              /public/retail_db/orders and /public/retail_db/order_items
+       4) data for products is available locally under --
+              /data/retail_db/products
+       5) Final output needs to be stored under --
+              HDFS location - avro format:
+              /user/dkothari/daily_revenue_avro_scala
+              HDFS location - text format:
+              /user/dkothari/daily_revenue_txt_scala
+              Local location - text format:
+              /home/dkothari/daily_revenue_txt_scala
+              Solution needs to be stored under;
+              /home/dkothari/daily_revenue_scala.txt
