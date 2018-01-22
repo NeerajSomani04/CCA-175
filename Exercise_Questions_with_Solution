@@ -122,11 +122,42 @@ Solution:
 13) Create class for each of the tables in retail_db data model. Also, create these classes in a package called "retail". 
 Make sure to incorporate some important concepts like "require method", object defination and declaration. 
 Solution:
-	
+14) More questions from Learn scala for spark course. section 4-5. scala collections, etc.
 
 Sqoop Questions:
 -->  sqoop-import ------
 1) Import data from mysql, compress it in snappy codec, and save file in both HDFS and Hive table in different file format.
+Solution 1: (import from mysql to hdfs in snappy codec and save in parquet file format. Fields terminatted by "\t" and 
+line terminatted by ":"). I have used --num-mappers here to control the number of output files.
+
+   sqoop import \
+   --connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+   --username retail_user \
+   --password itversity \
+   --num-mappers 2 \
+   --table orders \
+   --warehouse-dir /user/dkothari/retail_db_test \
+   --compress \
+   --compression-codec org.apache.hadoop.io.compress.SnappyCodec \
+   --as-parquetfile \
+   --fields-terminated-by "\t" \
+   --lines-terminated-by ":"
+
+Solution 2:(import from mysql to hive in snappy codec and save in avro file format. Fields terminatted by "\t" and line terminateed by ":")
+  sqoop import \
+   --connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+   --username retail_user \
+   --password itversity \
+   --num-mappers 2 \
+   --table orders \
+   --hive-import \
+   --hive-database dkothari_retail_db_sequence \
+   --create-hive-table \
+   --hive-table orders \
+   --fields-terminated-by "\t" 
+  
+Notes:-> --hive-import, doesn't support "line-terminated-by" other than "\n". Also, it doesn't support sequence and avro file format.
+
 2) Import data using sql query for same above sinario, with split-by, boundary-query clause.
 3) Differnce between usage of warehouse-dir and target-dir aurgument.
 4) How to handle null while importing or exporting.
