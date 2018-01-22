@@ -72,15 +72,57 @@ def isFibonacci(a: Int) = {
 
 8) Create functions for Sum of Numbers. This question can be formed in multiple ways:
     1) calculate sum while entering range of numbers
-    2) calculate sum while entering actual numbers. it can any numbers.
+    Solution: check durga sir's course page
+    	
+    2) calculate sum while entering actual numbers. it can be any numbers.
+       Solution: 
+	       def sum(args: Array[Int]) = {
+	       val s = args.size
+	       var sum = 0
+	       for (i <- 0 to s-1)
+	       {
+		sum += args(i)
+	       }
+	       sum
+	       }
+	  example: sum(Array(6,3,6))
+	  result: 15
+	  
+9) Sum of Square of numbers. 
+10) sum of cubes of numbers.
+11) sum of range of multiples of 2s of numbers.
+12) Creating object to invoke nCr:
+  i) Create a scala program of type object
+  ii) Give some name, eg: comb
+  iii) Add nCr function to the object
+  iv) Invoke it from main function
+  v) The program should take run time arguments
+Solution: 
+   object combination {
+    def nCr(n: Int, r: Int) = {
+     def fact(a: Int) = {
+     var res = 1
+     for (i <- 1 to a) {
+      res = res * i
+     }
+     res
+     }
+  fact(n)/(fact(n-r) * fact(r))
+  }
 
-9) Sum of Square of num. 
-10) cubes of nums.
-11) sum of range of multiples of 2s of numbers
-12) Creating object to invoke nCr
+  def main(args: Array[String]): Unit = {
+    val n = args(0).toInt
+    val r = args(1).toInt
+    val c = nCr(n, r)
+    println("There are " + c + " combinations of " + r + " in " + n + " elements")
+  }
+}
+
+
 13) Create class for each of the tables in retail_db data model. Also, create these classes in a package called "retail". 
 Make sure to incorporate some important concepts like "require method", object defination and declaration. 
-
+Solution:
+	
 
 Sqoop Questions:
 -->  sqoop-import ------
