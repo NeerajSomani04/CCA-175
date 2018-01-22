@@ -34,19 +34,46 @@ Solution: fibonacci series: 0 1 1 2 3 5 8 13 21 34 55.
   
 5) Develop a function which will return factorial of a given number recursively.
 Solution:
-  def factr(i: Int): Int = if(i==1) 1 else i * factr(i-1)
+  def fact(i: Int): Int = if(i==1) 1 else i * fact(i-1)
   
 6) Given 2 arguments n and r compute nCr = (n! / ((n-r)! * r!))
 Solution: 
   def combination(n: Int, r: Int): Int = {
-    
+     def fact(a: Int): Int = {
+     var res = 1
+     for (i <- 1 to a) {
+      res = res * i
+     }
+     res
+     }
+     
+    fact(n)/(fact(n-r) * fact(r))
   }
 7) Exercise – isFibonacci
 Given 1 argument which takes an integer return true if the number belongs to fibonacci series else return false.
 (eg: isFibonacci(13) should return true and isFibonacci(24) should return false)
 Solution:
-  
-8) Create functions for Sum of Numbers.
+def isFibonacci(a: Int) = {
+	var pre = 0
+	var curr = 1
+	var res = 0
+
+	while (res < a){
+	  res = pre + curr
+	  pre = curr
+	  curr = res
+	}
+
+    if (res == a){
+    print("Fibo")
+    }
+    else {print("No Fibo")}
+}
+
+8) Create functions for Sum of Numbers. This question can be formed in multiple ways:
+    1) calculate sum while entering range of numbers
+    2) calculate sum while entering actual numbers. it can any numbers.
+
 9) Sum of Square of num. 
 10) cubes of nums.
 11) sum of range of multiples of 2s of numbers
