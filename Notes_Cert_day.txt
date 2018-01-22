@@ -40,5 +40,13 @@ k) List details of all configuartion files related to each technology. This will
 1) Hadoop conf file --> cat /etc/hadoop/conf/core-site.xml
 2) yarn conf file --> cat /opt/yarn/conf/yarn-site.xml
 3) spark conf file -->
+under local cluster home directory (/home/dkothari). (need to check local and hdfs dir for cloudera)
+         $ view /etc/spark/conf/spark-env.sh
+         $ view /etc/spark/conf/spark-defaults.conf
 4) mysql db conf related details --> like jdbc url connection url, etc..
 5) Hive warehouse details on cluster -->
+6) sqoop conf file --> details for compression codec --> 
+      --> cat /etc/hadoop/conf/core-site.xml
+      --> /codec
+
+
