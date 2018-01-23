@@ -158,14 +158,47 @@ Solution 2:(import from mysql to hive in snappy codec and save in avro file form
   
 Notes:-> --hive-import, doesn't support "line-terminated-by" other than "\n". Also, it doesn't support sequence and avro file format.
 
-2) Import data using sql query for same above sinario, with split-by, boundary-query clause.
+2) Import data using sql query for same above scenario, with split-by, boundary-query clause.
+Solution: (Here, I am importing customer table, in parquet file format with snappy compression.
+	sqoop import \
+	--connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+	--username retail_user \
+	--password itversity \
+	--num-mappers 2 \
+	--compress \
+	--compression-codec org.apache.hadoop.io.compress.SnappyCodec \
+	--query "select * from customers where \$CONDITIONS" \
+	--split-by customer_id \
+	--target-dir /user/dkothari/retail_db_test/customers \
+	--as-parquetfile 	
+	
 3) Differnce between usage of warehouse-dir and target-dir aurgument.
+Solution:
+	--warehouse-dir --> clause is used to declare HDFS parent dir for table.
+	--table-dir --> clause is used to declare HDFS plain table dir.
+	
 4) How to handle null while importing or exporting.
+Solution: 
+	--input-null-non-string <null-str>    Input null non-string representation                                                    
+        --input-null-string <null-str>        Input null string representation
+        --null-non-string <null-str>          Null non-string representation
+        --null-string <null-str>              Null string representation
+   
 5) usage of --fields-terminated-by "\t" and --lines-terminated-by ":" clause.
-6) sqoop command for hive import.
+
 -->  sqoop-export ------
 1) practice few examples of sqoop-export scenarios.
-2) 
+Solution: (Here I am exporting customers record from "/user/dkothari/retail_db_test/customers" location)
+	--- Before running export the needed table should be available in mysql. ---
+	
+	sqoop export \
+	--connect jdbc:mysql://ms.itversity.com:3306/retail_export \
+	--username retail_user \
+	--password itversity \
+	--num-mappers 2 \
+	--export-dir /user/dkothari/retail_db_test/orders \
+	--table dkothari_retail_db_orders
+	
 
 Hive Questions:
 1) Create new hive table by using available tables in hive or hdfs files.
@@ -195,18 +228,13 @@ Mysql question:
 Like mysql host address or how can we figure it out by ourself. 
 I understand there would be definitely some details about user_name and password. 
 
-HDFS questions:
-1) How to find HDFS location of cluster.
-cat /etc/hadoop/conf/core-site.xml
-cat /opt/yarn/conf/yarn-site.xml
-2) 
-
 Spark Questions:
 1) How to get basic configuration details of spark on cluster.
 under local cluster home directory (/home/dkothari). (need to check local and hdfs dir for cloudera)
          $ view /etc/spark/conf/spark-env.sh
          $ view /etc/spark/conf/spark-defaults.conf
 2) how to get range of values in scala RDD. 
+val orders = sc.textFile(
 3) How to fetch last record in the RDD, if I don't know size. or How to get size of RDD.
 4) How to read data from local file system and text file has line delimiter as tab "\t" and field terminated as comma ",".
 5) practice by creating RDD from both local and hdfs file system. Since, sparkContext (sc) supports only saveAstextFile API,
