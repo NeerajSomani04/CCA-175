@@ -243,7 +243,18 @@ val orders = sc.textFile(
 
 Some excercise questions from video:
 video 66 --> Work on word count problem from scratch. means, creating data by usself and get the count of words.
+Solution:
+	val AList = List("Hello Medam", "How are you", "can we work together", "how can you talk to me", "are you still in illinois")
+	val AList_RDD = sc.parallelize(AList)
+	val AList_Map = AList_RDD.flatMap(rec => rec.split(" ")).map(word => (word,1))
+	val word_count = AList_Map.countByKey
+	
 video 67 --> Get all the orders of 2013-09 which are in closed or complete status
+Solution:
+	val orders = sqlContext.read.text("/public/retail_db/orders")
+	val orders_RDD = orders.rdd
+	// Incorrect code --> 
+	  //val ordersFilter = orders_RDD.filter( rec => rec(1) =="2013-09")
 video 69 --> Get all the orders which do not have corresponding entries in order_items table
 video 71 --> 
          1) get the count of orders by order status
