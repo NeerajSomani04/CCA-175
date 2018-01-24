@@ -198,7 +198,8 @@ Solution: (Here I am exporting customers record from "/user/dkothari/retail_db_t
 	--num-mappers 2 \
 	--export-dir /user/dkothari/retail_db_test/orders \
 	--table dkothari_retail_db_orders
-	
+
+6) can sqoop import data to local file system or export through local file system.
 
 Hive Questions:
 1) Create new hive table by using available tables in hive or hdfs files.
@@ -266,15 +267,22 @@ Solution: //Below solution is using sqlContext to read data from text file, crea
        		//It is good to perform dataframe operation on json, parquet, avro file format. Because these files contains proper
 		  defination of column structures. Hence, I am using json file for below example.
        val ordersDF_json = sqlContext.read.json("/public/retail_db_json/orders")
-       val ordersDF_filter = ordersDF_json.filter((ordersDF_json("order_status") === "CLOSED" || ordersDF_json("order_status") === "COMPLETE") && substring(ordersDF_json("order_date"), 0, 7)==="2013-09")
+       val ordersDF_filter = ordersDF_json.filter((ordersDF_json("order_status") === "CLOSED" || 
+               ordersDF_json("order_status") === "COMPLETE") && substring(ordersDF_json("order_date"), 0, 7)==="2013-09")
        ordersDF_filter.show //this will show first 20 records.
        
-video 69 --> Get all the orders which do not have corresponding entries in order_items table
+video 69 --> Get all the orders which do not have corresponding entries in order_items table.
+val ordersDF_json = sqlContext.read.json("/public/retail_db_json/orders")
+val order_itemsDF_json = sqlContext.read.json("/public/retail_db_json/order_items")
+val orders_join = ordersDF_json.join(order_itemsDF_json, ordersDF_json.col("order_id")===order_itemsDF_json.col("order_item_order_id"), "Left_Outer")
+
 video 71 --> 
-         1) get the count of orders by order status
+         1) get the count of orders by order status.
+	 
          2) compute revenue for the month of 2013-09. and then compute monthly revenue.
+	 
 video 73 --> (using GroupByKey API) Get revenue by order and sort the data in descending order by revenue. Final dataset should save at 
-local file system directory in parquet format. Data should have columns -- (revenue, order_id) 
+local file system directory in parquet format. Data should have columns in this format -- (revenue, order_id) 
 Homework Excercise: Learn how to sort string data type column in ascending or descending order. 
          For example, sort data in descending order by order_status.
 video 74 --> same above excercise with reduceByKey.
