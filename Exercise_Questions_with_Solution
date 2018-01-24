@@ -250,11 +250,25 @@ Solution:
 	val word_count = AList_Map.countByKey
 	
 video 67 --> Get all the orders of 2013-09 which are in closed or complete status
-Solution:
+Solution: //Below solution is using sqlContext to read data from text file, create Df, convert into RDD[String] and 
+             perform transformations.
 	val orders = sqlContext.read.text("/public/retail_db/orders")
-	val orders_RDD = orders.rdd
-	// Incorrect code --> 
-	  //val ordersFilter = orders_RDD.filter( rec => rec(1) =="2013-09")
+	val orders_RDD_row = orders.rdd // this command will create an RDD of type RDD[row], but we need RDD[String] type.
+	//Below is one way to create RDD[String] type
+	val orders_RDD_str = orders_RDD.map(x => x.mkString())
+	val orderFiltered = orders_RDD_str.filter(order => ((order.split(",")(3) == "COMPLETE" || order.split(",")(3) == "CLOSED") && 
+                            order.split(",")(1).contains("2013-09"))
+                            )
+       orderFiltered.take(10).foreach(println)
+       orderFiltered.count
+       
+       Solution 2: //Below solution is using sqlContext to read data from text file, create Df, perform filter oprations on DF.
+       		//It is good to perform dataframe operation on json, parquet, avro file format. Because these files contains proper
+		  defination of column structures. Hence, I am using json file for below example.
+       val ordersDF_json = sqlContext.read.json("/public/retail_db_json/orders")
+       val ordersDF_filter = ordersDF_json.filter((ordersDF_json("order_status") === "CLOSED" || ordersDF_json("order_status") === "COMPLETE") && substring(ordersDF_json("order_date"), 0, 7)==="2013-09")
+       ordersDF_filter.show //this will show first 20 records.
+       
 video 69 --> Get all the orders which do not have corresponding entries in order_items table
 video 71 --> 
          1) get the count of orders by order status
