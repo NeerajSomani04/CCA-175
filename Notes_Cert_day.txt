@@ -1,21 +1,31 @@
 Below are the points one should remember Exam Day:
 
-a) Need to check first about python version and make proper environment settings to update and use python 3.x version. 
+a) How to check mysql connection details, if not given directly. 
+   for this best is to run the sqoop command in Cloudera Hadoop Cluster VM.
+Note: I have seen on cloudera test video that cluster node details was given directly and we need to use it as is.
 
-b) you need to make sure about ip addresses and port number for differenet services running on CDH multinode cluster. 
-      In exam cluster mysql and hdfs could be at different node. means different servers (ip-addresses).
+b) Some concepts to understand:
+      1) If source or input is in parquet, json, avro, orc, csv format. Then we need to read data by sqlContext API and create DF.
+            then create a tempTable from DF and apply needed Hive operations.
+      concerns/questions: Need to understand how to apply rdd similar operations (like --> filter, flatMap, map, reduceByKey, groupByKey, etc here in hive). Also, how to save data in a specific required file format and output format. 
+      Current understanding/Answer: 
+            once you create data frame, you can apply most of the rdd related operattion, below is explanation:
+            1) filter --> output will be DataFrame
+            2) map, flatMap --> output will be RDD
+            3) reduceByKey, AggregateByKey, etc --> once RDD created, we can apply all RDD operations
+            4) write/save --> once we have our final RDD, we can create needed DF and save data as per need. 
       
 c) Open 4 applications on CDH:
     1) Sublim / any other text editor
     2) Cloudera Manager
     3) Terminal 
         a) for Hive
-        b) for pyspark --> 2 terminal to work on 2 problems simultaneously. This is because code usually takes long time to run.
+        b) spark-shell --> 2 terminal to work on 2 problems simultaneously. This is because code usually takes long time to run.
         c) for mysql
         d) sqoop
         e) need to update from here if needed for flume/impala/
         
-d) There should be some UI in cloudera that provides information about Namenode. NameNode will give us information about many important components. Need to locate and understand core-site.xml, hdfs-site.xml, yarn-site.xml, spark-env.sh
+d) There should be some UI in cloudera that provides information about Namenode. NameNode will give us information about many important components.
 
 e) understand memory and cluster capacity will help to leverage cluster properly and run jobs in proper manner. This way we can execute jobs fast and save some time in exam.
 
@@ -37,16 +47,17 @@ j) some important questions:
 
 k) List details of all configuartion files related to each technology. This will help us find any configuartion related details at the time of certification:
 
-1) Hadoop conf file --> cat /etc/hadoop/conf/core-site.xml
-2) yarn conf file --> cat /opt/yarn/conf/yarn-site.xml
-3) spark conf file -->
-under local cluster home directory (/home/dkothari). (need to check local and hdfs dir for cloudera)
-         $ view /etc/spark/conf/spark-env.sh
-         $ view /etc/spark/conf/spark-defaults.conf
-4) mysql db conf related details --> like jdbc url connection url, etc..
-5) Hive warehouse details on cluster -->
-6) sqoop conf file --> details for compression codec --> 
-      --> cat /etc/hadoop/conf/core-site.xml
-      --> /codec
+      1) Hadoop conf file --> cat /etc/hadoop/conf/core-site.xml, cat /etc/hadoop/conf/hdfs-site.xml
+      2) yarn conf file --> cat /opt/yarn/conf/yarn-site.xml
+      3) spark conf file -->
+      under local cluster home directory (/home/dkothari). (need to check local and hdfs dir for cloudera)
+               $ view /etc/spark/conf/spark-env.sh
+               $ view /etc/spark/conf/spark-defaults.conf
+      4) mysql db conf related details --> like jdbc url connection url, etc..
+      5) Hive warehouse details on cluster -->
+      6) sqoop conf file --> details for compression codec --> 
+            --> cat /etc/hadoop/conf/core-site.xml
+            --> /codec
+l) 
 
 
