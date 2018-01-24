@@ -57,6 +57,12 @@ Sqoop commands:
        --boundary-query aurgument is used for creating split while importing data.
        --table aurgument should not be used with --query aurgument.
        
+video 33 -- sqoop -- listing databases and tables
+       sqoop list-databases \
+            --connect jdbc:mysql://ms.itversity.com:3306 \
+            --username hr_user \
+            --password itversity 
+            
 video 44 -- apache sqoop -- sqoop import -- delimiters and handling nulls
 Example Sqoop command:--
             sqoop import \
