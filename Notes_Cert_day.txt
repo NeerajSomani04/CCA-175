@@ -58,6 +58,59 @@ k) List details of all configuartion files related to each technology. This will
       6) sqoop conf file --> details for compression codec --> 
             --> cat /etc/hadoop/conf/core-site.xml
             --> /codec
-l) 
 
+l) File format notes:
+
+TO READ:
+for text file:
+sc.textFile("/public/retail_db/orders")
+or
+sqlContext.read.text("/public/retail_db/orders")
+
+for json file: (same for orc, parquet)
+sqlContext.read.json("/public/retail_db_json/orders")
+or 
+sqlContext.load("/public/retail_db/orders", "json")
+
+for csv file: (same for avro)
+   we need to first import needed packages from databricks. There are 2 ways to do so
+   1) spark-shell --master yarn --conf spark.ui.port=12654 --num-executors 2 --executor-memory 512M --packages com.databricks:spark-avro_2.10:2.0.1
+   Notes:--> (for csv files, com.databricks:spark-csv_2.11:1.5.0)
+   Notes:--> (sometime we can use jar files as well by using --jars 'jarfilename' argument)
+   2) 
+   
+After you included package
+sqlContext.load("/public/retail_db_csv/orders", "com.databricks.spark.csv")
+
+TO WRITE:
+for textfile
+rdd.saveAsTextFile("/home/dkothari/orders", classOf["org.apache.hadoop.io.compress.SnappyCodec"])
+or 
+sqlContext.write.text("/home/dkothari/orders")
+sc.
+
+for orc file: (same for json, parquet)
+sqlContext.setConf(“spark.sql.orc.compression.codec”,”snappy”)
+DF.write.orc("/public/retail_db_orc/orders_orc", "snappy")
+or 
+sqlContext.save("/public/retail_db_orc/orders_orc", "orc", "snappy")
+
+for avro file format: (same for csv)
+DF.save("/public/retail_db_avro/orders_avro", "com.databricks.spark.avro")
+Note:--> to verify that the data gets loaded to the needed directory use below command.
+sqlContext.load("/public/retail_db_avro/orders_avro", "com.databricks.spark.avro").show()
+
+
+
+Sample Exam question format:
+   1) read data from file (data could be in any format)
+   2) aggregate (apply some transformation)
+   3) Sort (with multiple key in ascending, descending order)
+   4) save in file or table. (Hdfs or local) (also, with some specific delimiter, line terminator)
+   5) apply some compression method on data file.
+Notes:-->
+1) How to save json dataframe to text file.
+Answer: (Here I need to see how the column name of dataframe reacts to rdd and then textfile)
+1) first we need to convert dataframe to rdd 2) then apply map function to convert data into needed format
+       3) the save data in needed format.
 
