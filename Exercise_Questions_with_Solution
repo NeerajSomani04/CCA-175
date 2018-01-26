@@ -279,7 +279,8 @@ val orders_join = ordersDF_json.join(order_itemsDF_json, ordersDF_json.col("orde
 video 71 --> 
          1) get the count of orders by order status.
 	 
-         2) compute revenue for the month of 2013-09. and then compute monthly revenue.
+	 
+         2) compute revenue for the month of 2013-09 and then compute monthly revenue.
 	 
 video 73 --> (using GroupByKey API) Get revenue by order and sort the data in descending order by revenue. Final dataset should save at 
 local file system directory in parquet format. Data should have columns in this format -- (revenue, order_id) 
