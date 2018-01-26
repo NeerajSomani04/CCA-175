@@ -108,6 +108,8 @@ Sample Exam question format:
    3) Sort (with multiple key in ascending, descending order)
    4) save in file or table. (Hdfs or local) (also, with some specific delimiter, line terminator)
    5) apply some compression method on data file.
+   6) Also, need to understand how to overwrite existing file data
+
 Notes:-->
 1) How to save json dataframe to text file.
 Answer: (Here I need to see how the column name of dataframe reacts to rdd and then textfile)
