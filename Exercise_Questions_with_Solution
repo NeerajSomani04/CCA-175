@@ -285,7 +285,14 @@ video 71 -->
          2) compute revenue for the month of 2013-09 and then compute monthly revenue.
 	 val orders = sc.textFile("/public/retail_db/orders")
 	 val ordersFiltered = orders.filter( order => order.split(",")(1).substring(0,7) == "2013-09")
+	 val ordersMap = ordersFiltered.map(order => (order.split(",")(0).toInt, order.split(",")(1).substring(0,7)))
 	 val orderItems = sc.textFile("/public/retail_db/order_items")
+	 val orderItemsMap = orderItems.map( oi => (oi.split(",")(1).toInt, oi.split(",")(4).toFloat))
+	 val ordersJoin = ordersMap.join(orderItemsMap)
+	 val ordersJoinMap = ordersJoin.map(order => order._2)
+	 val ordersSepRevenue = ordersJoinMap.reduceByKey((total, rev) => total + rev) 
+	 
+	 
 	 
 video 73 --> (using GroupByKey API) Get revenue by order and sort the data in descending order by revenue. Final dataset should save at 
 local file system directory in parquet format. Data should have columns in this format -- (revenue, order_id) 
