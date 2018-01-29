@@ -363,19 +363,17 @@ video 72 -- spark -- Aggregations -- combiner
       groupByKey --> it doesn't use combiner. Its performance is slower than reduceByKey and aggregateByKey
               1, (1 to 1000) -- sum(1 to 1000) => 1 + 2 + 3 + 4...1000
           
-      reduceByKey --> it uses concept of combiner. which means aggregating based on combining result from intermediate values. But we need                              to use reduceByKey only when logic for all the intermediate computation and final compunatation is same. for                              example: (sum, count, etc). as you can see in syntext of reduceByKey, it uses only one func as aurgument to                                   compute the result.
+      reduceByKey --> it uses concept of combiner. which means aggregating based on combining result from intermediate values. 
+      But we need to use reduceByKey only when logic for all the intermediate computation and final compunatation is same. 
+      for example: (sum, count, etc). as you can see in syntext of reduceByKey, it uses only one func as aurgument to compute the result.
               1, (1 to 1000) -- sum(1 to 1000) => (sum(1,250), sum(251,500), sum(501,750), sum(751,1000))
-      aggregateByKey --> it is same as reduceByKey, the only difference is you can use it even if the computation logic for intermediate                                stage is different. for example (average, complex computation). As you can see in syntext of aggregateByKey, it uses two func as aurgument, one for intermediate computation and one for final combining computation to compute the final result. 
+              
+      aggregateByKey --> it is same as reduceByKey, the only difference is you can use it even if the computation logic for intermediate stage is different. for example (average, complex computation). As you can see in syntext of aggregateByKey, it uses two func as aurgument, one for intermediate computation and one for final combining computation to compute the final result. 
  
  video 73 -- spark -- groupByKey function
        Exercise statement:- get revenue by order_id 
        Solution:
-       val orders = sc.textFile("/user/dkothari/retail_db/orders")
        val orderItems = sc.textFile("/user/dkothari/retail_db/order_items")
-       
-       val ordersMap = orders.map(order => { 
-              (order.split(",")(0).toInt, order)
-              })
        val orderItemsMap = orderItems.map(orderItem => {
               (orderItem.split(",")(1).toInt, orderItem.split(",")(4).toFloat)
               })
