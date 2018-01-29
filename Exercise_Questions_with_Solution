@@ -277,12 +277,12 @@ val order_itemsDF_json = sqlContext.read.json("/public/retail_db_json/order_item
 val orders_join = ordersDF_json.join(order_itemsDF_json, ordersDF_json.col("order_id")===order_itemsDF_json.col("order_item_order_id"), "Left_Outer")
 
 video 71 --> 
-         1) get the count of orders by order status.
+        problem - 1) get the count of orders by order status.
 	 val orders = sc.textFile("/public/retail_db/orders")
 	 val ordersMap = orders.map(order => (order.split(",")(3),1))
 	 val ordersCount = ordersMap.countByKey
 	 
-         2) compute revenue for the month of 2013-09 and then compute monthly revenue.
+        problem - 2) compute revenue for the month of 2013-09.
 	 val orders = sc.textFile("/public/retail_db/orders")
 	 val ordersFiltered = orders.filter( order => order.split(",")(1).substring(0,7) == "2013-09")
 	 val ordersMap = ordersFiltered.map(order => (order.split(",")(0).toInt, order.split(",")(1).substring(0,7)))
@@ -292,10 +292,25 @@ video 71 -->
 	 val ordersJoinMap = ordersJoin.map(order => order._2)
 	 val ordersSepRevenue = ordersJoinMap.reduceByKey((total, rev) => total + rev) 
 	 
+	problem - 3) Compute monthly revenue.
+	 val orders = sc.textFile("/public/retail_db/orders")
+	 val ordersMap = orders.map(order => (order.split(",")(0).toInt, order.split(",")(0).toInt))
+	 val orderItems = sc.textFile("/public/retail_db/order_items")
+	 val orderItemsMap = orderItems.map(oi => (oi.split(",")(1).toInt, oi.split(",")(4).toFloat))
+	 val ordersJoin = ordersMap.join(orderItemsMap)
+	 val ordersJoinMap = ordersJoin.map(order => order._2)
+	 val ordersMonthlyRevenue = ordersJoinMap.reduceByKey((total, rev) => total + rev)
 	 
-	 
-video 73 --> (using GroupByKey API) Get revenue by order and sort the data in descending order by revenue. Final dataset should save at 
-local file system directory in parquet format. Data should have columns in this format -- (revenue, order_id) 
+video 73 --> 
+	problem - 1) (using GroupByKey API) Get revenue by order and sort the data in descending order by revenue. 
+	Final dataset should save at local file system directory in parquet format. 
+	Data should have columns in this format -- (revenue, order_id) 
+	Solution:-
+	val orderItems = sc.textFile("/public/retail_db/order_items")
+	val orderItemsGBK = orderItems.map(oi => (oi.split(",")(1).toInt, oi.split(",")(4).toFloat)).groupByKey
+	val ordersRevenue = orderItemsGBK.map(rec => (rec._2.toList.Sum, rec._1)
+	val ordersRevenueSorted = ordersRevenue.sortBy(o => o._1, ascending: false)
+	 	 
 Homework Excercise: Learn how to sort string data type column in ascending or descending order. 
          For example, sort data in descending order by order_status.
 video 74 --> same above excercise with reduceByKey.
