@@ -324,6 +324,7 @@ video 74 --> same above excercise with reduceByKey.
 
 video 75 --> (using AggregateByKey API) but output should be revenue, maxPerOrderID (max order_item_subtotal), order_id
 //output data format --> (order_id, (order_revenue, order_item_subtotal)) saved in parquent format.
+
 Homework Exercise Statement:- calculate revenueAndMinPerOrderId by looking at above solution. there will be some tweak and
 challanges. its not same as revenueAndMaxPerOrderID calculation.
 
@@ -345,14 +346,15 @@ Video 82 -->
          3) Get all unique customers who placed orders in Aug 2013 but not in Sep 2013
 
 Video 86 to 91 --> Solve below problem with both as a seperate solution (sc and sqlContext). RDD, spark DF and Spark SQL.
+	           (In both options, save data in both - Hive table and hdfs files and even local file system)
       video 86 to 91 --> using sparkContext API, RDD
-      video 109 to 112 --> using sqlContext, spark DF. (In this we can save data as both options - Hive table and hdfs files)
+      video 109 to 112 --> using sqlContext, spark DF. 
        1) use retail_db
        2) problem statement 
               i) get daily revenue by product considering completed and closed orders
               ii) data needs to be sorted in ascending order by order_date and then descending order by revenue computed for each product for each day
-              iii) data should be delimited by "," in this order --
-                       order_date, daily_revenue_per_product, product_name
+              iii) data should be delimited by "\t" in this order --
+                       order_date\tdaily_revenue_per_product\tproduct_name
        3) data for orders and order_items are available in HDFS --
               /public/retail_db/orders and /public/retail_db/order_items
        4) data for products is available locally under --
