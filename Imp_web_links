@@ -1,0 +1,98 @@
+Good links:
+
+http://arun-teaches-u-tech.blogspot.com/p/certification-preparation-plan.html
+
+https://www.quora.com/Is-anyone-plannig-to-give-CCA175-Certification-If-yes-how-are-you-preparing-for-it
+
+Basic Command practice:
+1) Hadoop hdfs
+      
+2) Sqoop 
+      
+      https://www.dezyre.com/hadoop-tutorial/hadoop-sqoop-tutorial
+
+http://diginbigdata.blogspot.com.ar/2016/12/sqoop-import-to-hive-in-sequence-file.html
+
+I also found questions on swoop ware easiest. only truck is to creat connection string and of course you have to be accurate about the location and data format.
+
+3) Hive
+https://www.dezyre.com/hadoop-tutorial/hive-commands
+http://hadooptutorial.info/hive-interactive-shell-commands/
+
+4) Impala
+http://hadooptutorial.info/impala-commands-cheat-sheet/
+
+5) Pig
+http://hadooptutorial.info/pig-functions-cheat-sheet/
+
+
+6) Spark Commands: (Scala and Python both)
+    i) PySpark API (SparkContext interface)
+    ii) Spark SQL (SqlContext Interface)
+
+http://www.itversity.com/courses/cca-spark-and-hadoop-developer-certification/?lipi=urn%3Ali%3Apage%3Ad_flagship3_pulse_read%3BLyYOxd8ZRPOvmDhfyig8Kg%3D%3D
+
+
+7) HBase
+http://hadooptutorial.info/hbase-functions-cheat-sheet/
+
+
+Basic Conceptual Understanding
+1) Flume
+2) Yarn
+3) Solr
+4) ZooKeeper
+5) Hue
+
+Important things to remember:
+
+Ques 1 -- To connect to MySql I was not provided with connection string, so I need to get host name by running command?
+Answer -- To get hostname I will do ,
+$ hostname -f
+
+Then connection string will be,
+jdbc:mysql://<HOSTNAME>/<MYDQL_DB_SCHEMA>
+
+mysql will be running on defult port or what ? 
+
+jdbc:mysql://<HOSTNAME>:3306/<MYDQL_DB_SCHEMA>
+
+--------
+
+2) Make sure you familiar with Ubuntu system and Sublime Text before exam. Get to know some basic tricks like, copy & past (Ctrl+c/v for Sublime Text and Ctrl+Shift+c/v for Ubuntu). 
+
+3) Also get to know how to increase the terminal font size.
+Answer --  I remember it was under Preferences on the left top corner.
+
+http://askubuntu.com/questions/157873/is-it-possible-to-change-the-terminal-font
+
+Also you can open more than one terminals, for parallel working.
+I had opened 2 terminals and working on two problems simultaneously. I.e. I was testing few commands  in spark-shell while one Spark programme is running.
+
+4) Also get yourself familiar with Cloudera documentation, mention on their certification page. However I did not get enough time to search through documentation.
+
+5) Through I use text editor for constructing DDL statements. 
+It will be good idea to get familiar with cloudera HIVE documentation in advance, as there are bunch of links we need to follow to reach to HIVE DDL page.
+
+https://cwiki.apache.org/confluence/display/Hive/LanguageManual+DDL
+
+6) Remember to read instructions properly -- 
+
+Praveen Padige: Hey..I doubt it is not technical. It is purely related to certification.  In the exam do we have to create a database? In the question it didn't specifically mentioned to create one. But it said to store the results in "student" DB. So I have created one to store the result. But in the final result my answers to the Hive questions were wrong it has this msg in the result mail. "Incorrect schema" & "no solution table"
+
+
+Me: I remember I had created a Hive schema in one of the problem.
+They have given a location where they want to have that schema created.
+You might have missed this part in your solution.
+
+7) Process streaming data as it is loaded onto the cluster
+
+
+Example of question format:
+1 sqoop import
+1 sqoop export
+2 hive questions one create table and another create partitioned table
+1 avro schema evolution
+3 scala spark sorting, reduce by key
+2 pyspark
+
