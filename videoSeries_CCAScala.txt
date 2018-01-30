@@ -403,7 +403,7 @@ video 75 -- Aggregations -- aggregateByKey
        //output data format --> (order_id, (order_revenue, order_item_subtotal))
        
        val revenueAndMaxPerOrderID = orderItemsMap.aggregateByKey((0.0f,0.0f))(
-       (inter, subtotal) => (inter._1+subtotal, if(subtotal > inter._2) subtotal else inter._2,
+       (inter, subtotal) => (inter._1+subtotal, if(subtotal > inter._2) subtotal else inter._2),
        (total, inter) => (total._1 + inter._1, if(total._2 > inter._2) total._2 else inter._2)
        )
        
