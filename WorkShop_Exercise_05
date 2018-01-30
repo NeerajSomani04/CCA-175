@@ -1,0 +1,41 @@
+Problem Statement:-
+        Develop Spark application using Scala to get daily revenue per department.
+        (In other words) Get all the completed or closed orders and then compute total revenue for each day for each department.
+        Print order_date, department_name and order_revenue
+Solution:-
+
+scenario 1 - If data is in text file format:
+       val departments = sc.textFile("/user/dkothari/retail_db/departments")
+       val departmentsMap = departments.map( dep => (dep.split(",")(0).toInt, dep.split(",")(1) ))
+       
+       val categories = sc.textFile("/user/dkothari/retail_db/categories")
+       val categoriesMap = categories.map( c => (c.split(",")(1).toInt, c.split(",")(0).toInt) )
+       val catDepJoin = categoriesMap.join(departmentsMap).map( rec => rec._2)
+       
+       val products = sc.textFile("/user/dkothari/retail_db/products")
+       val productsMap = products.map( product => (product.split(",")(1).toInt, product.split(",")(0).toInt))
+       val prodCatJoin = productsMap.join(catDepJoin).map(rec => rec._2)
+       
+       val orderItems = sc.textFile("/user/dkothari/retail_db/order_items")
+       val orderItemsMap = orderItems.map(orderItem => (orderItem.split(",")(2).toInt,(orderItem.split(",")(1).toInt, orderItem.split(",")(4).toFloat)))
+       val orderItemProdJoin = prodCatJoin.join(orderItemsMap).map( rec => (rec._2._2._1, (rec._2._2._2, rec._2._1))) 
+
+       val orders = sc.textFile("/user/dkothari/retail_db/orders")
+       val ordersMap = orders.filter( order => (order.split(",")(3) == "CLOSED" || order.split(",")(3) == "COMPLETED")).map( order => (order.split(",")(0).toInt, order.split(",")(1)))
+       val orderItemOrderJoin = ordersMap.join(orderItemProdJoin).map( rec => ((rec._2._1, rec._2._2._2),rec._2._2._1))
+       
+       val DailyRevenue = orderItemOrderJoin.reduceByKey((total , subtotal) => total+subtotal).sortByKey(ascending=false)
+       
+       ------------------------------------------------------------------------------------------------------------------
+       --> Sort data in ascending order by date and descending order by revenue
+       val DailyRevenue = orderItemOrderJoin.reduceByKey((total , subtotal) => total+subtotal)
+       val SortedDailyRevenue = DailyRevenue.map( rec => ((rec._1._1, -rec._1._2), rec)).sortByKey()
+      
+      ------------------------------------------------------------------------------------------------------------------------
+        select D.department_name, O.order_date, OI.order_item_subtotal
+        from departments D join categories C on D.department_id=C.category_department_id
+        join products P on C.category_id=P.product_category_id
+        join order_items OI on P.product_id=OI.order_item_product_id
+        join orders O on OI.order_item_order_id=O.order_id 
+        where O.order_status IN ('CLOSED', 'COMPLETED') limit 10;
+       
