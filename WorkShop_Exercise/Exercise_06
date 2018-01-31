@@ -1,0 +1,9 @@
+Exercise 06: Get top n traded stocks by volume each month from NYSE data with in a given year
+
+Solution:--
+    val stocks = sc.textFile("/public/nyse")
+    val stockMap = stocks.map( stock => (stock.split(",")(1), stock))
+    val stocksGByDate = stockMap.groupByKey
+    
+    val stockIterator = stocksGByDate.first._2
+    val stockTopNVolume = stockIterator.map( rec => rec.split(",")(6).toInt).toSet.toList
