@@ -351,7 +351,23 @@ video 76 -->
 video 77, 78, 79, 80, 81 --> Get top N priced product within each category.(try this with GroupByKey, reduceByKey and even with AggregateByKey)
          we need to get all the products in descending order by price. 
          Output should have same structure as products table data but just top 5 records by price for each category.
-         
+Solution:--
+         val products = sc.textFile("/user/dkothari/retail_db/products")
+         val productsMap = products.
+                 filter(product => product.split(",")(4) != "").
+                 map(product => (product.split(",")(1).toInt, product))
+         val ProductsGrpByCategory = productsMap.groupByKey
+	 
+	 def getTopNProducts(productsIterable: Iterable[String], topN: Int): Iterable[String] = {
+                val productPrices =  productsIterable.map(p => p.split(",")(4).toFloat).toSet 
+                val topNProductPrices = productPrices.toList.sortBy(p => -p).take(topN)
+                val productsSortedByPrice = productsIterable.toList.sortBy(product => -product.split(",")(4).toFloat)
+                val minOfTopNPrices = topNProductPrices.min
+                val topNPricedProducts = productsSortedByPrice.takeWhile(product => product.split(",")(4).toFloat >= minOfTopNPrices)
+                topNPricedProducts
+           }
+	 
+	 val top3PricedProductsByCategory = ProductsGrpByCategory.flatMap( rec => (getTopNProducts(rec._2, 3)))
 Video 82 -->  
          1) Get all customers who placed orders in Aug 2013 and Sep 2013.
          2) Get all unique customers who placed orders in Aug 2013 or Sep 2013
