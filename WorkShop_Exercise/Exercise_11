@@ -1,0 +1,25 @@
+This exercise is very important to have hands on knowledge to deal with files in HDFS as a developer.
+
+Description
+
+External source (your PC)
+Stage files on gateway Node (which have access to the entire cluster)
+Files can be downloaded to your PC from github62 account
+Problem Statement
+
+Copy files to HDFS (both retail_db directory as well as largedeck.txt file)
+For largedeck.txt
+Change the block size to 64 MB
+Change replication factor to 1
+Get the metadata of the files (hdfs fsck)
+Also, answer these questions
+
+What is default block size? What is the purpose of block size?
+What is default replication factor? Explain the purpose of replication factor
+Make sure you understand the role of name node/secondary name node and data node
+What are different commands to copy files from local filesystem on Gateway node to HDFS?
+What are different commands to copy files from HDFS to local filesystem on Gateway node?
+Also make sure to understand commands to copy/move files from one HDFS location to another HDFS location
+Permissions on the files
+Locations of the parameter files
+Note: for certification purposes commands to copy the files from and to HDFS is enough.
