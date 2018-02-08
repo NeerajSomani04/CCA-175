@@ -1,0 +1,18 @@
+Description
+
+Perform retail_db analysis using SQL in Hive
+Use joins, aggregate functions as well as window functions as applicable
+retail_db have 6 tables
+departments
+categories
+products
+orders
+order_items
+customers
+Problem Statement
+
+Get rank of each category by revenue with in each department generated from all the transactions
+Display the results by deparment_name and rank in ascending order
+Get percentage of each category by revenue with in each department
+Display the results by department_name and percentage in descending order
+Make sure to use ASCII syntax
