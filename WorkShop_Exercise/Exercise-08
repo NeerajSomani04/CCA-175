@@ -1,0 +1,30 @@
+Description
+
+Understanding data frames
+Ability to write Spark SQL
+Problem Statement
+
+For Exercise 5
+Create hive tables for retail_db
+implement exercise 5 using spark hive sql
+Writing simple sql is good enough
+If interested, you can go with sbt application using intellij or eclipse with Scala IDE
+Use 2 to 4 tasks while executing the queries
+Run the program on the cluster and observe DAG, stages, executors and executor tasks (use spark-shell, create HiveContext object and then run the query using hiveContext.sql)
+For Exercise 6
+Data is available under hdfs path /public/nyse
+Create data frame for the above data set
+implement exercise 6 using spark native sql
+Develop sbt project using intellij or eclipse with Scala IDE
+Validate locally - you can copy data from the gateway node /data/nyse to your PC to validate locally either by using tools like winscp or scp command.
+Build the jar file using sbt and then run on the cluster
+Use 2 to 4 tasks while executing the queries
+Run the program on the cluster and observe DAG, stages, executors and executor tasks
+
+
+------------------------------
+
+Sample query to get top 5 stocks every month by volume (using windowing functions)
+select * from (select trademonth, stockticker, monthly_volume, dense_rank() over (partition by trademonth order by monthly_volume desc) rnk from (select substr(tradedate, 1, 7) trademonth, stockticker, sum(volume) monthly_volume from stocks_eod group by substr(tradedate, 1, 7), stockticker) q1) q2 where rnk <= 5 order by trademonth, rnk;
+
+----------------------------
