@@ -1,0 +1,27 @@
+Description
+
+This is to test the knowledge about connecting to database and copy data to HDFS as well as Hive tables.
+Understand validating connectivity to MySQL
+Ability to run import table from MySQL to HDFS
+Create hive database and import data into hive tables.
+Documentation for reference - https://sqoop.apache.org/docs/1.4.6/SqoopUserGuide.html18
+Problem Statement
+
+List databases, list tables and validate that you can connect to database using Sqoop with JDBC URL. As part of validation you should query from one of the tables in MySQL
+Host: nn01.itversity.com
+Retail Database Names: retail_db, retail_import, retail_export
+Username to access Retail databases: retail_dba (itversity)
+NYSE Database: nyse
+Username to access nyse database: nyse_ro
+Table Name: stocks_eod
+Importing retail_db to both HDFS
+Import all tables
+file format - avrodata-file
+Importing retail_db to Hive
+Better to create a database with your lab account id and use it while import
+Import all tables
+File format - text file
+Delimiter - |
+Import nyse.stocks_eod to HDFS
+Try to use compression - snappy codec
+Use 8 parallel threads
