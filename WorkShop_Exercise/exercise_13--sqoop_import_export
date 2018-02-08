@@ -1,0 +1,19 @@
+Description
+
+Use NYSE data
+Perform import into HDFS, run given query, perform sqoop export back to nyse_export
+Problem Statement
+
+Import nyse.stocks_eod (preferably hive import into your own database)
+
+Run this CTAS query which will store data back to new hive table
+
+create table stocks_revenue_monthly as
+select stockticker, substr(tradedate, 1, 7) trademonth,
+sum(volume) monthly_volume
+from stocks_eod
+group by stockticker, substr(tradedate, 1, 7);
+
+Create table in mysql - nyse_export with some unique name
+
+Sqoop export to copy data back to mysql table created in last step (source - hive table stocks_revenue_monthly)
