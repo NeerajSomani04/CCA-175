@@ -1,0 +1,17 @@
+Description
+
+We will be creating several hive tables using different file formats, delimiters and partitioning strategy
+Also we will be loading data into these hive tables
+Data Location
+HDFS - /public/retail_db
+Local - /data/retail_db
+To get data types visit mysql database retail_db using user retail_dba
+Problem Statement
+
+Make sure you have 2 databases with your OS User name and then stage and final as suffix
+example: dgadiraju_stage, dgadiraju_final
+dgadiraju_stage - Create external tables in dgadiraju_stage pointing to HDFS location /public/retail_db
+dgadiraju_stage - Make sure at least one table point to different location and use load command to load data from local file system into the hive table
+dgadiraju_final - Create all 6 tables in hive as managed tables, delimiter is “|”, also use gzip compression while storing the data
+Also create 2 additional tables for orders and order_items where both tables are bucketed by order_id
+Create another table for orders where data is partitioned by order_month
