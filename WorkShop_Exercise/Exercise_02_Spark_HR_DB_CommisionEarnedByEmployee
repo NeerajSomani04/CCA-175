@@ -1,21 +1,21 @@
 Description
 
-Intention of this problem is to understand the process of developing applications
-Dependencies: MySQL JDBC, typesafe.config for externalizing JDBC URL
-Use MySQL as database. If you do not have one, install it locally.
-Steps to setup database
-Create database by name HR
-Switch to HR database
-Run this script, it will create bunch of tables
-Get it from github53
-List the tables
-Make sure employees table is in the list
-Understand all the columns
-Also there is database by name hr in lab, user name hr_ro, password itversity. You can connect to it as well, instead of setting up database locally
-Use best programming practices, than trying to do every thing using scala (for eg, if you write sql try to get as much work as possible done in sql it self)
-Problem Statement
+There is database by name hr in lab, host - ms.itversity.com, user name hr_user, password itversity. 
+Use best programming practices, than trying to do every thing using scala 
+(for eg, if you write sql try to get as much work as possible done in sql it self)
 
+Problem Statement::
 Let us get commission earned by each and every employee
 For each and every employee who have commission_pct set compute commission earned in dollars (by multiplying salary with commission_pct)
 Print employee name, salary and commission earned
 If commission_pct is null in database, print “N/E” for commission earned
+
+Solution:
+using spark SQL --
+
+val employees = sc.textFile("/public/hr_db/employees")
+
+-- this file is tab seperated. came to know after reading and analyzing it.
+val employees = sc.textFile("/public/hr_db/employees")
+val employeesWithCommission = employees.filter(employee => employee.split("\t")(8) != "null").map( employee => (employee.split("\t")(1)+" "+employee.split("\t")(2), employee.split("\t")(7).toFloat, (employee.split("\t")(7).toFloat * employee.split("\t")(8).toFloat).toFloat))
+val employeesWithOutCommission = employees.filter(employee => employee.split("\t")(8) == "null").map( employee => (employee.split("\t")(1)+" "+employee.split("\t")(2), employee.split("\t")(7).toFloat, "N/E"))
