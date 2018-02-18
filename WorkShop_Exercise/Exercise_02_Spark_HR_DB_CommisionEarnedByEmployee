@@ -11,11 +11,14 @@ Print employee name, salary and commission earned
 If commission_pct is null in database, print “N/E” for commission earned
 
 Solution:
-using spark SQL --
-
-val employees = sc.textFile("/public/hr_db/employees")
+using spark RDD --
 
 -- this file is tab seperated. came to know after reading and analyzing it.
+
 val employees = sc.textFile("/public/hr_db/employees")
-val employeesWithCommission = employees.filter(employee => employee.split("\t")(8) != "null").map( employee => (employee.split("\t")(1)+" "+employee.split("\t")(2), employee.split("\t")(7).toFloat, (employee.split("\t")(7).toFloat * employee.split("\t")(8).toFloat).toFloat))
+val employeesWithCommission = employees.filter(employee => employee.split("\t")(8) != "null").map( employee => (employee.split("\t")(1)+" "+employee.split("\t")(2), employee.split("\t")(7).toFloat, (employee.split("\t")(7).toFloat * employee.split("\t")(8).toFloat).toString))
 val employeesWithOutCommission = employees.filter(employee => employee.split("\t")(8) == "null").map( employee => (employee.split("\t")(1)+" "+employee.split("\t")(2), employee.split("\t")(7).toFloat, "N/E"))
+val employeesResult = employeesWithCommission.union(employeesWithOutCommission)
+
+val employeeDF = employeesResult.toDF("employee name", "salary", "commission earned")
+employeeDF.save.
