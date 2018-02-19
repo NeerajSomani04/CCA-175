@@ -11,7 +11,9 @@ Print employee name, salary and commission earned
 If commission_pct is null in database, print “N/E” for commission earned
 
 Solution:
-using spark RDD --
+-- using spark RDD --
+--- Need to launch the spark-shell with installing avro package
+spark-shell --master yarn --packages com.databricks.spark-avro_2.10:2.0.1 --conf spark.ui.port=12567
 
 -- this file is tab seperated. came to know after reading and analyzing it.
 
@@ -20,10 +22,28 @@ val employeesWithCommission = employees.filter(employee => employee.split("\t")(
 val employeesWithOutCommission = employees.filter(employee => employee.split("\t")(8) == "null").map( employee => (employee.split("\t")(1)+" "+employee.split("\t")(2), employee.split("\t")(7).toFloat, "N/E"))
 val employeesResult = employeesWithCommission.union(employeesWithOutCommission)
 
-val employeeDF = employeesResult.toDF("employee name", "salary", "commission earned")
+val employeeDF = employeesResult.toDF("employee_name", "salary", "commission_earned")
+To save data frame in json format, use below command:-
 employeeDF.write.json("/user/dkothari/WS_Exercise_02/json/")
+To save data frame in avro format, we can use either of the below command:-
 employeeDF.write.avro("/user/dkothari/WS_Exercise_02/avro/")
+------- or -----
+employeeDF.save("/user/dkothari/WS_Exercise_02/avro123/", "com.databricks.spark.avro")
 
-employeeDF.save("/user/dkothari/WS_Exercise_02/avro/", "com.databricks.spark.avro")
+-- using spark SQL --
 
-spark-shell --master yarn --packages com.databricks.spark-avro_2.10:2.0.1 --conf spark.ui.port=12567
+val employeesJsonDF = sqlContext.read.json("/user/dkothari/WS_Exercise_02/json/")
+employeesJsonDF.registerTempTable("employeesTable")
+val finalDF = sqlContext.sql("select * from employeesTable")
+finalDF.write.avro("/user/dkothari/WS_Exercise_02/avro/")
+
+--- we can use sql comething like below --
+select first_name, salary,
+(case when (ifnull(commission_pct,0) = 0.00 )
+THEN 'N/A’
+ELSE (salary *commission_pct)
+END) CommisionEarned
+from employeesTable
+--------------------------
+
+
