@@ -21,4 +21,9 @@ val employeesWithOutCommission = employees.filter(employee => employee.split("\t
 val employeesResult = employeesWithCommission.union(employeesWithOutCommission)
 
 val employeeDF = employeesResult.toDF("employee name", "salary", "commission earned")
-employeeDF.save.
+employeeDF.write.json("/user/dkothari/WS_Exercise_02/json/")
+employeeDF.write.avro("/user/dkothari/WS_Exercise_02/avro/")
+
+employeeDF.save("/user/dkothari/WS_Exercise_02/avro/", "com.databricks.spark.avro")
+
+spark-shell --master yarn --packages com.databricks.spark-avro_2.10:2.0.1 --conf spark.ui.port=12567
