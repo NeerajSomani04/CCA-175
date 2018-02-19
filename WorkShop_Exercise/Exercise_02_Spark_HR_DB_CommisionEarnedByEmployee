@@ -13,7 +13,9 @@ If commission_pct is null in database, print “N/E” for commission earned
 Solution:
 -- using spark RDD --
 --- Need to launch the spark-shell with installing avro package
-spark-shell --master yarn --packages com.databricks.spark-avro_2.10:2.0.1 --conf spark.ui.port=12567
+spark-shell --master yarn --packages com.databricks:spark-avro_2.10:2.0.1 --conf spark.ui.port=12567
+--- Need to launch the spark-shell with installing csv package
+spark-shell --master yarn --packages com.databricks:spark-csv_2.11:1.3.0 --conf spark.ui.port=12567
 
 -- this file is tab seperated. came to know after reading and analyzing it.
 
@@ -23,12 +25,30 @@ val employeesWithOutCommission = employees.filter(employee => employee.split("\t
 val employeesResult = employeesWithCommission.union(employeesWithOutCommission)
 
 val employeeDF = employeesResult.toDF("employee_name", "salary", "commission_earned")
-To save data frame in json format, use below command:-
+
+-- To save data frame in json format, use below command:-
 employeeDF.write.json("/user/dkothari/WS_Exercise_02/json/")
-To save data frame in avro format, we can use either of the below command:-
+
+-- To save data frame in avro format, we can use either of the below command:-
+import com.databricks.spark.avro._;
 employeeDF.write.avro("/user/dkothari/WS_Exercise_02/avro/")
 ------- or -----
 employeeDF.save("/user/dkothari/WS_Exercise_02/avro123/", "com.databricks.spark.avro")
+
+-- To save data frame in csv format, we can use below command:-
+import com.databricks.spark.csv._;
+employeeDF.write.format("com.databricks.spark.csv").option("header", "true").save("/user/dkothari/WS_Exercise_02/csv/")
+employeeDF.save("/user/dkothari/WS_Exercise_02/csv1/", "com.databricks.spark.csv")
+
+--- To save data frame in csv format, with compression codec ---
+employeeDF.write.format("com.databricks.spark.csv").option("header", "true")
+.option("codec", "org.apache.hadoop.io.compress.GzipCodec")
+.save("/user/dkothari/WS_Exercise_02/csv12/")
+
+--- To save dataframe in csv format, with (\t) tab seperated
+employeeDF.write.format("com.databricks.spark.csv").option("header", "true")
+.option("delimiter", "\t").save("/user/dkothari/WS_Exercise_02/csv12/")
+
 
 -- using spark SQL --
 
