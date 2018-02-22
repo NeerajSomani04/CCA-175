@@ -1,0 +1,71 @@
+Ankur -- Cleared CCA 175 on 14th Feb 2018
+1) Work on multiple problems together
+2) File formats, transformations and join these are most important topics for exam.
+
+tmuralikrishna -- Cleared CCA175 - 05FEB2018
+1) 2 sqoop(import & export) questions & 7 spark.
+2) Focus more on compression techniques.
+3) Just for exam do not spend lot of time on spark streaming.
+4) Keep last 15 minutes just for checking output location and see if the format and compression are correct.
+5) size of the datasets are very small that default spark-shell options worked quick enough for me.
+
+xuyoumi --- CCA175 Cleared on Jan 21th 2018
+ 
+1) do not worry if you know all the concepts in Druga Sir’s videos/exercises and 
+you can finish the mock questions in Arun’s blog in time and accurate, you are good to go.
+2) better to have a big monitor for the exam. 
+3) pay attention to the output requirements. (location, file format, file content, compression, record count…)
+4) if you have enough time, you can use both HDFS commands and Spark-shell to check/reverse check your output.
+
+Dinakar -- Cleared CCA 175 19-Dec-2017
+
+1) For Sqoop try and memorize as much as possible all the commands in import and export and how and where to use them.
+2) Be well acquainted with the file format conversion from one format to other.
+3) One should remember how to covert and store the data in a specified location.
+4) Get well versed with RDD’s transformations and actions. Data frames for saving and generating desired output using SQL.
+5) One should know how to convert from RDD to DF and vice versa.
+6) SQL’s are simple not very difficult. A practice of simple SQL and joins will suffice. Need to know join RDD / Data frames.
+
+bhavik9243 -- CCA175 Scored 8/9 on 19-JAN-2018
+
+read every problems very carefully
+keep calm (most important)
+focused more on file format convrsions
+and lastly time management is important
+
+vm109 -- CCA175 Cleared on 01/13/2018 Score 8/9
+
+File formats and compressions read and write are most important, because it doesnt matter how good you are at transformations, 
+if you are not able to present your output the way it was asked you are not going to get credit for that question
+The test VM is very low resolution, so make good use of your time
+
+1) sqoop --> Import and Export are straight forward but look out for columns being requested, delimiters and file formats.
+2) Spark questions --> basic RDD oeprations and then reduceByKey, Join, groupByKey very basic and 
+most importantly fileformats and compression as usual.
+
+rajeshkancharla --- CCA175 cleared on 22-JAN-2018
+
+https://github.com/rajeshkancharla/bigdata-babysteps
+
+1) Time is critical. Just 2 hours for 9-10 questions. Try to get first time right and don’t spend more time on a single question 
+if you are stuck on something. Move on to next ones.
+2) If you are comfortable, use Sublime Text editor which is available during test. Create one text file per question and 
+persist your code in it till the end in separate files. This saved time for me because 2 questions had similar data sources and 
+I could just reuse earlier written code!
+3) Wherever possible, use copy paste of source and target paths than hand-typing it. A single mistake in output folder path 
+will not give credits for that question.
+4) Use sqoop eval to validate your sqoop questions. Ensure output is in right format as specified in question and in right folders.
+5) Do a telescopic search at the end of your test just to ensure all files in right formats are in right folders at the end of 
+the exam (before you click on End Test).
+hdfs dfs -ls /<path/to/target/files>/problem/solution*
+
+vasanthkailasam -- CCA175 Cleared on Jan 17th 2018
+I practiced Durga’s and Arun’s set of questions more than twice.
+
+Malvika -- Cleared CCA 175 on June 12th
+
+2)Learn all the different file formats along with Save mode.
+while saving dataframe to hdfs if you want to overwrite the existing files you can use mode method. e.g.
+
+import org.apache.spark.sql.SaveMode
+df.write.format(“parquet”).mode(SaveMode.Overwrite).save("/path/to/file")
