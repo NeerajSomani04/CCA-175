@@ -1,0 +1,62 @@
+3. Problem Scenario 3: You have been given MySQL DB with following details. 
+user=retail_dba 
+password=cloudera 
+database=retail_db 
+table=retail_db.categories 
+jdbc URL = jdbc:mysql://quickstart:3306/retail_db 
+
+1. Import data from catagories table, where category=22 (Data should be stored in categories_subset) 
+
+Solution - 1 :
+sqoop import \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+--username retail_user \
+--password itversity \
+--query "select * from categories where category_id=22 AND \$CONDITIONS" \
+--target-dir /user/dkothari/practice_scenarios/S3/categories_subset \
+--split-by category_id \
+--delete-target-dir
+
+Notes: In the above exercise, I encountered following mistakes.
+1) with --query aurgument, we can't use --target-dir and --warehouse-dir together.
+2) with --query aurgument, we must use --target-dir aurgument
+3) with --query aurgument, we must use --split-by aurgument
+4) my first sqoop job was by mistake imported data for category_id = 20. So, I need to delete the target-dir before reimporting data for 
+category_id=22. Hence, I used --delete-target-dir aurgument.
+5) we can also use --direct aurgument to speed up the sqoop import run.
+
+Another way of writting sqoop statment for same scenario:
+
+sqoop import \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+--username retail_user \
+--password itversity \
+--table categories \
+--where category_id=22 \
+--target-dir /user/dkothari/practice_scenarios/S3/categories_subset \
+--delete-target-dir
+
+4. While importing catagories data change the delimiter to '|' and import data for category between 1 and 22
+(Data should be stored in categories_subset_6) 
+
+sqoop import \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+--username retail_user \
+--password itversity \
+--table categories \
+--where "category_id between 1 and 22" \
+--target-dir /user/dkothari/practice_scenarios/S3/categories_subset_2 \
+--fields-terminated-by '|' \
+--delete-target-dir 
+
+5. Importing data from catagories table and restrict the import to category_name,category_id columns only with delimiter as '|' 
+
+sqoop import \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+--username retail_user \
+--password itversity \
+--table categories \
+--columns "category_id, category_name" \
+--target-dir /user/dkothari/practice_scenarios/S3/categories_subset_3 \
+--fields-terminated-by '|' \
+--delete-target-dir 
