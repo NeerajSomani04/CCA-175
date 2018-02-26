@@ -16,6 +16,8 @@ sqoop import \
 --table categories \
 --where "category_id between 1 and 22" \
 --hive-import \
---hive-overwrite \
---hive-table dkothari_S4_hive.categories_subset \
---create-hive-table
+--hive-table dkothari_practice_scenarios.S4_categories_subset_1 \
+--delete-target-dir 
+
+
+
