@@ -28,10 +28,13 @@ sqoop export \
 --columns "department_id, department_name" \
 --export-dir /user/dkothari/updated_departments \
 --update-key "department_id" \
---update-mode allowinsert
+--update-mode updateonly
 
-Note: above command is not working.
 
+Note: for some reason --update-mode 'allowinsert' is not working in above sqoop statment. but 'updateonly' is working as expected. 
+
+we can also try some aurguments like below in same sqoop statement:
+--input-fields-terminated-by ','
 
 
 
