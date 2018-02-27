@@ -1,7 +1,7 @@
 Problem Scenario 30 : You have been given three csv files in hdfs as below. 
 EmployeeName.csv with the field (id, name) 
 EmployeeManager.csv (id, managerName) 
-Employeesalary.csv (id, Salary) 
+EmployeeSalary.csv (id, Salary) 
 using Spark and its API you have to generate a joined output as below and save as a text file (Separated by comma) tor final distribution and output must be sorted by id.
 Id,name,salary,managerName 
 ==================================================================================
@@ -9,5 +9,28 @@ Id,name,salary,managerName
 Solution:
 
 1. Create the files:
-cd /user/dkothari/
-vi EmployeeName.csv
+/home/dkothari/practice_scenarioes/S30
+Below are the records for each file
+
+1,Neeraj2,Shikha3,Divya4,Ankit5,Ankur
+1,Steve2,David3,John4,Carol5,Jenniffer
+1,100002,120003,80004,140005,13000
+
+2. Read data from file
+val empName = sc.textFile("/user/dkothari/practice_scenarios/S30/EmployeeName.csv")
+val empManager = sc.textFile("/user/dkothari/practice_scenarios/S30/EmployeeManager.csv")
+val empSalary = sc.textFile("/user/dkothari/practice_scenarios/S30/EmployeeSalary.csv")
+
+val empNameMap = empName.map(x => (x.split(",")(0), x.split(",")(1)))
+val empManagerMap = empManager.map(x => (x.split(",")(0), x.split(",")(1)))
+val empSalaryMap = empSalary.map(x => (x.split(",")(0), x.split(",")(1)))
+
+
+val empJoin1 = empNameMap.join(empManagerMap)
+val empJoin2 = empJoin1.join(empSalaryMap)
+
+val finalRDD = empJoin2.map( x => (x._1, x._2._1._1, x._2._1._2, x._2._2))
+
+val finalSorted = finalRDD.sortBy(x => (x._1, 0))
+
+
