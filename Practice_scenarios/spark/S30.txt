@@ -1,0 +1,13 @@
+Problem Scenario 30 : You have been given three csv files in hdfs as below. 
+EmployeeName.csv with the field (id, name) 
+EmployeeManager.csv (id, managerName) 
+Employeesalary.csv (id, Salary) 
+using Spark and its API you have to generate a joined output as below and save as a text file (Separated by comma) tor final distribution and output must be sorted by id.
+Id,name,salary,managerName 
+==================================================================================
+
+Solution:
+
+1. Create the files:
+cd /user/dkothari/
+vi EmployeeName.csv
