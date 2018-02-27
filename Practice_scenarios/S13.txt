@@ -1,0 +1,31 @@
+13. Problem Scenario 13 : You have been given following mysql database details as well as other info. 
+user=retail_dba 
+password=cloudera 
+database=retail_db 
+jdbc URL = jdbc:mysql://quickstart:3306/retail_db 
+Please accomplish following. 
+1. Create a table in retail_export database with following definition. 
+CREATE table dkothari_departments_export (department_id int(11), department_name varchar(45), created_date TIMESTAMP DEFAULT NOW()); 
+
+Solution:
+mysql -h ms.itversity.com -u retail_user -p itversity
+
+mysql> use retail_export;
+mysql> CREATE table dkothari_departments_export (department_id int(11), department_name varchar(45), created_date TIMESTAMP DEFAULT NOW()); 
+mysql> select * from departments_export;
+
+2. Now export the data from following directory into dkothari_departments_export table. 
+/user/dkothari/retail_db/departments
+
+Solution:
+sqoop export \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_export \
+--username retail_user \
+--password itversity \
+--table dkothari_departments_export \
+--columns "department_id, department_name" \
+--export-dir /user/dkothari/retail_db/departments
+
+
+
+
