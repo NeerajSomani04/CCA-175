@@ -1,0 +1,21 @@
+Problem Scenario 31 : You have given following two files 
+1. Content.txt : Contain a huge text file containing space separated words. 
+2. Remove.txt : Ignore/filter all the words given in this file (Comma Separated). 
+Write a Spark program which reads the Content.txt file and load as an RDD, remove all the words from a broadcast variables (which is loaded as an RDD of words from remove.txt). and count the occurrence of the each word and save ie as a text file  HDFS.
+
+==================================================================
+Solution:
+val contentRDD = sc.textFile("/user/dkothari/practice_scenarios/S31/content.txt")
+val removeRDD = sc.textFile("/user/dkothari/practice_scenarios/S31/remove.txt")
+
+val removeMap = removeRDD.flatMap(x => x.split(",")).map(word=>word.trim)
+val removeBroadcast = sc.broadcast(removeMap.collect().toList)
+
+val contentMap = contentRDD.flatMap(x => x.split(" ")).map(word=>word.trim)
+val contentFilter = contentMap.filter{case (word) => !removeBroadcast.value.contains(word)}
+
+val contentCount = contentFilter.map(word => (word,1)).reduceByKey( (total, value) => total+value)
+
+contentCount.saveAsTextFile("/user/dkothari/practice_scenarios/S31/ResultFile")
+
+Attention/Notes: All text files will be saved under a directory "ResultFile" as specified above.
