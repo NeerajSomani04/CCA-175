@@ -51,6 +51,40 @@ Archive --> Glaciar (mostly used ofr long time back-up). User can't directly upl
     in this we create lifecycle events -->
     i) like after 90 days move files from Standard S3 to Standard IA and after 365 days move to Glcier.
 15) Databases:
+16) AWS RDS --> Relational Database Service, set alarms and automatically react to changes in AWS resources.
+
+17) CloudWatch --> Monitor all the time (Cloud Resources and Applications)
+Also, to collect and monitor logs. 
+
+18) SNS (Simple Notification Services) --> 
+    This is fully managed messaging and mobile notification service.
+
+19) Domain Name System (DNS) --> The backbone of Internet
+It basically converts domain names to IP address. Every domain in associated with IP addresses.
+User supply domain name and DNS apply IP addresses on internet.
+
+20) Route53 --> DNS of AWS
+    i) Managed Approach --> managed by service provider
+    ii) Unmanaged Approach --> managed by application team itself.
+
+21) Serverless Computing -->
+        AWS Lamda --> Event Driven Service --> whenever a configured event occurs, the lamda function runs.
+            Users only gets charged based on the compute time Lamda function consumed.
+       Example of AWS Lamda function --> when a user uploads a video, Lamda function runs and compress the video to decrese the size.             This lamda function runs on the event basis with the event of uploading video.
+       
+22) Reverse Proxy --> Its NGINX time
+    protect server details and attacks to servers.
+    optimized content by compressing, provide great caching functionality
+    can act as SSL terminating policy.
+
+23) Content Delivery Network --> CDN
+    using this service we can response to few request that are directly related to content like (images, file like terms and conditions,
+    etc.... which are not required specific authentication for our server.
+    These services manages all firewall security part and deliver our content with minimal latency.
+    
+
+
+Need to understand what is IOPs
     
 
 
