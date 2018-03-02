@@ -29,6 +29,34 @@ Lecture 13:-
   This automatically allows incoming traffic to distribute across multiple instances.
   It can handle rapid change in network traffic pattern
   
+11) Scaling to Traffic pattern -->
+    Define rule based on which AWS will automatically allocate server instances to the traffic.
+
+12) AWS S3 --> Unlimited Storage, S3 (Simple Storage Service)
+    few of the features that comes by default with AWS S3 -->
+    Versioning, Encryption, Logging, Transfer Acceleration, Cross Region Replication
+
+Two important Terminologies of S3:
+Buckets --> Its like folder where data resides. Bucket name should be unique, as it shared across all users.
+Objects --> its just files like image files, or text files.
+
+
+13) S3 storage classes: mostly these differce in pricing, availability, durability, performance
+General Purpose --> Standard S3
+Infrequent Access --> Standard S3 IA
+RRS --> Reduce Redundency Storage 
+Archive --> Glaciar (mostly used ofr long time back-up). User can't directly upload files to this storage. User has to first upload file in any of the above 3 storage classes and then move to Archive or Glacier storage class.
+
+14) S3 Life cycle policies:
+    in this we create lifecycle events -->
+    i) like after 90 days move files from Standard S3 to Standard IA and after 365 days move to Glcier.
+15) Databases:
+    
+
+
+
+    
+  
     
     
   
