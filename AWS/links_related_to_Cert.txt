@@ -1,0 +1,10 @@
+https://github.com/MHBL12/AWS-Certified-Solutions-Architect---Associate
+
+https://github.com/cloudacademy/aws-developer-fundamentals
+
+https://github.com/aws-samples/aws-developer-workshop
+
+https://github.com/sko71/aws-bigdata-specialty
+
+
+
