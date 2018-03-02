@@ -1,0 +1,34 @@
+Lecture 13:-
+
+1) we have selected Oregon region because many new services available there.
+2) Create first key pair pem file and downloaded/placed at itversity lab location "/home/dkothari/aws_practice/Oregon_First.pem"
+    i) after downloading pem file, I used vi editor to copy and paste content of pem file to itveristy lab location.
+3) Create first default instance with all default settings.
+4) Need to connect to this instance using public IP address and private Key pair file (Oregon_First.pem)
+    i) not able to connect to EC2 instances using Private IP address without VPN machines.
+5) changed permission of the file --> chmod 400 Oregon_First.pem
+
+6) Below is the command to connect to EC2 instances using ssh.
+  ssh -i "/home/dkothari/aws_practice/Oregon_First.pem" ec2-user@54.191.225.94
+  
+7) Firwall -- Security groups 
+    Firwall allows only authenticate users. 
+    
+8) Two Device type for instances
+  i) Instance stores: Its a temporary block storage. Data will be removed from hard disk once you stop instances.
+  ii) EBS Portal HardDisk: EBS (Elastic Block Storage).
+    Its a permanent block storage, means even if we start or stop instances the data in the hard disk will not be lost.
+    Its High avalability and scalability is the key, dynamic increase in capacity and performance and replicate in availability zone.
+    
+9) Compute != Storage
+    EC2 --> RAM and CPU
+    AWS EC2 generally regarded as compute based service and compute generally refer to Memory and CPU.
+    EC2 and EBS are two seperate services in AWS.
+
+10) ELB (Elastic Load Balancer) -->
+  This automatically allows incoming traffic to distribute across multiple instances.
+  It can handle rapid change in network traffic pattern
+  
+    
+    
+  
