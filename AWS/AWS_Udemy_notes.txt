@@ -98,12 +98,28 @@ Business Capacity,
 Capacity planning,
 Operation challanges
 
-Datacenter vs AWS model:
+AWS model benefits over Data Center:
 pay as you go model
 stop guessing by capacity
 lower overall cost
 ability and agility to scale
 go global in minutes
+
+27) AWS Documentation
+28) Shared resposibility model: Distribution is always good
+Infrastructure services: --> example, EC2, EBS, Auto-scaling, VPC
+container services: --> RDS, Elastic Map-Reduce, Elastic BeanStalk
+Abstract Services: --> SES, SQS, S3, SNS, 
+
+Security responsibility is always shared:
+    1) Hosting provider has to ensure security of the cloud.
+    2) you have to ensure security in the cloud.
+
+29) Principle of Least Priviledge: practice of limiting access to minimal level that will allow normal functioning.
+A user should have only access to the data, hardware that they need to be able to perform they assigned duties.
+
+
+    
 
 Need to understand what is IOPs
 
