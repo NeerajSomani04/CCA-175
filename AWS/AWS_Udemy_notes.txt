@@ -82,10 +82,31 @@ User supply domain name and DNS apply IP addresses on internet.
     etc.... which are not required specific authentication for our server.
     These services manages all firewall security part and deliver our content with minimal latency.
     
+24) Fundamentals of pricing:
+Pay as you go -->
+Pay less when you reserve -->
+pay even less when AWS grows
 
+25) AWS support plans -->
+Basic
+Developer
+Business
+Enterprise
+
+26) Total cost of ownership -->
+Business Capacity,
+Capacity planning,
+Operation challanges
+
+Datacenter vs AWS model:
+pay as you go model
+stop guessing by capacity
+lower overall cost
+ability and agility to scale
+go global in minutes
 
 Need to understand what is IOPs
-    
+
 
 
 
