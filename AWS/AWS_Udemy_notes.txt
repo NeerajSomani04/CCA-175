@@ -118,6 +118,12 @@ Security responsibility is always shared:
 29) Principle of Least Priviledge: practice of limiting access to minimal level that will allow normal functioning.
 A user should have only access to the data, hardware that they need to be able to perform they assigned duties.
 
+30) IAM (Identity and Access management): who can do what
+users, groups, roles and permissions
+Security permission is denied by default. Hence, whatever admin will allow that will only be enable for user.
+
+31) IAM Roles:
+
 
 Need to understand what is IOPs
 
