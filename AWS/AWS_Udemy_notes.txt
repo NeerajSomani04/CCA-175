@@ -119,8 +119,6 @@ Security responsibility is always shared:
 A user should have only access to the data, hardware that they need to be able to perform they assigned duties.
 
 
-    
-
 Need to understand what is IOPs
 
 
