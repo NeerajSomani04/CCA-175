@@ -123,6 +123,35 @@ users, groups, roles and permissions
 Security permission is denied by default. Hence, whatever admin will allow that will only be enable for user.
 
 31) IAM Roles:
+32) Need of compliance: Security compliance
+33) AWS trusted advisor: 
+34) CloudTrail: Lets Audit our cloud.
+This is good to undertand how you secure your cloud and make sure it compliance with audit process.
+We monitor and record user activity.
+
+35) Exam preparation tips:
+1) No scenario based questions. 
+2) question could be more like related to, what AWS service would be helpful for specific tasks.
+for example:- which AWS service will you use when there is need of firewall. Answer:-- security groups
+
+Different pointers to remember:--
+1) Understand the AWS global infrastructure
+    i) differnce between Region and AZ
+    ii) Understand the total cost of ownership
+2) VPC and EC2 sections
+    i) VPC --> used for creating virtual networks
+    ii) differnce between on-demad vs reserved vs spot instances.
+    iii) what is auto scaling feature.
+    iv) what is elastic block store and security groups
+3) Understand the core AWS services, like S3, SNS, AWS Lamda, AWS RDS
+4) Pricing section:--> Billing alarm with help of cloudWatch, AWS marketPlace
+
+few sample questions:-->
+1) which AWS service allows us to create virtual networks. --> AWS VPC
+2) why AWS is more economical in terms of TCO compared to data center.
+Answe --> EC2 instances can be launched on-demand and customer pay for what they use.
+
+
 
 
 Need to understand what is IOPs
