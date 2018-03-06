@@ -1,0 +1,23 @@
+Problem Scenario 33 : You have given a files as below. 
+spark5/EmployeeName.csv (id,name) 
+spark5/EmployeeSalary.csv (id,salary) 
+Data is given in RHS (Righ hand side). 
+Now write a Spark code in scala which will load these two files from hdfs and join the same, and produce the (name,salary) values. 
+And save the data in multiple file group by salary (Means each file will have name of employees with same salary). 
+Make sure file name includes salary as well.
+==================================================================================
+Solution:
+
+loaded data in below folder location:
+/user/dkothari/practice_scenarios/S33/
+
+val ENameRDD = sc.textFile("/user/dkothari/practice_scenarios/S33/EmployeeName.csv")
+val ENameMap = ENameRDD.map(x => (x.split(",")(0).toInt, x.split(",")(1)))
+val ESalaryRDD = sc.textFile("/user/dkothari/practice_scenarios/S33/EmployeeSalary.csv")
+val ESalaryMap = ESalaryRDD.map(x => (x.split(",")(0).toInt, x.split(",")(1).toFloat))
+
+val joinRDD = ENameMap.join(ESalaryMap)
+val joinMap = joinRDD.map(x => x._2)
+val joinGBy = joinMap.groupBy( x => x._2)
+
+val result = joinGBy.map{case (k,v) => k->sc.makeRDD(v.toSeq)} 
