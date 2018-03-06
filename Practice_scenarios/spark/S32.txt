@@ -5,11 +5,11 @@ spark3/sparkdir3/file3.txt
 Each file contain some text. As given in RHS (Righ hand side). 
 Now write a Spark code in scala which will load all these three files from hdfs and do the word count by filtering following words. 
 And result should be sorted by word count in reverse order. 
-Filter words (a,the,an,as,with,this,this,these,is,are,in,for,to,and,the,of) 
+Filter words (“a”,”the”,”an”, “as”, “a”,  “with”, “this”, “this”, “these”, “is”, “are”, “in”, “for”, “to”, “and”, “the”, “of” 
 Also please make sure you load all three files as a Single RDD (All three files must be loaded using single API call). 
 You have also been given following codec 
 import org.apache.hadoop.io.compress.GzipCodec 
-Please use above codec to compress tile, while saving in hdfs. 
+Please use above codec to compress file, while saving in hdfs. 
 
 
 Solution:
@@ -17,6 +17,21 @@ I have created files under below location with some text.
 /user/dkothari/practice_scenarios/S32
 
 val fileRDD = sc.textFile("/user/dkothari/practice_scenarios/S32/sparkdir1/file1.txt,/user/dkothari/practice_scenarios/S32/sparkdir2/file2.txt,/user/dkothari/practice_scenarios/S32/sparkdir3/file3.txt")
+val fileMap = fileRDD.flatMap( x => (x.split(" "))).map( x => (x.toLowerCase.trim))
 
-val FilterList = List(“a”,”the”,”an”, “as”, “a”,  “with”, “this”, “this”, “these”, “is”, “are”, “in”, “for”, “to”, “and”, “the”, “of”)
+val FilterList = List("a","the","an", "as", "with", "this","these", "is", "are", "in", "for", "to", "and", "of")
 val filterRDD = sc.parallelize(FilterList)
+
+
+val finalWords = fileMap.subtract(filterRDD)
+val finalRDD = finalWords.map( x => (x,1))
+val finalRbyK = finalRDD.reduceByKey( (total, next) => (total + next))
+val Result = finalRbyK.sortBy( x => x._2, false)
+
+import org.apache.hadoop.io.compress.GzipCodec 
+Result.saveAsTextFile("/user/dkothari/practice_scenarios/S32/Result", classOf[org.apache.hadoop.io.compress.GzipCodec])
+
+
+//alternative approach for sorting
+val finalSwap = finalRbyK.map( x => x.swap)
+val sortResult = finalSwap.sortByKey(false)
