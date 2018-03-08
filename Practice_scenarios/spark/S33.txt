@@ -17,7 +17,14 @@ val ESalaryRDD = sc.textFile("/user/dkothari/practice_scenarios/S33/EmployeeSala
 val ESalaryMap = ESalaryRDD.map(x => (x.split(",")(0).toInt, x.split(",")(1).toFloat))
 
 val joinRDD = ENameMap.join(ESalaryMap)
-val joinMap = joinRDD.map(x => x._2)
-val joinGBy = joinMap.groupBy( x => x._2)
+val keyRemoved = joinRDD.values
+val joinMap = keyRemoved.map(x => x.swap)
+val joinGBy = joinMap.groupByKey().collect()
+---////val joinGBy_C = joinMap.groupByKey()
+
+
 
 val result = joinGBy.map{case (k,v) => k->sc.makeRDD(v.toSeq)} 
+
+result.foreach{ case (k,rdd) => rdd.saveAsTextFile("/user/dkothari/practice_scenarios/S33/Result"+k)}
+
