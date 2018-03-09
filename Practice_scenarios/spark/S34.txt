@@ -14,11 +14,11 @@ created data file at
 val userRDD = sc.textFile("/user/dkothari/practice_scenarios/S34/user.csv")
 val headerAndRows = userRDD.map(line => line.split(",").map(_.trim))
 val header = headerAndRows.first 
-val data = headerAndRows.filter(_(O)!= header(O)) 
+val data = headerAndRows.filter(_(0)!= header(0)) 
 val maps = data.map(splits => header.zip(splits).toMap)
-val result = maps.filter(map => map("id") == "myself")
-result.saveAsTextFile("/user/dkothari/practice_scenarios/S34/Result/")
-
+val result = maps.filter(map => map("id") != "myself")
+val resultRDD = result.map( x => ("id" + " " + x("id"), "topic" + " " + x("topic"), "hits" + " " + x("hits")))
+resultRDD.saveAsTextFile("/user/dkothari/practice_scenarios/S34/Result/")
 
 ----
 Need to understand when RDD got created and when it gets moved to any scala collection.
