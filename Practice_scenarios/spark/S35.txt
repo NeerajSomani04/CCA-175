@@ -10,6 +10,8 @@ val empNSwap = empNMap.map(x => x.swap)
 val empNSort = empNSwap.sortByKey()
 val empNFinal = empNSort.map(x => x.swap)
 
+val empNResult = empNFinal.map( x => x._1 + "," + x._2)
+
 empNFinal.repartition(1).saveAsTextFile("/user/dkothari/practice_scenarios/S35/Result/")
 
 -------
