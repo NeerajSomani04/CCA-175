@@ -1,0 +1,15 @@
+Problem Scenario 36 : You have been given a tile named spark8/data.csv (type,name). 
+
+1. Load this file from hdfs and save it back as (type, (all names of same type)) in results directory. However, make sure while saving it should be able to write in a single file.
+============================================================================
+Solution : 
+
+data is saved in below location:
+This time I am reading data from local file system.
+
+
+val data = scala.io.Source.fromFile("/home/dkothari/practice_scenarioes/S36/data.csv").getLines.toList 
+val dataRDD = sc.parallelize(data)
+
+
+val data1 = sc.textFile("file:///home/dkothari/practice_scenarioes/S36")
