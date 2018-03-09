@@ -5,11 +5,32 @@ Problem Scenario 36 : You have been given a tile named spark8/data.csv (type,nam
 Solution : 
 
 data is saved in below location:
+
+val data = sc.textFile("/user/dkothari/practice_scenarios/S36/data.csv")
+val dataMap = data.map(x => (x.split(",")(0).trim, x.split(",")(1).trim))
+val dataGBy = dataMap.groupByKey()
+val dataResult = dataGBy.map( x => (x._1, (x._2.toList)))
+dataResult.saveAsTextFile("/user/dkothari/practice_scenarios/S36/Result1/")
+
+
+-------------
+val name = sc.textFile("spark8/data.csv") 
+val namePairRDD = name.map(x=> (x.split(",")(O),x.split(",”)(1))) 
+
+step 3 : NOW swap namepairRDD RDD. 
+val data = sc.textFile("/user/dkothari/practice_scenarios/S36/data.csv")
+val dataMap = data.map(x => (x.split(",")(0).trim, x.split(",")(1).trim))
+
+Step 4 : Now combine the rdd by key. 
+
+val combinedOutput = dataMap.combineByKey(List(_), (x:List[String], y:String) => y :: x, (x:List[String], y:List[String]) => x ::y)
+
+
+---
+val result = joinGBy.map{case (k,v) => k->(v.toSeq)} 
+
 This time I am reading data from local file system.
-
-
 val data = scala.io.Source.fromFile("/home/dkothari/practice_scenarioes/S36/data.csv").getLines.toList 
 val dataRDD = sc.parallelize(data)
-
-
+or --- using beow command
 val data1 = sc.textFile("file:///home/dkothari/practice_scenarioes/S36")
