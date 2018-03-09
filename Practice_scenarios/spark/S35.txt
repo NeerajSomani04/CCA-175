@@ -1,0 +1,19 @@
+Problem Scenario 35 : You have been given a file named spark7/EmployeeName.csv (id,name). 
+1. Load this file from hdfs and sort it by name and save it back as (id,name) in results directory. However, make sure while saving it should be able to write in a single file.
+==============================================================================
+Solution:
+
+reading data from below location:
+val empName = sc.textFile("/user/dkothari/practice_scenarios/S30/EmployeeName.csv")
+val empNMap = empName.map( x => (x.split(",")(0), x.split(",")(1)))
+val empNSwap = empNMap.map(x => x.swap)
+val empNSort = empNSwap.sortByKey()
+val empNFinal = empNSort.map(x => x.swap)
+
+empNFinal.repartition(1).saveAsTextFile("/user/dkothari/practice_scenarios/S35/Result/")
+
+-------
+val empNResult = empNFinal.foreach(x => x._1, x.split(",")(1))
+empNFinal.saveAsTextFile("/user/dkothari/practice_scenarios/S35/Result1/")
+
+
