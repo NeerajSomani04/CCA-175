@@ -8,8 +8,14 @@ data is saved in below location:
 
 val data = sc.textFile("/user/dkothari/practice_scenarios/S36/data.csv")
 val dataMap = data.map(x => (x.split(",")(0).trim, x.split(",")(1).trim))
-val dataGBy = dataMap.groupByKey()
-val dataResult = dataGBy.map( x => (x._1, (x._2.toList)))
+val dataGBy = dataMap.groupByKey().collect()
+
+
+val result = dataGBy.map{case (k,v) => k->sc.makeRDD(k, v.toSeq)} 
+
+result.foreach{ case (k,rdd) => rdd.repartition(1).saveAsTextFile("/user/dkothari/practice_scenarios/S36/Result3/"+k)}
+
+
 dataResult.saveAsTextFile("/user/dkothari/practice_scenarios/S36/Result1/")
 
 
