@@ -11,6 +11,20 @@ result of above command:
 scala> flattened
 res16: org.apache.spark.rdd.RDD[(Int, String, Int, Int)] = MapPartitionsRDD[1] at flatMap at <console>:29
 
-Problem 1:-
+2) Hive import and avro file format 
+sqoop and hive import tutorial --> http://www.itversity.com/topic/creating-tables-in-hiveimpala/   
+
+Example for creating hive tables with different names than column names in avsc files
+
+CREATE TABLE orders_part_avro (
+order_id int,
+order_date bigint,
+order_customer_id int,
+order_status string
+)
+PARTITIONED BY (order_month string)
+STORED AS AVRO
+LOCATION 'hdfs:///user/cloudera/sqoop_import/orders_part_avro'
+TBLPROPERTIES ('avro.schema.url'='hdfs://quickstart.cloudera/user/cloudera/avsc_files/orders_part_avro.avsc');
 
 
