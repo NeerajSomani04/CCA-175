@@ -1,24 +1,24 @@
 Every step solution:
 
 sqoop import \
---connect jdbc:mysql://quickstart:3306/retail_db \
---username retail_dba \
---password cloudera \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+--username retail_user \
+--password itversity \
 --table orders \
---warehouse-dir /user/cloudera/Arun_problems/problem1 \
+--warehouse-dir /user/dkothari/Arun_problems/problem1 \
 --compress \
 --compression-codec org.apache.hadoop.io.compress.SnappyCodec \
---as-avrodatafile 
+--as-avrodatafile
 
 
 ---------------------------------------------
 
 sqoop import \
---connect jdbc:mysql://quickstart:3306/retail_db \
---username retail_dba \
---password cloudera \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+--username retail_user \
+--password itversity \
 --table order_items \
---warehouse-dir /user/cloudera/Arun_problems/problem1 \
+--warehouse-dir /user/dkothari/Arun_problems/problem1 \
 --compress \
 --compression-codec org.apache.hadoop.io.compress.SnappyCodec \
 --as-avrodatafile 
