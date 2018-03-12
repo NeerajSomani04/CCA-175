@@ -26,10 +26,13 @@ sqoop import \
 -------------------------------------------
 a. Problem solving using Data Frame API
 
+for itversity labs we need to import it as packages while launching spark-shell:
+
+spark-shell --master yarn --conf spark.ui.port=12247 --packages com.databricks:spark-avro_2.10:2.0.1
 import com.databricks.spark.avro._;
 
-val orderDF = sqlContext.read.avro("/user/cloudera/Arun_problems/problem1/orders")
-val orderItemsDF = sqlContext.read.avro("/user/cloudera/Arun_problems/problem1/order_items")
+val orderDF = sqlContext.read.format("com.databricks.spark.avro").load("/user/dkothari/Arun_problems/problem1/orders/part-m-00000.avro")
+val orderItemsDF = sqlContext.read.avro("/user/dkothari/Arun_problems/problem1/order_items")
 val joinedDF = orderDF.join(orderItemsDF, orderDF("order_id") === orderItemsDF("order_item_order_id"))
 
 val AggDF = joinedDF.groupBy(to_date(from_unixtime(col("order_date")/1000)).alias("formatted_order_date"), col("order_status")).agg(round(sum(col("order_item_subtotal")),2).alias("total_amount"), countDistinct(col("order_id")).alias("total_orders"))
@@ -39,12 +42,16 @@ val SortedDF = AggDF.orderBy(col("formatted_order_date").desc, col("order_status
 --------------------------------------------
 b. Problem solving using Spark SQL 
 
+spark-shell --master yarn --conf spark.ui.port=12126 --packages com.databricks:spark-avro_2.11:4.0.0
 import com.databricks.spark.avro._;
 
-val orderDF = sqlContext.read.avro("/user/cloudera/Arun_problems/problem1/orders")
-val orderItemsDF = sqlContext.read.avro("/user/cloudera/Arun_problems/problem1/order_items")
+var orderDF = sqlContext.read.avro("/user/dkothari/Arun_problems/problem1/orders")
+val orderItemsDF = sqlContext.read.avro("/user/dkothari/Arun_problems/problem1/order_items")
 val joinedDF = orderDF.join(orderItemsDF, orderDF("order_id") === orderItemsDF("order_item_order_id"))
 
 joinedDF.registerTempTable("order_joined")
 
-val AggDF = sqlContext.sql("select to_date(from_unixtime(order_date/1000)) as formatted_order_date, order_status, cast(sum(order_item_subtotal) as decimal(10,2)) as total_amount, count(distinct(order_id)) as total_orders from order_joined group by order_date, order_status order by ")
+val AggDF = sqlContext.sql("select to_date(from_unixtime(order_date/1000)) as formatted_order_date, order_status, cast(sum(order_item_subtotal) as decimal(10,2)) as total_amount, count(distinct(order_id)) as total_orders from order_joined group by to_date(from_unixtime(order_date/1000)), order_status order by formatted_order_date desc, order_status, total_amount desc, total_orders")
+
+-------------------------------------------------
+
