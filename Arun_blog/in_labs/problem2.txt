@@ -1,1 +1,10 @@
-hello
+1. 
+sqoop import \
+--connect jdbc:mysql://quickstart.cloudera:3306/retail_db \
+--username retail_user \
+--password itversity \
+--table products \
+--warehouse-dir /user/dkothari/Arun_problems/problem2 \
+--fields-terminated-by "|" 
+
+2. 
