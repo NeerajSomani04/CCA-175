@@ -28,3 +28,18 @@ LOCATION 'hdfs:///user/cloudera/sqoop_import/orders_part_avro'
 TBLPROPERTIES ('avro.schema.url'='hdfs://quickstart.cloudera/user/cloudera/avsc_files/orders_part_avro.avsc');
 
 
+-----------------------------
+// Import Spark SQL data types
+import org.apache.spark.sql.types.{StructType,StructField,StringType};
+
+// Generate the schema based on the string of schema
+val schema =
+  StructType(
+    schemaString.split(" ").map(fieldName => StructField(fieldName, StringType, true)))
+               
+// Apply the schema to the RDD.
+val peopleDataFrame = sqlContext.createDataFrame(rowRDD, schema)
+
+--------------------------------
+
+               
