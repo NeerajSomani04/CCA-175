@@ -41,5 +41,9 @@ val schema =
 val peopleDataFrame = sqlContext.createDataFrame(rowRDD, schema)
 
 --------------------------------
+Sequence - Order is important
+Set - Order is not important
+Unlike set same element can appear multiple times in a sequence.
 
+---------------------------------------
                
