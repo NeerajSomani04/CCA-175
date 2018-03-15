@@ -1,0 +1,51 @@
+1. creating needed directory 
+
+hdfs dfs -mkdir -p /user/cloudera/Arun_problems/problem3/retail_stage.db
+
+sqoop-import-all-tables \
+--connect jdbc:mysql://quickstart.cloudera:3306/retail_db \
+--username retail_dba \
+--password cloudera \
+--as-avrodatafile \
+--warehouse-dir /user/cloudera/Arun_problems/problem3/retail_stage.db \
+--compress \
+--compression-codec "org.apache.hadoop.io.compress.SnappyCodec" 
+
+2. 
+created one DB for this problem:
+
+CREATE DATABASE ARUNPROBLEM3;
+
+create external table orders_sqoop
+STORED AS AVRO
+LOCATION '/user/cloudera/Arun_problems/problem3/retail_stage.db/orders'
+TBLPROPERTIES ('avro.schema.url'='/user/cloudera/Arun_problems/problem3/schemas/orders.avsc')
+
+----------------------- Sqoop --hive-import command doesn't work for AVRO format -----------------------
+sqoop import \
+--connect jdbc:mysql://quickstart.cloudera:3306/retail_db \
+--username retail_dba \
+--password cloudera \
+--as-avrodatafile \
+--table orders \
+--warehouse-dir /user/cloudera/Arun_problems/problem3 \
+--compress \
+--compression-codec "org.apache.hadoop.io.compress.SnappyCodec" \
+--hive-import \
+--create-hive-table \
+--hive-table Arunproblem3.order_sqoop123 
+---------------------------------------------------------------------------------------------------------
+
+3.
+select * from orders_sqoop as X where X.order_date in (select a.order_date from (select Y.order_date, count(1) as total_orders from orders_sqoop as Y group by Y.order_date order by total_orders desc, Y.order_date desc limit 1) a;
+
+5.
+I created table in Arunproblem3 database.
+
+create table orders_avro(order_id int, order_date date, order_customer_id int, order_status string)
+STORED AS AVRO
+partitioned by (order_month string)
+
+set hive.exec.dynamic.partition = true;
+set hive.exec.dynamic.partition.mode = nonstrict;
+set hive.exec.max.dynamic.partition.pernode = 300;
