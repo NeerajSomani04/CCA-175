@@ -48,4 +48,5 @@ partitioned by (order_month string)
 
 set hive.exec.dynamic.partition = true;
 set hive.exec.dynamic.partition.mode = nonstrict;
-set hive.exec.max.dynamic.partition.pernode = 300;
+set hive.exec.max.dynamic.partitions.pernode = 300;
+
