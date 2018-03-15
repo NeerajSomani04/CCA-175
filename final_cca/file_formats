@@ -1,0 +1,8 @@
+need to check on below:
+df.write.option("compression", "gzip").json("/foo/bar")
+df.write.option("codec", "org.apache.hadoop.io.compress.GzipCodec")
+df.write.option("compression", "org.apache.hadoop.io.compress.GzipCodec")
+sqlContext.setConf("spark.sql.avro.compression.codec","snappy") 
+
+
+df.write.mode(SaveMode.Overwrite).format("orc") .save(<path to location>)
