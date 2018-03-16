@@ -1,0 +1,27 @@
+Creating hive context in spark shell
+import org.apache.spark.sql.hive.HiveContext val hiveContext = new HiveContext(sc)
+
+// Create hive table orders
+CREATE TABLE orders(
+        order_id int,
+        order_date string,
+        order_customer_id int,
+        order_status string 
+    ) row format delimited fields terminated by ','
+    stored as textfile;
+
+//data file should be in text format and available at local file system
+Load data local inpath '/data/retail_db/orders' into table orders;
+
+
+// Create table orders in orc
+CREATE TABLE orders(
+        order_id int,
+        order_date string,
+        order_customer_id int,
+        order_status string 
+    ) 
+    stored as orc;
+
+//insert data from table to table
+insert into table orders select * from varunu28_retail_db_txt.orders;
