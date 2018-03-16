@@ -6,3 +6,20 @@ sqlContext.setConf("spark.sql.avro.compression.codec","snappy")
 
 
 df.write.mode(SaveMode.Overwrite).format("orc") .save(<path to location>)
+
+
+Creating RDD from HDFS
+val orders = sc.textFile("/public/retail_db/orders") val order_items = sc.textFile("/public/retail_db/order_items")
+
+Creating RDD from Local File System
+val products = scala.io.Source.fromFile("/data/retail_db/products/part-00000").getLines.toList val productsRDD = sc.parallelize(products)
+
+// To save data as a sequence file
+
+import org.apache.hadoop.io._
+
+sc.textFile("file:///home/cloudera/Desktop/CCA175 Commands/data/retail_db/products").map(rec => (rec.split(",")(0).toInt,rec)).saveAsSequenceFile("/user/cloudera/product_seq")
+
+// Reading a sequence file
+
+sc.sequenceFile("/user/cloudera/product_seq", classOf[IntWritable],classOf[Text]).map(rec => rec.toString()).collect().foreach(println)
