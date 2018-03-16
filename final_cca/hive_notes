@@ -1,27 +1,69 @@
 Creating hive context in spark shell
 import org.apache.spark.sql.hive.HiveContext val hiveContext = new HiveContext(sc)
 
+to set hive environment variables:
+
+-- *************************************************************************************************************************************
+/* BUCKETING */
+-- The data is distributed into buckets
+-- The number of buckets is predefined by the user
+-- The basis for routing data into buckets is determined by (ID Value of the column) % (Number of Buckets)
+-- Hashing function takes care of distribution of data
+
+-- Set the environment variable to enable bucketing
+hive> set hive.enforce.bucketing=true
+
+-- An external staging table is required for loading data into bucketed table
+hive> create external table emp_stage (e_id int, e_name string, e_dept string, e_salary int) 
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+LOCATION '/user/rajesh.kancharla_outlook/ex_data';
+
+-- Create Bucketed table
+hive> create table b_emp(e_id int, e_name string, e_dept string, e_salary int) 
+clustered by (e_id) into 4 buckets
+row format delimited fields terminated by ',';
+
+-- Insert data into bucketed table
+insert into table b_emp select * from emp_stage;
+
+-- At this stage, a directory b_emp is created in hive warehouse with 4 files as there are 4 buckets
+-- Ex: /apps/hive/warehouse/rajeshk.db/b_emp/000000_0.deflate
+--     /apps/hive/warehouse/rajeshk.db/b_emp/000001_0.deflate
+--     /apps/hive/warehouse/rajeshk.db/b_emp/000002_0.deflate
+--     /apps/hive/warehouse/rajeshk.db/b_emp/000003_0.deflate
+-- All the files are in binary format, however in order to read the contents of each of the bucketed files, use
+
+
+
 // Create hive table orders
-CREATE TABLE orders(
-        order_id int,
-        order_date string,
-        order_customer_id int,
-        order_status string 
-    ) row format delimited fields terminated by ','
-    stored as textfile;
+CREATE TABLE u_data (
+  userid INT,
+  movieid INT,
+  rating INT,
+  unixtime STRING)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '\t'
+STORED AS TEXTFILE
+PARTITIONED BY (u_date date)
+LOCATION '/user/rajesh.kancharla_outlook/ex_data';
+
+// we can specify location when we already know file path while creating hive table
+
 
 //data file should be in text format and available at local file system
 Load data local inpath '/data/retail_db/orders' into table orders;
 
+//data file read from HDFS 
+Load data inpath '/data/retail_db/orders' into table orders;
 
-// Create table orders in orc
-CREATE TABLE orders(
-        order_id int,
-        order_date string,
-        order_customer_id int,
-        order_status string 
-    ) 
-    stored as orc;
+// for partitioned table
+load data local inpath '/home/rajesh.kancharla_outlook/pig/emp_hr_1.txt' into table emp_spart partition(e_dept = 'HR');
 
-//insert data from table to table
-insert into table orders select * from varunu28_retail_db_txt.orders;
+/* 
+Difference between managed and external table
+-- Managed Table source file is moved from source path to the hdfs path
+-- Managed Table is completely owned and maintained by hive. Once you drop, both data and metadata are gone
+-- External Table source file is copied from source path to hdfs path. Source path, data is still retained.
+-- External table's metadata is maintained in Hive. When it is dropped, only metadata is deleted, the source data still remains.
+*/
+
