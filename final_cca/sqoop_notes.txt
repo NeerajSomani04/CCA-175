@@ -144,3 +144,32 @@ sqoop import
   --query 'select ename,job,sal,emp.deptno from emp join dept on emp.deptno = dept.deptno WHERE $CONDITIONS'
   --split-by emp.deptno
   --boundary-query "select min(deptno), max(deptno) from emp"
+  
+  
+  # Import as ORC
+	# There is no direct ORC support for Sqoop
+	# Step 1: Create tables for TEXT and ORC Import
+	# Step 2: Sqoop import to TEXT file
+	# Step 3: Insert into ORC from TEXT
+
+	CREATE EXTERNAL TABLE order_items_text (order_item_id int, order_item_order_id int, order_item_product_id int, order_item_quantity int, order_item_subtotal float, order_item_product_price float) 
+	STORED AS TEXTFILE LOCATION "/apps/hive/warehouse/rajeshk.db/order_items_text";
+
+	CREATE EXTERNAL TABLE order_items_orc (order_item_id int, order_item_order_id int, order_item_product_id int, order_item_quantity int, order_item_subtotal float, order_item_product_price float) 
+	STORED AS ORC LOCATION "/apps/hive/warehouse/rajeshk.db/order_items_orc";
+
+	sqoop import \
+	 --connect jdbc:mysql://nn01.itversity.com/retail_db \
+	 --username retail_dba \
+	 --password itversity \
+	 --table order_items \
+	 --hive-import \
+	 --hive-overwrite \
+	 --hive-database rajeshk \
+	 --hive-table order_items_text
+
+	INSERT INTO order_items_orc SELECT * FROM order_items_text
+	-- After this is done, the data is stored as ORC format in the hive warehouse directory
+	-- The data is accessible via the Hive Table
+	-- A dataframe can be created from the orc path df = sqlContext.read.orc("/apps/hive/warehouse/rajeshk.db/order_items_orc")
+
