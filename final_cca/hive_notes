@@ -47,6 +47,9 @@ STORED AS TEXTFILE
 PARTITIONED BY (u_date date)
 LOCATION '/user/rajesh.kancharla_outlook/ex_data';
 
+// below line is only for avro schema 
+TBLPROPERTIES('avro.schema.file'='/home/rajeshkancharla/order_items.avsc');
+
 // we can specify location when we already know file path while creating hive table
 
 
