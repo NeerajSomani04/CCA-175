@@ -19,7 +19,7 @@ import org.apache.spark.{SparkConf, SparkContext} val conf = new SparkConf().set
 Get all conf parameters
 sc.getConf.getAll.foreach(println)
 
-spark DF and spark SQL notes --------------
+----------------- spark DF and spark SQL notes --------------
 
 case class Orders(
 order_id: Int,
@@ -43,7 +43,6 @@ val ordersDF = orders.map(rec => {
 val r = rec.split(",")
 Orders(r(0).toInt,r(1),r(2).toInt,r(3))
 }).toDF
-
 
 // Order Items DF
 
@@ -75,6 +74,53 @@ order_itemsDF.registerTempTable("order_items")
 
 sqlContext.sql("SELECT order_date, SUM(order_item_subtotal) FROM orders JOIN order_items ON order_id = order_item_order_id WHERE order_status IN ('COMPLETED','CLOSED') GROUP BY order_date").show()
 
+------------------------------
 
+val input = sc.textFile("spark_files/emp.txt")
+case class employee(id: Int, name: String, salary: Int, dept: String)
+val input_split = input.map(line => line.split(","))
+val emprdd = input_split.map(x => employee(x(0).toInt, x(1), x(2).toInt, x(3)))
+val empDF = emprdd.toDF()
+
+//to chnage particular column but not all
+empDF.withColumnRenamed("ID", "A").show()
+
+// to drop a column
+empDF.drop("ID").show()
+
+//to select specific columns
+empDF.select(empDF("ID"),empDF("Name")).show()
+
+// to get distinct values from a column
+empDF.select(empDF("Dept")).distinct.show()
+
+// to filter few records from a column
+empDF.filter(empDF("Dept") === "HR").show()
+---- another way to filter records -- 
+empDF.filter($"Dept" === "HR").show()
+
+----Inner join DF ----
+empDF.join(deptDF, empDF("dept") === deptDF("did")).show()
+//if you want display of full data in columns ----
+empDF.join(deptDF, empDF("dept") === deptDF("did")).show(truncate=false)
+
+---- Left Outer join -------
+empDF.join(deptDF, empDF("dept") === deptDF("did"),"left_outer").show(truncate=false)
+--- right Outer join -------
+empDF.join(deptDF, empDF("dept") === deptDF("did"),"right_outer").show(truncate=false)
+---- full outer join ----
+empDF.join(deptDF, empDF("dept") === deptDF("did"),"full_outer").show(truncate=false)
+
+//Order By --- sorting of data frame
+empDF.orderBy(empDF("Id")).show()
+empDF.orderBy(empDF("salary").desc).show()
+
+---- spark sql --
+empDF.registerTempTable("employee")
+val mid_sal = sqlContext.sql("select name, dept, salary from employee where salary >= 2000 and salary <= 5000")
+
+--- to read a hive table in spark --
+// here rajeshk is the DB name and dept is table name
+val deptDF = sqlContext.sql("select * from rajeshk.dept");
 
             
