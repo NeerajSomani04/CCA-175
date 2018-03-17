@@ -1,0 +1,85 @@
+1.
+sqoop import \
+--connect jdbc:mysql://quickstart.cloudera:3306/retail_db \
+--username retail_dba \
+--password cloudera \
+--table products_replica \
+--target-dir /user/cloudera/Arun_problems/problem5/products-text \
+--fields-terminated-by "|" \
+--lines-terminated-by "\n" \
+--null-string "NOT-AVAILABLE" \
+--null-non-string "-1" \
+--where "product_id >= 1 and product_id <= 1000" \
+-m 3 \
+--as-textfile
+
+2.
+sqoop import \
+--connect jdbc:mysql://quickstart.cloudera:3306/retail_db \
+--username retail_dba \
+--password cloudera \
+--table products_replica \
+--target-dir /user/cloudera/Arun_problems/problem5/products-text-part1 \
+--fields-terminated-by "*" \
+--lines-terminated-by "\n" \
+--null-string "NA" \
+--null-non-string "-1000" \
+--where "product_id <= 1111" \
+-m 2 \
+--as-textfile
+
+3.
+sqoop import \
+--connect jdbc:mysql://quickstart.cloudera:3306/retail_db \
+--username retail_dba \
+--password cloudera \
+--table products_replica \
+--target-dir /user/cloudera/Arun_problems/problem5/products-text-part2 \
+--fields-terminated-by "*" \
+--lines-terminated-by "\n" \
+--null-string "NA" \
+--null-non-string "-1000" \
+--where "product_id > 1111" \
+-m 5 \
+--as-textfile
+
+4.
+sqoop merge \
+
+--new-data /user/cloudera/Arun_problems/problem5/products-text-part2 \
+--onto /user/cloudera/Arun_problems/problem5/products-text-part1 \
+--target-dir /user/cloudera/Arun_problems/problem5/products-text-both-parts \
+--merge-key product_id;
+
+5.
+sqoop job \
+--create Arun_problem5_part5 \
+--import \
+--connect "jdbc:mysql://quickstart.cloudera:3306/retail_db" \
+--username "retail_dba" \
+--password "cloudera" \
+--table products_replica \
+--target-dir /user/cloudera/Arun_problems/problem5/products-incremental \
+--check-column product_id \
+--incremental append \
+--last-value 0;
+
+6.
+in hive terminal 
+create database ArunProblem5;
+
+sqoop job \
+--create Arunproblem5part6 \
+-- import \
+--connect "jdbc:mysql://quickstart.cloudera:3306/retail_db" \
+--username "retail_dba" \
+--password "cloudera" \
+--table products_replica  \
+--check-column product_id \
+--incremental append \
+--last-value 0 \
+--hive-import \
+--hive-table products_hive \
+--hive-database Arunproblem5;
+
+sqoop job --exec Arunproblem5part6;
