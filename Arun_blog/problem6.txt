@@ -1,0 +1,20 @@
+
+1. in hive window
+create database arunproblem6;
+
+2.
+sqoop import-all-tables \
+--connect jdbc:mysql://quickstart.cloudera:3306/retail_db \
+--username retail_dba \
+--password cloudera \
+--hive-import \
+--hive-database arunproblem6 
+
+
+dataframe example for rank and dense rank
+https://stackoverflow.com/questions/42966590/scala-spark-how-do-we-rank-dataframe-with-sqlcontext-and-version-1-5/42972123
+
+https://stackoverflow.com/questions/44968912/difference-in-dense-rank-and-row-number-in-spark
+
+
+
