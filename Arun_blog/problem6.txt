@@ -10,11 +10,28 @@ sqoop import-all-tables \
 --hive-import \
 --hive-database arunproblem6 
 
+3.
+var hc = new org.apache.spark.sql.hive.HiveContext(sc);
+
+hc.sql("")
+
 
 dataframe example for rank and dense rank
 https://stackoverflow.com/questions/42966590/scala-spark-how-do-we-rank-dataframe-with-sqlcontext-and-version-1-5/42972123
 
 https://stackoverflow.com/questions/44968912/difference-in-dense-rank-and-row-number-in-spark
+
+
+val departmentRDD = sc.textFile("/user/hive/warehouse/arunproblem6.db/departments")
+val categoriesRDD = sc.textFile("/user/hive/warehouse/arunproblem6.db/categories")
+val productsRDD = sc.textFile("/user/hive/warehouse/arunproblem6.db/products")
+
+case class Departments(departmentId: Int, departmentName: String)
+case class Categories(category_id: Int, category_department_id: Int, category_name: String)
+case class Products(product_id: Int, product_category_id: Int, product_name: String, product_description: String, product_price: Float, product_image: String)
+
+val departDF = departmentRDD.map( x => Departments(x(0).toInt, x(1))).toDF()
+
 
 
 
