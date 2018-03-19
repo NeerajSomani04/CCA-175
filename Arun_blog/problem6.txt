@@ -81,7 +81,7 @@ val ordersDF=ordersRDD.map(rec => rec.split(",")).map( b => Order(b(0).toInt,b(1
 val orderItemsDF=orderItemsRDD.map(rec => rec.split(",")).map( b => OrderItem(b(0).toInt,b(1).toInt,b(2).toInt,b(3).toInt,b(4).toFloat,b(5).toFloat ) ).toDF()
 val customersDF = customerRDD.map(rec => rec.split(",")).map( b => Customer(b(0).toInt,b(1),b(2),b(3),b(4),b(5),b(6),b(7),b(8)) ).toDF()
 
-val DataFrameResult = ordersDF.join(orderItemsDF, ordersDF("orderId") === orderItemsDF("orderItemOrderId")).join(customersDF, ordersDF("orderCustomerId") === customersDF("customerId")).groupBy(customersDF("customerId"),customersDF("customerFname")).agg(countDistinct(orderItemsDF("orderItemProductId"))).orderBy(customersDF("customerId")).take(10)
+val DataFrameResult = ordersDF.join(orderItemsDF, ordersDF("orderId") === orderItemsDF("orderItemOrderId")).join(customersDF, ordersDF("orderCustomerId") === customersDF("customerId")).groupBy(customersDF("customerId"), customersDF("customerFname")).agg(countDistinct(orderItemsDF("orderItemProductId")).alias("unique_products")).orderBy(col("unique_products").desc,customersDF("customerId"))
 
 
 5.
