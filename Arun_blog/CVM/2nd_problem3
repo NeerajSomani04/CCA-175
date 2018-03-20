@@ -1,0 +1,6 @@
+3.
+select b.* from orders_sqoop as b where b.order_date IN (select a.order_date from (select count(order_id) as total_orders, order_date from orders_sqoop 
+group by order_date
+order by total_orders desc limit 1) as a)
+
+4.
