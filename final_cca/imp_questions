@@ -9,4 +9,11 @@ sqoop export scnearios to practice
 
 
 ---- apply all above sinaries in hive from one form in one table to another form in another table ---
-
+arun problem 3 is an example of this type.
+1. export simple text file to hive table
+2. export snappy compressed text file to hive table
+3. export gzip compressed json file to hive table
+4. export simple parquent file to hive table
+5. export snappy compressed avro file to hive table
+6. export simple avro file to hive table
+7. export simple orc file to hive table
