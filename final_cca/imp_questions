@@ -1,0 +1,12 @@
+sqoop export scnearios to practice
+1. export simple text file to mysql table
+2. export snappy compressed text file to mysql table
+3. export gzip compressed json file to mysql table
+4. export simple parquent file to mysql table
+5. export snappy compressed avro file to mysql table
+6. export simple avro file to mysql table
+7. export simple orc file to mysql table
+
+
+---- apply all above sinaries in hive from one form in one table to another form in another table ---
+
