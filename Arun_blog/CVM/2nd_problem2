@@ -1,0 +1,7 @@
+val productsRDD = sc.TextFile("/user/cloudera/Arun_problems/problem2/products")
+
+val productsDF = productsRDD.map{ x => if (x.split("|")(4) != "") x.replace(" AW,", "").toString else x.toString}.filter( x => x.split("|")(0).toInt == 685)
+
+val DataFrameResult = productsDF.filter(col("product_price") < 100).groupBy(col("product_category_id"))
+.agg(max(col("product_price")).alias("max_product_price"), count(col("product_id")).alias("total_products"), 
+round(avg(col("product_price"),2).alias("avg_price"), min(col("product_price")).alias("min_product_price")).orderBy(col("product_category_id"))
