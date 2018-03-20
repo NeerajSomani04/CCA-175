@@ -1,5 +1,4 @@
-need to check on below:
-df.write.option("compression", "gzip").json("/foo/bar")
+few ways to work on compression of data:
 df.write.option("codec", "org.apache.hadoop.io.compress.GzipCodec")
 df.write.option("compression", "org.apache.hadoop.io.compress.GzipCodec")
 sqlContext.setConf("spark.sql.avro.compression.codec","snappy") 
@@ -7,19 +6,18 @@ sqlContext.setConf("spark.sql.avro.compression.codec","snappy")
 import org.apache.spark.sql.SaveMode;
 df.write.mode(saveMode.Overwrite).format("orc") .save(<path to location>)
 
+to read data from avro in lab:
+spark-shell --master yarn --conf spark.ui.port=12786 --packages com.databricks:spark-avro_2.10:2.0.1
 
-Creating RDD from HDFS
-val orders = sc.textFile("/public/retail_db/orders") val order_items = sc.textFile("/public/retail_db/order_items")
 
 Creating RDD from Local File System
 val products = scala.io.Source.fromFile("/data/retail_db/products/part-00000").getLines.toList val productsRDD = sc.parallelize(products)
 
+------------ sequence file ----------------
 // To save data as a sequence file
-
 import org.apache.hadoop.io._
-
 sc.textFile("file:///home/cloudera/Desktop/CCA175 Commands/data/retail_db/products").map(rec => (rec.split(",")(0).toInt,rec)).saveAsSequenceFile("/user/cloudera/product_seq")
 
 // Reading a sequence file
-
 sc.sequenceFile("/user/cloudera/product_seq", classOf[IntWritable],classOf[Text]).map(rec => rec.toString()).collect().foreach(println)
+---------------------------------------------
