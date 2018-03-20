@@ -32,5 +32,10 @@ val DataFrameResult = ordersDF.join(orderItemsDF, ordersDF("order_id") === order
 .orderBy(col("order_date").desc, col("order_status"), col("total_amount").desc, col("total_orders"))
 
 4.
-sqlContext.setConf("org.apache.hadoop.io.compress.codec","GzipCodec")
+sqlContext.setConf("spark.sql.parquet.compression.codec","snappy")
 DataFrameResult.write.option("compression","gzip").parquet("/user/cloudera/Arun_problems/problem1/result4a-gzip_3rd")
+DataFrameResult.write.mode(SaveMode.Overwrite).format("parquet").save("/user/cloudera/Arun_problems/problem1/result4a-uncompressed")
+
+sqlContext.setConf("spark.sql.parquet.compression.codec","uncompressed")
+
+
