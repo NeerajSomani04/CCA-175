@@ -1,0 +1,27 @@
+val hc = new apache.spark.sql.hive.HiveContext(sc)
+
+hc.sql("show databases").show   //output of hc.sql will be dataframe
+
+1.
+sqoop import-all-tables \
+--connect \
+--username \
+--password \
+--warehouse-dir /user/hive/warehouse/arunproblem6.db \
+--hive-import \
+--hive-database arunproblem6 \
+--create-hive-table \
+--as-textfile \
+
+2. 
+val HiveResult1 = select d.department_id, rank() over(partition by d.department_id order by p.product_price) as product_rank from departments as d join categories as c on d.department_id = c.category_department_id join products as p on p.product_category_id = c.category_id where p.product_price < 100;
+
+3.
+val HiveResult2 = hc.sql("select c.customer_id, c.customer_fname, count(distinct(order_item_product_id)) as unique_products from customers c inner join orders o on o.order_customer_id=c.customer_id  inner join order_items oi on oi.order_item_order_id=o.order_id group by c.customer_id, c.customer_fname order by unique_products desc, c.customer_id limit 10")
+
+4. already incorporated in point 2.
+
+5.
+HiveResult2.registerTempTable("top10_cust")
+
+
