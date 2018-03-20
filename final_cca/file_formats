@@ -4,8 +4,8 @@ df.write.option("codec", "org.apache.hadoop.io.compress.GzipCodec")
 df.write.option("compression", "org.apache.hadoop.io.compress.GzipCodec")
 sqlContext.setConf("spark.sql.avro.compression.codec","snappy") 
 
-
-df.write.mode(SaveMode.Overwrite).format("orc") .save(<path to location>)
+import org.apache.spark.sql.SaveMode;
+df.write.mode(saveMode.Overwrite).format("orc") .save(<path to location>)
 
 
 Creating RDD from HDFS
