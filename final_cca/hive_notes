@@ -22,14 +22,15 @@ TBLPROPERTIES('avro.schema.file'='/home/rajeshkancharla/order_items.avsc');
 
 // we can specify location when we already know file path while creating hive table
 
+--------------------- important point about hive load command ------
+'LOAD DATA' is available in which the data will not be moved from your existing source location to hive data warehouse location.
+
 //data file should be in text format and available at local file system
 Load data local inpath '/data/retail_db/orders' into table orders;
-
 //data file read from HDFS 
 Load data inpath '/data/retail_db/orders' into table orders;
-
 // for partitioned table
-load data local inpath '/home/rajesh.kancharla_outlook/pig/emp_hr_1.txt' into table emp_spart partition(e_dept = 'HR');
+load data local inpath '/home/rajesh.kancharla_outlook/pig/emp_hr_1.txt' into table emp_spart partition (e_dept = 'HR');
 
 // Below is one more example how to load data into partitioned table:
 create database retail;
@@ -45,8 +46,14 @@ create table orders_avro
 insert overwrite table orders_avro partition (order_month)
 select order_id, to_date(from_unixtime(cast(order_date/1000 as int))), order_customer_id, order_status, substr(from_unixtime(cast(order_date/1000 as int)),1,7) as order_month from default.orders_sqoop;
 
+--------------------
+INSERT OVERWRITE will overwrite any existing data in the table or partition
+and INSERT INTO will append to the table or partition keeping the existing
+data.
 
 --------------------
+alter table statements ----
+ALTER TABLE table_name CHANGE col_name col_name newType
 
 
 to set hive environment variables:
