@@ -34,6 +34,9 @@ val joinedDF = orderDF.join(orderItemsDF, orderDF("order_id") === orderItemsDF("
 
 val DataFrameResult = joinedDF.groupBy(to_date(from_unixtime(col("order_date")/1000)).alias("order_date"), col("order_status")).agg(countDistinct(col("order_id")).alias("total_orders"), round(sum(col("order_item_subtotal")),2).alias("total_amount")).orderBy(col("order_date").desc, col("order_status"), col("total_orders").desc, col("total_amount"))
 
+//if to_date is not supported by many file format
+val DataFrameResult = joinedDF.groupBy(substring(from_unixtime(col("order_date")/1000), 1, 10).alias("order_date"), col("order_status")).agg(countDistinct(col("order_id")).alias("total_orders"), round(sum(col("order_item_subtotal")),2).alias("total_amount")).orderBy(col("order_date").desc, col("order_status"), col("total_orders").desc, col("total_amount"))
+
 --------------------------------------------
 b. Problem solved using Spark SQL 
 
