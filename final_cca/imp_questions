@@ -1,9 +1,34 @@
 sqoop export scnearios to practice
 1. export simple text file to mysql table
-2. export snappy compressed text file to mysql table
-3. export gzip compressed json file to mysql table
+create table retail_db.orders_csv(order_date varchar(255) not null,order_status varchar(255) not null, total_orders int, total_amount numeric, constraint pk_order_result primary key (order_date,order_status)); 
+
+sqoop export \
+--connect jdbc:mysql://quickstart.cloudera:3306/retail_db \
+--username retail_dba \
+--password cloudera \
+--table orders_csv \
+--export-dir /user/cloudera/Arun_problems/diff_file_format/result4a-csv \
+
+
+2. export snappy compressed tab seperated text file to mysql table
+create table retail_db.orders_tsv_snappy(order_date varchar(255) not null,order_status varchar(255) not null, total_orders int, total_amount numeric, constraint pk_order_result primary key (order_date,order_status)); 
+
+sqoop export \
+--connect jdbc:mysql://quickstart.cloudera:3306/retail_db \
+--username retail_dba \
+--password cloudera \
+--table orders_tsv_snappy \
+--export-dir /user/cloudera/Arun_problems/diff_file_format/result4a-tsv_snappy \
+--input-fields-terminated-by '\t' \
+
+
+3. export snappy compressed json file to mysql table
+it was not working --- need to test again
+
 4. export simple parquent file to mysql table
+
 5. export snappy compressed avro file to mysql table
+
 6. export simple avro file to mysql table
 7. export simple orc file to mysql table
 
