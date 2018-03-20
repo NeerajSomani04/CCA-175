@@ -1,26 +1,34 @@
 1. saving below command to remind all the string function that we can implement on rdd
 
-val cust2013Aug = orders.
-						filter(order => order.split(",")(1).contains("2013-08")).
-						map(rec => rec.split(",")(2).toInt)
+val cust2013Aug = orders.filter(order => order.split(",")(1).contains("2013-08")).map(rec => rec.split(",")(2).toInt)
 
 2. Row level transformation (MAP => Get date from orders in Integer format)
 orders.map(e => (e.split(",")(1).substring(0,10).replace("-", "")).toInt)
             
- // Left Outer Join // it will take all data from left but leaving data from left that are also present in right.
-val ordersLeftOuterJoin = ordersMap.leftOuterJoin(orderItemsMap)
-							.filter(order => order._2._2 == None)
-							.map(order => order._2._1)
+// Left Outer Join // it will take all data from left but leaving data from left that are also present in right.
+// ordersMap and orderItemsMap are RDD in (k, v) pair form.
+val ordersLeftOuterJoin = ordersMap.leftOuterJoin(orderItemsMap).filter(order => order._2._2 == None).map(order => order._2._1)
 
-3. 
-Steps To Initialize Spark Context Programmatically
-import org.apache.spark.{SparkConf, SparkContext} val conf = new SparkConf().setAppName("Daily Revenue").setMaster("yarn-client") val sc = new SparkContext(conf)
+---------------------- Important DF functions: ----------
+to_date(from_unixtime(col("order_date")/1000)).alias("order_formatted_date")
+to_date() --> will print date in the format YYYY-MM-DD
+from_unixtime() --> will convert date format value from unixtime format to regular datetime format.
+alias() --> is used to assign an alias name of column
+------- agg(round(sum("order_item_subtotal"),2) -----
+agg() --> is used to calculate aggregate values
+round(colname, 2) --> is used to round decimal values to 2 decimal points
+sum() --> is used to calculate the sum of all values of that column
+min(), max(), avg() --> some other function works as name specifies
+countDistinct() --> used to count distinct values of that column
+count() --> is used to count values of that column
 
-Get all conf parameters
-sc.getConf.getAll.foreach(println)
+----------- Important spark SQL notes -------
+DF.registerTempTable("temp_tblName");
+to_date(from_unixtime(cast(order_date/1000 as bigint)))
+cast() --> function to cast the datatype of column
+cast(sum(order_item_subtotal) as DECIMAL (10,2)) 
 
 ----------------- spark DF and spark SQL notes --------------
-
 case class Orders(
 order_id: Int,
 order_date: String,
@@ -32,11 +40,10 @@ order_item_id: Int,
 order_item_order_id: Int,
 order_item_product_id: Int,
 order_item_quantity: Int,
-order_item_subtotal: Double,
+order_item_subtotal: Float,
 order_item_price: Double)
 
-// Orders DF
-
+// OrdersDF from orders RDD 
 val orders = sc.textFile("file:///home/cloudera/Desktop/CCA175 Commands/data/retail_db/orders")
 
 val ordersDF = orders.map(rec => {
@@ -45,12 +52,10 @@ Orders(r(0).toInt,r(1),r(2).toInt,r(3))
 }).toDF
 
 // Order Items DF
-
 val order_items = sc.textFile("file:///home/cloudera/Desktop/CCA175 Commands/data/retail_db/order_items")
-
 val orders_itemsDF = order_items.map(rec => {
 val r = rec.split(",")
-OrderItems(r(0).toInt,r(1).toInt,r(2).toInt,r(3).toInt,r(4).toDouble,r(5).toDouble)
+OrderItems(r(0).toInt,r(1).toInt,r(2).toInt,r(3).toInt,r(4).toFloat,r(5).toDouble)
 }).toDF
 
 // Quering the DF
@@ -64,9 +69,7 @@ val ordersFiltered = ordersDF.filter(ordersDF("order_status") === "COMPLETE" || 
 val orderJoin = ordersFiltered.Join(order_itemsDF, ordersFiltered("order_id") === order_itemsDF("order_item_order_id"))
 
 // Group By in DF
-orderJoin.groupBy("order_date").
-agg(sum("order_item_subtotal")).
-show()
+orderJoin.groupBy("order_date").agg(sum("order_item_subtotal")).show()
 
 // Doing the above operation using SQL
 ordersDF.registerTempTable("orders")
@@ -75,14 +78,9 @@ order_itemsDF.registerTempTable("order_items")
 sqlContext.sql("SELECT order_date, SUM(order_item_subtotal) FROM orders JOIN order_items ON order_id = order_item_order_id WHERE order_status IN ('COMPLETED','CLOSED') GROUP BY order_date").show()
 
 ------------------------------
+//Below are some Dataframe functions
 
-val input = sc.textFile("spark_files/emp.txt")
-case class employee(id: Int, name: String, salary: Int, dept: String)
-val input_split = input.map(line => line.split(","))
-val emprdd = input_split.map(x => employee(x(0).toInt, x(1), x(2).toInt, x(3)))
-val empDF = emprdd.toDF()
-
-//to chnage particular column but not all
+//to change particular column but not all
 empDF.withColumnRenamed("ID", "A").show()
 
 // to drop a column
@@ -104,7 +102,7 @@ empDF.join(deptDF, empDF("dept") === deptDF("did")).show()
 //if you want display of full data in columns ----
 empDF.join(deptDF, empDF("dept") === deptDF("did")).show(truncate=false)
 
----- Left Outer join -------
+---- Left Outer join ------- // here DF.show(truncate=false) is used to show full data values of column.
 empDF.join(deptDF, empDF("dept") === deptDF("did"),"left_outer").show(truncate=false)
 --- right Outer join -------
 empDF.join(deptDF, empDF("dept") === deptDF("did"),"right_outer").show(truncate=false)
@@ -112,10 +110,9 @@ empDF.join(deptDF, empDF("dept") === deptDF("did"),"right_outer").show(truncate=
 empDF.join(deptDF, empDF("dept") === deptDF("did"),"full_outer").show(truncate=false)
 
 //Order By --- sorting of data frame
-empDF.orderBy(empDF("Id")).show()
-empDF.orderBy(empDF("salary").desc).show()
+empDF.orderBy(empDF("Id"), empDF("salary").desc).show()
 
----- spark sql --
+---- spark sql ----------
 empDF.registerTempTable("employee")
 val mid_sal = sqlContext.sql("select name, dept, salary from employee where salary >= 2000 and salary <= 5000")
 
@@ -123,4 +120,12 @@ val mid_sal = sqlContext.sql("select name, dept, salary from employee where sala
 // here rajeshk is the DB name and dept is table name
 val deptDF = sqlContext.sql("select * from rajeshk.dept");
 
-            
+-------------------
+3. 
+Steps To Initialize Spark Context Programmatically
+import org.apache.spark.{SparkConf, SparkContext} 
+val conf = new SparkConf().setAppName("Daily Revenue").setMaster("yarn-client") 
+val sc = new SparkContext(conf)
+
+Get all conf parameters
+sc.getConf.getAll.foreach(println)
