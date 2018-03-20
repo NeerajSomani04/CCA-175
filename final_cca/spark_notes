@@ -22,6 +22,15 @@ min(), max(), avg() --> some other function works as name specifies
 countDistinct() --> used to count distinct values of that column
 count() --> is used to count values of that column
 
+---- string operations on DF columns ---- also I can try similar function in SparkSQL ---
+df = df.select(col("*"), substring(col("a"), 4, 6).as("c"))
+
++------+---+---+
+|     a|  b|  c|
++------+---+---+
+|foobar|foo|bar|
++------+---+---+
+
 ----------- Important spark SQL notes -------
 DF.registerTempTable("temp_tblName");
 to_date(from_unixtime(cast(order_date/1000 as bigint)))
