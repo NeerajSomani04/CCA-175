@@ -11,9 +11,48 @@ sqoop export scnearios to practice
 ---- apply all above sinaries in hive from one form in one table to another form in another table ---
 arun problem 3 is an example of this type.
 1. export simple text file to hive table
-2. export snappy compressed text file to hive table
+Solution: 
+    create database hive_test_problems;
+
+    create external table hive_test_problems.csv_noComp(order_date String, order_status String, total_orders String, total_amount String)
+    row format delimited
+    fields terminated by ','
+    stored as textfile;
+
+    load data inpath '/user/cloudera/Arun_problems/problem1/result4a-csv' into table hive_test_problems.csv_noComp;
+
+    select * from csv_nocomp;
+
+2. export snappy compressed parquet file to hive table
+Solution:
+drop table hive_test_problems.parquet_snappy;
+create external table hive_test_problems.parquet_snappy 
+    (order_date String, order_status String, total_orders bigint, total_amount double)
+    stored as parquet;
+    TBLPROPERTIES('parquet.compression', 'SNAPPY');
+
+ALTER TABLE hive_test_problems.parquet_snappy CHANGE order_date order_date date;
+describe formatted parquet_snappy;
+set parquet.compression=SNAPPY;
+alter table parquet_snappy set location '/user/cloudera/Arun_problems/problem1/result4a-snappy';
+
+select * from parquet_snappy
 3. export gzip compressed json file to hive table
 4. export simple parquent file to hive table
+
 5. export snappy compressed avro file to hive table
 6. export simple avro file to hive table
 7. export simple orc file to hive table
+
+-------
+when to use hive for 
+insert into table orders_sqoop values (67, , , )
+-----
+insert overwrite table orders_avro partition (order_month)
+select order_id, to_date(from_unixtime(cast(order_date/1000 as int))), order_customer_id, order_status, 
+substr(from_unixtime(cast(order_date/1000 as int)),1,7) as order_month from default.orders_sqoop;
+-----
+create table problem6.product_rank_result as select * from product_rank_result_temp where product_price < 100;
+
+
+
