@@ -1,0 +1,4 @@
+1. hiveContext output will be dataframe.
+2. hive concate two columns, we can use below function
+CONCAT('hadoop','-','hive') returns 'hadoop-hive'
+3.
