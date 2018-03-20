@@ -1,5 +1,53 @@
 Creating hive context in spark shell
-import org.apache.spark.sql.hive.HiveContext val hiveContext = new HiveContext(sc)
+import org.apache.spark.sql.hive.HiveContext;
+val hc = new HiveContext(sc)
+
+// INVALIDATE METADATA; // for validating and updating hive or impala environment
+//sometime need to configure hive-site.xml file as well for both.
+
+// Create hive table orders
+CREATE (EXTERNAL) TABLE u_data (
+  userid INT,
+  movieid INT,
+  rating INT,
+  unixtime STRING)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '\t'
+STORED AS TEXTFILE
+PARTITIONED BY (u_date date)
+LOCATION '/user/rajesh.kancharla_outlook/ex_data';
+
+// below line is only for avro schema 
+TBLPROPERTIES('avro.schema.file'='/home/rajeshkancharla/order_items.avsc');
+
+// we can specify location when we already know file path while creating hive table
+
+//data file should be in text format and available at local file system
+Load data local inpath '/data/retail_db/orders' into table orders;
+
+//data file read from HDFS 
+Load data inpath '/data/retail_db/orders' into table orders;
+
+// for partitioned table
+load data local inpath '/home/rajesh.kancharla_outlook/pig/emp_hr_1.txt' into table emp_spart partition(e_dept = 'HR');
+
+// Below is one more example how to load data into partitioned table:
+create database retail;
+
+create table orders_avro
+    > (order_id int,
+    > order_date date,
+    > order_customer_id int,
+    > order_status string)
+    > partitioned by (order_month string)
+    > STORED AS AVRO;
+
+insert overwrite table orders_avro partition (order_month)
+select order_id, to_date(from_unixtime(cast(order_date/1000 as int))), order_customer_id, order_status, substr(from_unixtime(cast(order_date/1000 as int)),1,7) as order_month from default.orders_sqoop;
+
+
+--------------------
+
 
 to set hive environment variables:
 
@@ -33,34 +81,6 @@ insert into table b_emp select * from emp_stage;
 --     /apps/hive/warehouse/rajeshk.db/b_emp/000003_0.deflate
 -- All the files are in binary format, however in order to read the contents of each of the bucketed files, use
 
-
-
-// Create hive table orders
-CREATE TABLE u_data (
-  userid INT,
-  movieid INT,
-  rating INT,
-  unixtime STRING)
-ROW FORMAT DELIMITED
-FIELDS TERMINATED BY '\t'
-STORED AS TEXTFILE
-PARTITIONED BY (u_date date)
-LOCATION '/user/rajesh.kancharla_outlook/ex_data';
-
-// below line is only for avro schema 
-TBLPROPERTIES('avro.schema.file'='/home/rajeshkancharla/order_items.avsc');
-
-// we can specify location when we already know file path while creating hive table
-
-
-//data file should be in text format and available at local file system
-Load data local inpath '/data/retail_db/orders' into table orders;
-
-//data file read from HDFS 
-Load data inpath '/data/retail_db/orders' into table orders;
-
-// for partitioned table
-load data local inpath '/home/rajesh.kancharla_outlook/pig/emp_hr_1.txt' into table emp_spart partition(e_dept = 'HR');
 
 /* 
 Difference between managed and external table
