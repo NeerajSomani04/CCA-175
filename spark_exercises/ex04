@@ -1,0 +1,10 @@
+hdfs dfs -put /data/nyse/* /user/dkothari/data/nyse
+
+val nyseRDD = sc.textFile("/user/dkothari/data/nyse")
+case class nyse(stockticker: String, transactiondate:String, openprice:Float, highprice:Float, lowprice:Float, closeprice:Float, volume:Int)
+
+val nyseDF = nyseRDD.map(x => x.split(',')).map(x => nyse(x(0).toString,x(1).toString,x(2).toFloat,x(3).toFloat,x(4).toFloat,x(5).toFloat,x(6).toInt)).toDF
+
+sqlContext.setConf("spark.sql.parquet.compression.codec", "uncompressed")
+
+nyseDF.write.parquet("/user/dkothari/spark_exercises/exercise04/nyse_parquet")
