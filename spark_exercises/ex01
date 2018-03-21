@@ -1,0 +1,27 @@
+Question link:
+http://discuss.itversity.com/t/exercise-01-get-monthly-crime-count-by-type/7846/2
+
+Data location:
+hdfs dfs -ls /public/crime/csv
+
+Spark core API --- Spark RDD Solution:
+
+val crimeRDD = sc.textFile("/public/crime/csv")
+val crimeFilter = crimeRDD.filter( x => x.split(',')(0).toString != "ID")
+val crimeMap = crimeFilter.map(x => ((x.split(',')(2).substring(6,10).concat(x.split(',')(2).substring(0,2)), x.split(',')(5).toString), x.split(',')(0).toInt))
+val crimeGBK = crimeMap.groupByKey()
+val crimeSort = crimeGBK.map(x => (x._1._1, x._2.toList.size, x._1._2)).sortBy(x => (x._1, -x._2))
+val crimeResult = crimeSort.map(x => x._1 + "\t" + x._2 + "\t" + x._3)
+crimeResult.saveAsTextFile("/user/dkothari/spark_exercises/exercise01/crimes_by_type_by_month", classOf[org.apache.hadoop.io.compress.GzipCodec])
+
+Spark Data Frame:-
+val crimeRDD = sc.textFile("/public/crime/csv")
+val crimeFilter = crimeRDD.filter( x => x.split(',')(0).toString != "ID")
+case class Crime(ID: String, month: String, crime_type: String)
+val crimeDF = crimeFilter.map(x => x.split(',')).map(x => Crime(x(0), x(2), x(5))).toDF
+val crimeResultDF = crimeDF.groupBy(concat(substring(col("month"),7,4),substring(col("month"),1,2)).alias("month"), col("crime_type")).agg(count(col("ID")).alias("crime_count")).orderBy(col("month"),col("crime_count").desc)
+val crimeResult = crimeResultDF.select(col("month"), col("crime_count"), col("crime_type"))
+val crimeResultMap = crimeResult.map(x => x(0) + "\t" + x(1) + "\t" + x(2)) 
+crimeResultMap.saveAsTextFile("/user/dkothari/spark_exercises/exercise01/crimes_by_type_by_month", classOf[org.apache.hadoop.io.compress.GzipCodec])
+
+
