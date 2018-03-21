@@ -4,14 +4,12 @@ val ordersRDD = sc.parallelize(orders)
 val customers = scala.io.Source.fromFile("/data/retail_db/customers/part-00000").getLines.toList
 val customersRDD = sc.parallelize(customers)
 
-val customersDF = customersRDD.map(x => x.split(',')(0).toInt, x.split(',')(2).toString, x.split(',')(1).toString).toDF("cust_id", "cust_lname","cust_fname")
+val customersDF = customersRDD.map(x => (x.split(',')(0).toInt, x.split(',')(2).toString, x.split(',')(1).toString)).toDF("cust_id", "cust_lname","cust_fname")
 val ordersDF = ordersRDD.map(x => (x.split(',')(2).toInt)).toDF("order_cust_id")
 
 val FinalDF = customersDF.join(ordersDF, customersDF("cust_id") === ordersDF("order_cust_id"), "left")
 val finalFilter = FinalDF.filter("order_cust_id is null").select("cust_lname", "cust_fname").orderBy(col("cust_lname"),col("cust_fname"))
-finalFilter.map(x => x(0) + ',' + x(1)).repartition(1).saveAsTextFile("/user/dkothari/spark_ex/solutions02/inactive_customers")
+finalFilter.map(x => x(0) + "," + x(1)).repartition(1).saveAsTextFile("/user/dkothari/spark_exercises/exercise02/inactive_customers")
 
-
-9890817559
 
 correct answer: - final result count should be 30.
