@@ -1,0 +1,9 @@
+sqlContext.sql("create database dkothari_retail_db_spark_exercise06")
+sqlContext.sql("show tables in dkothari_retail_db_spark_exercise06").show
+
+sqlContext.sql("select * from dkothari_retail_db_txt.orders").show
+sqlContext.sql("select count(*) from dkothari_retail_db_txt.order_items").show
+sqlContext.sql("select count(*) from dkothari_retail_db_txt.customers").show
+
+
+sqlContext.sql("select concat(substring(to_date(o.order_date),1,4),substring(to_date(o.order_date),6,2)) as month,c.customer_id, round(sum(oi.order_item_subtotal),2) as revenue from dkothari_retail_db_txt.orders o join dkothari_retail_db_txt.order_items oi on oi.order_item_order_id=o.order_id join dkothari_retail_db_txt.customers c on c.customer_id=o.order_customer_id group by concat(substring(to_date(o.order_date),1,4),substring(to_date(o.order_date),6,2)),c.customer_id order by ")
