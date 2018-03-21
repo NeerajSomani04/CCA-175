@@ -1,0 +1,19 @@
+val crimeRDD = sc.textFile("/public/crime/csv")
+val header = crimeRDD.first
+val crimeFilter = crimeRDD.filter(x => x != header)
+val crimeMap = crimeFilter.map(x => x.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1)).map(x => (x(0).toInt, x(5).toString.trim, x(7).toString.trim))
+val crimeGBK = crimeMap.filter(x => x._3 == "RESIDENCE").map(x => (x._2, (x._1))).groupByKey()
+val crimeResult = crimeGBK.map(x => (x._1, x._2.toList.size)).toDF("crime_type", "total_incidents").orderBy(col("total_incidents").desc).limit(3)
+
+crimeResult.toJSON.saveAsTextFile("/user/dkothari/spark_exercises/exercise03/RESIDENCE_AREA_CRIMINAL_TYPE_DATA")
+-------or-----------
+crimeResult.write.json("/user/dkothari/spark_exercises/exercise03/RESIDENCE_AREA_CRIMINAL_TYPE_DATA")
+-------or-----------
+crimeResult.save("/user/dkothari/spark_exercises/exercise03/RESIDENCE_AREA_CRIMINAL_TYPE_DATA", "json")
+
+
+
+
+
+
+
