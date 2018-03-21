@@ -6,4 +6,17 @@ sqlContext.sql("select count(*) from dkothari_retail_db_txt.order_items").show
 sqlContext.sql("select count(*) from dkothari_retail_db_txt.customers").show
 
 
-sqlContext.sql("select concat(substring(to_date(o.order_date),1,4),substring(to_date(o.order_date),6,2)) as month,c.customer_id, round(sum(oi.order_item_subtotal),2) as revenue from dkothari_retail_db_txt.orders o join dkothari_retail_db_txt.order_items oi on oi.order_item_order_id=o.order_id join dkothari_retail_db_txt.customers c on c.customer_id=o.order_customer_id group by concat(substring(to_date(o.order_date),1,4),substring(to_date(o.order_date),6,2)),c.customer_id order by ")
+val revenueDF = sqlContext.sql("select substring(o.order_date,1,7) as month,c.customer_id, round(sum(oi.order_item_subtotal),2) as revenue from dkothari_retail_db_txt.orders o join dkothari_retail_db_txt.order_items oi on oi.order_item_order_id=o.order_id join dkothari_retail_db_txt.customers c on c.customer_id=o.order_customer_id group by substring(o.order_date,1,7), c.customer_id")
+revenueDF.registerTempTable("revenueTemp")
+
+val RankedDF = sqlContext.sql("select c.*, r.month, r.revenue, rank() over(partition by r.month order by r.revenue desc) as rank from revenueTemp as r join customer c on c.customer_id=r.customer_id order by month, revenue desc")
+RankedDF.registerTempTable("rankedTemp")
+val top5Cust = sqlContext.sql("select * from rankedTemp rt where rt.rank <=5 order by rt.month, rt.revenue desc")
+
+val finalDf = top5Cust.drop(top5Cust.rank)
+
+
+finalDf.saveAsTable(“dkothari_retail_db_txt.top5_customers_per_month”)
+------------ or --------------
+finalDf.registerTempTable("finalTemp")
+sqlContext.sql("create table dkothari_retail_db_txt.top5_customers_per_month select * from finalTemp")
