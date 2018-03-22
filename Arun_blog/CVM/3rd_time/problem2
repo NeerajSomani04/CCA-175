@@ -1,0 +1,39 @@
+1.
+
+sqoop import \
+--connect jdbc:mysql://quickstart.cloudera:3306/retail_db \
+--username retail_dba \
+--password cloudera \
+--table products \
+--warehouse-dir /user/cloudera/Arun_problems/3rd_time/problem2 \
+--as-textfile \
+--fields-terminated-by '|' \
+
+4.
+val productsRDD = sc.textFile("/user/cloudera/Arun_problems/3rd_time/problem2/products")
+
+val productsMap = productsRDD.map(x => x.split('|')).map(x => (x(0).toInt,x(1).toInt,x(4).toFloat))
+val productsDF = productsMap.toDF("product_id","product_category_id","product_price")
+
+4a. --- using DataFrame ---
+
+val DFResult = productsDF.filter(col("product_price") < 100).groupBy(col("product_category_id")).agg(max(col("product_price")).alias("max_price"),count(col("product_id")).alias("total_products") , round(avg(col("product_price")),2).alias("avg_price"), min(col("product_price")).alias("min_price")).orderBy(col("product_category_id"))
+
+4b. ----- using spark SQL ----
+productsDF.registerTempTable("productsTemp")
+val sparkSQLResult = sqlContext.sql("select product_category_id, max(product_price) as max_price, count(product_id) as total_product, round(avg(product_price),2) as avg_price, min(product_price) as min_price from productsTemp where product_price < 100 group by product_category_id order by product_category_id")
+
+4c. --- using spark RDD ---
+val sparkRDDResult = productsMap.map(x => (x(1), x(2))).aggregateByKey()(0,0.0)(())
+
+
+5.
+sqlContext.setConf("spark.sql.avro.compression.codec","snappy")
+
+DFResult.write.avro("/user/cloudera/Arun_problems/3rd_time/problem2/result-df")
+
+import org.apache.spark.sql.SaveMode;
+
+sparkSQLResult.repartition(5).write.format("com.databricks.spark.avro").mode(SaveMode.Overwrite).save("/user/cloudera/Arun_problems/3rd_time/problem2/result-sparksql")
+
+
