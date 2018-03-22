@@ -1,0 +1,39 @@
+1.
+sqoop import-all-tables \
+--connect jdbc:mysql://quickstart.cloudera:3306/retail_db \
+--username retail_dba \
+--password cloudera \
+--warehouse-dir /user/hive/warehouse/arunproblem3_3rdtime.db \
+--as-avrodatafile \
+--compress \
+--compression-codec=snappy
+
+2.
+hdfs dfs -get /user/hive/warehouse/arunproblem3_3rdtime.db/orders/part-m-00000.avro /home/cloudera/arunproblem3_3rdtime
+
+avro-tools getschema /home/cloudera/arunproblem3_3rdtime/part-m-00000.avro > orders.avsc
+
+hdfs dfs -copyFromLocal /home/cloudera/arunproblem3_3rdtime/orders.avsc /user/cloudera/Arun_problems/3rd_time/problem3
+
+create external table arunproblem3_3rdtime.orders_sqoop
+stored as avro
+location '/user/hive/warehouse/arunproblem3_3rdtime.db/orders'
+tblproperties ('avro.schema.url'='/user/cloudera/Arun_problems/3rd_time/problem3/orders.avsc')
+
+3.
+select os.* from arunproblem3_3rdtime.orders_sqoop os where os.order_date in (select a.order_date from (select temp.order_date, count(temp.order_id) as total_orders from arunproblem3_3rdtime.orders_sqoop as temp group by temp.order_date order by total_orders desc limit 1) as a);
+
+5.
+create external table arunproblem3_3rdtime.orders_avro(order_id int, order_date date, order_customer_id int, order_status string)
+partitioned by (order_month string)
+stored as avro
+
+6.
+
+set hive.exec.dynamic.partition.mode=nonstrict;
+
+insert overwrite table arunproblem3_3rdtime.orders_avro partition (order_month) select order_id, to_date(from_unixtime(cast(order_date/1000 as bigint))) as order_date, order_customer_id, order_status, substring(from_unixtime(cast(order_date/1000 as bigint)),1,7) as order_month from arunproblem3_3rdtime.orders_sqoop;
+
+7.
+select os.* from arunproblem3_3rdtime.orders_avro os where os.order_date in (select a.order_date from (select temp.order_date, count(temp.order_id) as total_orders from arunproblem3_3rdtime.orders_avro as temp group by temp.order_date order by total_orders desc limit 1) as a);
+
