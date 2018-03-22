@@ -8,7 +8,9 @@ sqoop import-all-tables \
 --username retail_dba \
 --password cloudera \
 --hive-import \
---hive-database arunproblem6 
+--hive-database arunproblem6 \
+--create-hive-table \
+--as-textfile
 
 3.
 var hc = new org.apache.spark.sql.hive.HiveContext(sc);
