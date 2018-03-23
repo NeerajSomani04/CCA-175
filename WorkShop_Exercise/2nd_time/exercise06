@@ -1,0 +1,14 @@
+“stockticker”, “transactiondate”, “openprice”, “highprice”, “lowprice”, “closeprice”, “volume”)
+
+val nyseRDD = sc.textFile("/public/nyse")
+
+val nyseDF = nyseRDD.map(x => x.split(',')).map(x => (x(0).toString, x(1).toInt, x(6).toInt)).toDF("stock_name","Date", "volume")
+
+nyseDF.registerTempTable("nyseTemp")
+
+Question: top2Stocks by volume for each day
+
+val DFResult = sqlContext.sql("select * from (select date, stock_name, volume, dense_rank() over (partition by date order by volume desc) as dense_rank from nyseTemp) as a where dense_rank<3 order by date, dense_rank desc")
+
+
+
