@@ -3,10 +3,33 @@
 create database dkothari_stage_workshopExercise14;
 create database dkothari_final_workshopExercise14;
 
+
+drop table dkothari_stage_workshopExercise14.departments;
+drop table dkothari_final_workshopExercise14.departments;
 2.
 create external table dkothari_stage_workshopExercise14.departments(department_id int, department_name string)
 row format delimited
 fields terminated by ','
-stored as text
-location '/public/retail_db/departments'
+stored as textfile
+location '/user/dkothari/retail_db/departments';
 
+3.
+create table dkothari_final_workshopExercise14.departments(department_id int, department_name string)
+row format delimited
+fields terminated by '|'
+TBLPROPERTIES ('text.compress'='gzip');
+
+Insert into table dkothari_final_workshopExercise14.departments select * from dkothari_stage_workshopExercise14.departments;
+
+4.
+hdfs dfs -cat /apps/hive/warehouse/dkothari_final_workshopexercise14.db/departments/* | head -n 5
+
+
+create table dkothari_final_workshopExercise14.departments
+row format delimited
+fields terminated by '|'
+stored as textfile
+TBLPROPERTIES ('textfile.compress'='gzip')
+as select * from dkothari_stage_workshopExercise14.departments;
+
+Insert into table dkothari_final_workshopExercise14.departments select * from dkothari_stage_workshopExercise14.departments;
