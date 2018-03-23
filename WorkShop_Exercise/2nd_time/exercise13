@@ -1,0 +1,33 @@
+1.
+create database dkothari_nyse_db;
+
+2.
+sqoop import \
+--connect jdbc:mysql://ms.itversity.com:3306/nyse_db \
+--username nyse_user \
+--password itversity \
+--table stock_eod \
+--hive-import \
+--hive-database dkothari_nyse_db \
+--create-hive-table \
+--as-textfile \
+-m 1
+
+3.
+create table dkothari_nyse_db.stocks_revenue_monthly as
+select stockticker, substr(tradedate, 1, 7) trademonth,
+sum(volume) monthly_volume
+from dkothari_nyse_db.stock_eod
+group by stockticker, substr(tradedate, 1, 7);
+
+4.
+create table nyse_export.dkothari_stocks_revenue_monthly(stockticker varchar(255), trademonth varchar(10), monthly_volume bigint);
+alter table nyse_export.dkothari_stocks_revenue_monthly add primary key (stockticker, trademonth);
+
+5.
+sqoop export \
+--export-dir /apps/hive/warehouse/dkothari_nyse_db.db/stocks_revenue_monthly \
+--connect jdbc:mysql://ms.itversity.com:3306/nyse_export \
+--username nyse_user \
+--password itversity \
+--table dkothari_stocks_revenue_monthly
