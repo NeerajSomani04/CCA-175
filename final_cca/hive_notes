@@ -23,7 +23,7 @@ TBLPROPERTIES('avro.schema.file'='/home/rajeshkancharla/order_items.avsc');
 // we can specify location when we already know file path while creating hive table
 
 --------------------- important point about hive load command ------
-'LOAD DATA' is available in which the data will not be moved from your existing source location to hive data warehouse location.
+'LOAD DATA' is available in which the data will be moved from your existing source location to hive data warehouse location.
 
 //data file should be in text format and available at local file system
 Load data local inpath '/data/retail_db/orders' into table orders;
@@ -54,7 +54,7 @@ data.
 --------------------
 alter table statements ----
 ALTER TABLE table_name CHANGE col_name col_name newType
-
+ALTER TABLE table_name ADD PARTITION (dateMonth='2013-07') LOCATION '/user/cloudera/data/orders'
 
 to set hive environment variables:
 
