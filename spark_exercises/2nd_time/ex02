@@ -1,0 +1,24 @@
+import com.databricks.spark.csv._
+spark-shell --master yarn --conf spark.ui.port=12232 --packages com.databricks:spark-csv_2.10:1.3.0
+
+1. using Data Frame
+val ordersDF1 = sqlContext.read.format("csv").load("/public/retail_db/orders")
+val ordersDF = ordersDF1.toDF("order_id", "order_date", "order_customer_id", "order_status")
+
+val custsDF1 = sqlContext.read.format("csv").load("/public/retail_db/customers")
+val customersDF =  custsDF1.map(x => (x(0).toString.toInt, x(1).toString, x(2).toSting)).toDF("cust_id", "cust_fname", "cust_lname")
+
+val DFjoin = customersDF.join(ordersDF, col("cust_id") === col("order_customer_id"), "left_Outer")
+val DFResult = DFResult.filter("order_customer_id is null").select("cust_lname", "cust_fname")
+
+
+
+2. Using Spark Sql
+
+ordersDF.registerTempTable("ordersTemp")
+customersDF.registerTempTable("custTemp")
+
+val sparksql = sqlContext.sql("select c.cust_lname, c.cust_fname from custTemp c left join ordersTemp o on o.order_customer_id = c.cust_id where o.order_customer_id is null")
+
+
+
