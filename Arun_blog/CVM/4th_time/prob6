@@ -1,0 +1,24 @@
+1.
+sqoop import-all-tables \
+--connect jdbc:mysql://quickstart:3306/retail_db \
+--username retail_dba \
+--password cloudera \
+--hive-import \
+--hive-database arunproblem6 \
+--create-hive-table \
+--warehouse-dir /user/hive/warehouse/Arun_problems/4th_time/problem6.db \
+--as-textfile
+
+2.
+set org.apache.hive.join=;
+
+val a = hc.sql("select c.category_department_id, p.product_id, p.product_price, rank() over(partition by c.category_department_id order by p.product_price desc) as rank, dense_rank() over(partition by c.category_department_id order by p.product_price desc) as dense_rank from arunproblem6.categories c join arunproblem6.products p on p.product_category_id=c.category_id order by c.category_department_id, rank desc, dense_rank desc")
+
+3.
+val top10Cust = hc.sql("select c.customer_id, count(distinct(oi.order_item_product_id)) as unique_products from arunproblem6.customers c join arunproblem6.orders o on o.order_customer_id = c.customer_id join arunproblem6.order_items oi on o.order_id = oi.order_item_order_id group by c.customer_id order by unique_products desc, c.customer_id limit 10")
+
+top10Cust.registerTempTable("top10CustTemp")
+
+val top10CustProd = hc.sql("select p.* from arunproblem6.products p join order_items oi on oi.order_item_product_id=p.product_id join arunproblem6.orders o on o.order_id=oi.order_item_order_id join arunproblem6.customers c on o.order_customer_id=c.customer_id join top10CustTemp tc on tc.customer_id=c.customer_id where p.product_price<100")
+
+
