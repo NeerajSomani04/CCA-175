@@ -1,0 +1,83 @@
+8:30 am
+
+1.
+sqoop import \
+--connect jdbc:mysql://quickstart:3306/retail_db \
+--username retail_dba \
+--password cloudera \
+--table products_replica \
+--target-dir /user/cloudera/Arun_problems/4th_time/problem5/products-text \
+--fields-terminated-by "|" \
+--lines-terminated-by "\n" \
+--null-non-string -1 \
+--null-string  "NOT-AVAILABLE" \
+--where "product_id >=1 and product_id<=1000" \
+-m 3 \
+--as-textfile \
+
+
+2. 1111 records
+sqoop import \
+--connect jdbc:mysql://quickstart:3306/retail_db \
+--username retail_dba \
+--password cloudera \
+--table products_replica \
+--target-dir /user/cloudera/Arun_problems/4th_time/problem5/products-text-part1 \
+--fields-terminated-by "*" \
+--lines-terminated-by "\n" \
+--null-non-string -1000 \
+--null-string  "NA" \
+--where "product_id<=1111" \
+-m 2 \
+--as-textfile
+
+3. 235 records
+sqoop import \
+--connect jdbc:mysql://quickstart:3306/retail_db \
+--username retail_dba \
+--password cloudera \
+--table products_replica \
+--target-dir /user/cloudera/Arun_problems/4th_time/problem5/products-text-part2 \
+--fields-terminated-by "*" \
+--lines-terminated-by "\n" \
+--null-non-string -1000 \
+--null-string  "NA" \
+--where "product_id>=1111" \
+-m 5 \
+--as-textfile
+
+4.
+sqoop merge \
+--class-name products_replica \
+--jar-file mp/sqoop-cloudera/compile/66b4f23796be7625138f2171a7331cd3/products_replica.jar \
+--new-data /user/cloudera/problem5/products-text-part2 \
+--onto /user/cloudera/problem5/products-text-part1 \
+--target-dir /user/cloudera/problem5/products-text-both-parts \
+--merge-key product_id;
+
+5.
+sqoop job \
+--create prob5_prod_replica \
+-- import \
+--connect jdbc:mysql://quickstart:3306/retail_db \
+--username retail_dba \
+--password cloudera \
+--table products_replica \
+--target-dir /user/cloudera/Arun_problems/4th_time/problem5/products-incremental \
+--check-column product_id \
+--incremental append \
+--last-value 0 
+
+sqoop job --exec prob5_prod_replica
+
+7.
+sqoop job \
+--create prob5_export_hivetomysql \
+-- export \
+--connect jdbc:mysql://quickstart:3306/retail_db \
+--username retail_dba \
+--password cloudera \
+--export-dir /user/hive/warehouse/Arun_problems/4th_time/problem5.db/products_hive \
+--table products_external \
+--update-mode allowinsert \
+--update-key product_id
