@@ -1,0 +1,6 @@
+val crimeDF = sqlContext.read.format("csv").option("header","true").load("/public/crime/csv")
+val DFResult = crimeDF.filter("`Location Description` = 'RESIDENCE'").groupBy(col("Primary Type")).agg(countDistinct(col("ID")).as("number_of_incidents")).orderBy(col("number_of_incidents").desc).limit(3)
+
+DFResult.limit(3).show
+
+DFResult.limit(3).write.json("/user/dkothari/solutions/solution03/RESIDENCE_AREA_CRIMINAL_TYPE_DATA")
