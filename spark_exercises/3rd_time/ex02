@@ -1,0 +1,21 @@
+1. using dataframe
+
+spark-shell --master yarn --conf spark.ui.port=12453 --packages com.databricks:spark-csv_2.10:1.3.0
+import com.databricks.spark.csv._
+
+val ordersDF = sqlContext.read.format("csv").load("/public/retail_db/orders")
+val ordersDFCol = ordersDF.toDF("order_id", "order_date", "order_customer_id", "order_status")
+
+
+val customersDF = sqlContext.read.format("csv").load("/public/retail_db/customers")
+val customersDFCol = customersDF.select("C0", "C1", "C2")toDF("cust_id", "cust_fname", "cust_lname")
+
+val joinedDF = customersDFCol.join(ordersDFCol, ordersDFCol("order_customer_id") === customersDFCol("cust_id"), "left")
+
+val count1 = joinedDF.filter("order_customer_id is null")
+
+
+
+
+
+
