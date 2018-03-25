@@ -1,0 +1,34 @@
+spark-shell --master yarn --conf spark.ui.port=12453 --packages com.databricks:spark-csv_2.10:1.3.0
+import com.databricks.spark.csv._
+
+val crimeDF = sqlContext.read.format("csv").options("header","true").load("/public/crime/csv")
+
+val crimeDF = sqlContext.read.format("csv").option("header", "true").load("/public/crime/csv")
+val crimeDF1 = crimeDF.groupBy(concat(substring(col("Date"),7,4),substring(col("Date"),1,2)).as("month"), col("Primary Type")).agg(countDistinct("ID").alias("crime_count"))
+
+
+1. using dataframe
+
+spark-shell --master yarn --conf spark.ui.port=12453 --packages com.databricks:spark-csv_2.10:1.3.0
+import com.databricks.spark.csv._
+
+val crimeDF = sqlContext.read.format("csv").option("header", "true").load("/public/crime/csv")
+
+val DFResult = crimeDF.groupBy(concat(substring(col("Date"),7,4),substring(col("Date"),1,2)).as("month"), col("Primary Type")).agg(countDistinct("ID").alias("crime_count")).orderBy(col("month"), col("crime_count").desc)
+
+DFResult.map(x => x(0) + "\t" + x(2) + "\t" + x(1)).saveAsTextFile("/user/dkothari/solutions/solution01/crimes_by_type_by_month", classOf[org.apache.hadoop.io.compress.GzipCodec])
+
+2. using spark RDD
+
+val crimeRDD = sc.textFile("/public/crime/csv")
+val header = crimeRDD.first
+val crimeFilter = crimeRDD.filter(x => x != header)
+val crimeMap = crimeFilter.map(x => x.split(',')).map(x => ((x(2).toString,x(5).toString),1))
+
+val crimeMap1 = crimeMap.map(x => ((x._1._1.substring(6,10)+x._1._1.substring(0,2), x._1._2),1))
+
+val crimeResult = crimeMap1.reduceByKey(_+_).sortBy(x => (x._1._1,-x._2))
+
+
+
+
