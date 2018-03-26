@@ -54,7 +54,7 @@ drop table hive_test_problems.parquet_snappy;
 create external table hive_test_problems.parquet_snappy 
     (order_date String, order_status String, total_orders bigint, total_amount double)
     stored as parquet;
-    TBLPROPERTIES('parquet.compression', 'SNAPPY');
+    TBLPROPERTIES('parquet.compress', 'SNAPPY');
 
 ALTER TABLE hive_test_problems.parquet_snappy CHANGE order_date order_date date;
 describe formatted parquet_snappy;
