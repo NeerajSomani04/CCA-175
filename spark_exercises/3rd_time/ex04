@@ -1,0 +1,4 @@
+val nyseDF = sqlContext.read.format("csv").load("/public/nyse")
+val nyseDFCol = nyseDF.toDF("stockticker", "transactiondate", "openprice", "highprice", "lowprice", "closeprice", "volume")
+
+nyseDFCol.write.parquet("/user/<YOUR_USER_ID>/nyse_parquet")
