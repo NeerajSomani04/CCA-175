@@ -1,0 +1,11 @@
+spark-shell --master yarn --conf spark.ui.port=12386 --packages com.databricks:spark-avro_2.10:2.0.1 --executor-memory 3GB --driver-cores 20 --num-executors 10
+import com.databricks.spark.avro._
+
+val wordRDD = sc.textFile("/public/randomtextwriter")
+val wordMap = wordRDD.flatMap(x => (x.split(' '))).map(x => (x,1))
+val wordResult = wordMap.reduceByKey((k,v) => k+v, 8)
+
+sqlContext.setConf("spark.sql.avro.compression.codec","default")
+
+wordResult.toDF("word", "count").write.avro("/user/dkothari/spark_exercises/exercise05/wordcount")
+
