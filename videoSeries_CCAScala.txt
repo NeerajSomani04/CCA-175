@@ -68,20 +68,89 @@ Video 07 - Scala Fundamentals --> Collections, below are interfaces and not conc
           Array --> contain elements {val a = Array(1, 2, 3, 4)}
           List --> can take duplicate values {val a = List(1, 1, 2, 3, 3, 4)}. order of elements are kept while reading.
       Set --> only unique values {val a = set(1, 1, 2, 3, 3, 4)} --> 1, 2, 3, 4 (even if you pass duplicate values, it will discard them). Hence, set doesn't store order of your elements.
-      Map --> (Key,value) pair { val m = Map("Hello" -> 1, "World" -> 2)
+      Map --> (Key,value) pair { val m = Map("Hello" -> 1, "World" -> 2) }
 
-MySql DB Details: (at time of certification, cloudera wouldn't allow to connect to mysql. we need to validate any mysql queries through sqoop)
-       users --> 
+video 14 --> Scala fundamentals - I/O operations
+       --> Read data from file 
+        --> convert into collection
+       --> perform collection operation on data
+       --> Run map reduce job
+       example:-
+          --> (import scala.io.Source --> this command can be used to read the file or any other Source)
+          example:- val OrderItems = Source.fromFile("file_path/filename")
+              by default this will return bufferSource iterator
+              there are many iterator APIs that we can use to get data in the needed format from any collection.
+          example:- val OrderItems = Source.fromFile("file_path/filename").getLines
+              to print it --> OrderItems.take(10).foreach(println)
+
+       --> you can convert any iterator into List using "toList" function and apply all list operation on top of it.
+       
+       --> we can use filter, map, reduce APIs to perform any ETL operations
+       --> Map --> this API is used to transform any input row into needed format row. Its a row to row conversion
+       --> filter --> used to filter record based on condition
+       --> Reduce --> used to aggregate records and perfomr logic operation
+
+Video 15 -->
+       Tuple --> Generic object type where there is no name associate with it
+              --> it represents a record with different attributes and data types
+              --> elements can be accessed using positinal notation, like index position
+              --> It will eliminate the necessity of creating the classes and instantiating them. This will be helpful in few scenarios where we just want to create collection and not the complete class.
+          
+       example:- 
+              val t = (1, 5, 6) --> hence, this way we created tuple, just passing the values in the curly braces
+              t._1, t._2 --> these commands can be used to get these values.
+              
+Video 16 - 17 --> Development life cycle, build jar file, run jar file
+       developed small application for scala and saw how it work.
+       SBT (Simple Build Tool) --> tool in scala to compile the scala code, generate classes and build jar file out of it.
+              sbt package --> command to create/build jar file
+       to run the program below are 2 ways -->
+              --> sbt run --> this command run all the jar file in the location
+              --> scala jar_file_path --> this command will run specific jar file
+
+Video 29 --> HDFS basics 
+       properties files --> 
+              /etc/hadoop/conf/core-site.xml
+              /etc/hadoop/conf/hdfs-site.xml
+      Important properties -->
+              fs.defaultFS --> gives information about namenode URI (master deamon)
+              dfs.BlockSize --> file partition based on this block size (example: 128 MB)
+              dfs.replication --> environment will create copy of file to make it highly available (example: 3 replica)
+      
+      HDFS commands --> 
+              copying file -->
+                     --> from local file system to HDFS (hadoop fs -copyFromLocal or -put)
+                     --> to local from HDFS (hadoop fs -copyToLocal or -get)
+                     --> from one HDSF location to another (haddop fs -cp)
+              listing file (hadoop fs -ls)
+              previewing data from file (hadoop fs -tail or -cat)
+              checking size of the file (hadoop fs -du -s -h filepath/filename)
+
+Video 30 --> YARN (Yet another resource nagotiator) 
+       (distribution processing framework -- controls the execution of jobs)
+       --> spark typically runs in YARN mode
+       yarn configuration can be found at below location -->
+              /etc/hadoop/conf/yarn-site.xml
+              etc/spark/conf/spark-env.sh
+       spark default settings --> these setting can help in performance
+              Number of executor --> 2
+              memory --> 1 GB
+       
+       
+       
+Video 33 --> Sqoop Introduction and exploration --> we can use Sqoop user guide to understand sqoop commands
+
+MySql DB Details: (at time of certification, cloudera wouldn't allow to connect to mysql. we need to validate any mysql queries through sqoop) 
+       hostname --> ms.itversity.com
+       usernames --> 
               retail_user
               hr_user
               nyse_user
+       password --> itversity
        available databases -->
               retail_db
               hr_db
               nyse_db
-       hostname --> ms.itversity.com
-       
-       password --> itversity
        Commands --> 
               to connect to mysql --> mysql -u retail_user -h ms.itversity.com -p itversity
               to see available databases --> show databases;
@@ -103,7 +172,7 @@ Sqoop commands:
        --boundary-query aurgument is used for creating split while importing data.
        --table aurgument should not be used with --query aurgument.
        
-video 33 -- sqoop -- listing databases and tables
+video 33 -- sqoop commands -- listing databases and tables
        sqoop list-databases \
             --connect jdbc:mysql://ms.itversity.com:3306 \
             --username hr_user \
