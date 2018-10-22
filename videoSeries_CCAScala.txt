@@ -1,29 +1,75 @@
 All the details are at Itversity.com website under specific courses
+
+Below notes are based on course at you tube link 
+(https://www.youtube.com/watch?v=PJnV4eQw4vk&list=PLf0swTFhTI8rDQXfH8afWtGgpOTnhebDx&index=4)
        
-Video 01 - Scala Fundamentals --> Have instructions on scala setup on mac with intellij IDE
+Video 01 - Scala Fundamentals --> Have instructions on scala setup on mac with intellij IDE and setup
 Video 02 - Basic Scala Programming --> Var --> mutable, val --> immutable, loops (for loop, while loop, if-else, etc)
-Video 03 - Functions --> defining functions and anaonymous funcs.
+Video 03 - Functions --> User defined functions and anaonymous funcs.
+       Below points for UDF -->
+       --> No need to create function aurguments with var or val declaration. 
+       --> but you need to declare the return type of function.
+       --> return type of the function declaration is also not mandatory.
+              correct syntext is below -->
+                     def sum(lb: Int, ub: Int) = {
+                            var total = 0
+                            for (element <- lb to ub by 2) {
+                                   total += element
+                                 }
+                            total
+                            }
+        
+        Anonymous function --> are like lambda and function can call another function. These function don't have any name but can work as a function.
+              
 Video 04 - OOPs concepts --> Class
      below command is used to set Java_Home environment path, so that we can use :javap command of scala.
         export JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk
     Few Important points for Scala Class:
        Scala Class definition by default generate default constructor.
-       If there is any argumnet of class with Val or Var, then those will be only argument of class and not variable of class.
+       If there is any argumnet of constructor without val or var declaration then those will be only argument of constructor and not allowed to access them outside of class or even using object of class.
        If arguments are defined by Val (immutable), getter method will be available by constructor.
        If arguments are defined by Var (mutable), getter and setter method will be available by constructor.
-Video 05 - OOPs concepts --> Objects
+       
+       example -->
+              class Order(orderId: Int, OrderStatus: String){
+                     println("Hello")
+                }
+       
+              val order = new Order(1, "2013-01-01", 101, "Complete") --> command to create constructor.
+
+       REPL --> READ, EVALUATE, PRINT and LOOP
+       use Scala command to launch REPL on command prompt or terminal
+       :quit --> command to come out of scala
+       cntl+l --> shortcut to clear screen
+       :help --> to get help regarding any commands
+       :history --> to get history of command or use up arraow
+       :h? ls --> this can be used to get history of commands where ls command was used previously
+       :paste --> command can be used to write multi-line commands and run in sequence in one shot
+              --> cntl+d --> command used to finish and run the command written in :paste mode.
+              
+        Scala is a statically typed language.
+        Scala is a functional programming language.
+        
+        :javap -p is a command used to compile the class or constructor and get the defination of class / constructor.
+        
+Video 05 - OOPs concepts of Scala -->
        Objects are singleton class, hence it can not be initiatable more than once. 
-       There is no constructor for Objects.
+       There is no constructor for Objects, hence we can have as many method as we want.
+       
        Companion Objects:- Class name and Object name are same.
+       
+       "Unit" is return type of scala which means no return value, (which is similar to java "void" return type).
+       In scala, it also require main method that takes array of string as aurguments.
+       
 Video 06 - OOPs concepts --> Case Classes
-      This basically gives you many functionality as a inbuilt, without writting much code.
-Video 07 - Scala Fundamentals --> Collection
+      This basically gives you many functionality as a inbuilt, without writting much code. like getter, setter method, apply method is default.
+Video 07 - Scala Fundamentals --> Collections, below are interfaces and not concrete classes
       Sequence --> hold number of elements
-          Array -->
-          List -->
-      Set --> unique values
-      Map --> (Key,value) pair
-      
+          Array --> contain elements {val a = Array(1, 2, 3, 4)}
+          List --> can take duplicate values {val a = List(1, 1, 2, 3, 3, 4)}. order of elements are kept while reading.
+      Set --> only unique values {val a = set(1, 1, 2, 3, 3, 4)} --> 1, 2, 3, 4 (even if you pass duplicate values, it will discard them). Hence, set doesn't store order of your elements.
+      Map --> (Key,value) pair { val m = Map("Hello" -> 1, "World" -> 2)
+
 MySql DB Details: (at time of certification, cloudera wouldn't allow to connect to mysql. we need to validate any mysql queries through sqoop)
        users --> 
               retail_user
