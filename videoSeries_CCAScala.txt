@@ -344,7 +344,11 @@ video 56 --> sqoop export -- update/ upsert/merge
        1. "--update-key" is the operator that can be used to update the records in table at the time of export.
        2. "--update-mode" --> can be "updateonly" (default) or "allowinsert"
        
-       
+video 58 --> sqoop export -- stage table
+       1. you can use "--staging-table table_name" aurgument to load data first to stage table and then to the target table. This is important to verify the complete load. If export process fails due to any reason our target table wouldn't get impacted.
+       Although, you need to explicitly create this stage table in MySQL DB and then use it in your export.
+       2. "--clear-staging-table" aurgument is used to clear the stage table if the sqoop export command successful. If sqoop export fails then you can use this stage table for analysis.
+
 video 59 --> command to initiate the spark-shell
        spark-shell --master yarn --conf spark.ui.port=12654 (any 5 digit port no from 10000 to 65535)
       
