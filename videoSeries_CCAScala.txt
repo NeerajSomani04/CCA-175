@@ -163,13 +163,7 @@ Sqoop commands:
                   where, hostname --> ms.itevrsity.com
                          port --> 3306 (this is usually default port)
                          db_name --> retails_db
-       Things to remember for --split-by option of sqoop command:
-              1) Column should be indexed
-              2) values should be sparse / or it should be sequentially generated or evenly incremented
-              3) it should not have null values
-              4) we need to use this always when we use --query aurgument
-              
-       --boundary-query aurgument is used for creating split while importing data.
+
        --table aurgument should not be used with --query aurgument.
        
 video 33 -- sqoop commands -- listing databases and tables
@@ -177,8 +171,63 @@ video 33 -- sqoop commands -- listing databases and tables
             --connect jdbc:mysql://ms.itversity.com:3306 \
             --username hr_user \
             --password itversity 
+
+Video 40 --> sqoop import -- using split by
+       Question: - how to divide the data for fast processing if there is no primary key or index on table. Also, how to handle "NULL" values for column in table.
+       Answer:- using split-by aurgument
+    Notes:- 
+       --> default import command will fail if there is no primary key defined on table. Because it doesn't know how to divid data for each partition.
+       --> we can avoid this situation by using "-m" or "num-mappers" aurgument, and set it to 1.
+       --> "--autoreset-to-one-mapper" aurgument can be used to split the records when there is no primary key on table.
+       --> or we can use --split-by aurgument (lets see how)
+       
+       Things to remember for --split-by option of sqoop command:
+       1) Column should be indexed to get better performance. sqoop command will work even if your column is not indexed but there will be performance impact because of it.
+       2) values should be sparse / or it should be sequentially generated or evenly incremented
+       3) it should not have null values. If there are any NULL values, those records will be ignored.
+       4) we need to use this always when we use --query aurgument
+              
+       --boundary-query aurgument is used for creating split while importing data.
+
+       --> By default sqoop doesn't allow to split records based on non-numeric key fields. BUt it can be done by specifying below aurgument :
+       -Dorg.apache.sqoop.splitter.allow_text_splitter=true \
+
+video 42 and 43 --> sqoop import file format and compression
+       --> avro format --> binary JSON file format
+       --> Parquet --> columnar binary data file format. Mostly used with MPP databases.
+       --> sequence file format --> simple binary file format
+       
+       Compression Algorithm --> Gzip, Snappy, Deflat, Others
+       two aurgument can be used to enable compression --> "-z" or "--compress"
+       compression algorithm can be defined by aurgument --> "--compression-codec" (gZip is default compression technique)
+       
+       Inorder to view data in your compressed file, you can copy data from HDFS to local file system
+       --> then use "gunzip" command to unzip the file and view the data
+       
+       few compression algorithm -->
+              org.apache.hadoop.io.compress.(BZip2Codec or GZipCodec or SnappyCodec)
+
+*** very imp points
+video 44 --> sqoop import -- boundary query, columns and query
+       boundary-query --> this is the select statment which will be used by sqoop to split data while fetching from DB. This will always contain index column values or the column which will be used for split.
+       columns --> what are the columns you want to import. Column name should be comma seperated and should not contain spaces in between.
+       query --> this will be actual query that will be used to get data, it might not be needed to get the boundary values. 
+       ******* --> "table or columns aurgument can't be used with query aurgument".
+       ******* --> "warehouse-dir" aurgument should not be used with "query aurgument", we should use "target-dir" aurgument.
+       **** --> for query operations split-by is manadatory if num-mappers is greater than 1
+       **** --> query should have place holder \$CONDITIONS to support sqoop operation
+       
+       "$CONDITION" --> this is a special part of query we need to put in our query statement with where claue. Example, below:
+       
+       sqoop import \
+            --connect jdbc:mysql://ms.itversity.com:3306/hr_db \
+            --username hr_user \
+            --password itversity \
+            --target-dir /user/dkothari/sqoop_import/retail_db/orders_with_revenue \
+            --query "select o.*, sum(oi.order_item_subtotal) order_revenue from orders o join order_items oi on o.order_id=oi.order_item_order_id and \$CONDITIONS group by o.order_id, o.order_status, o.order_date, o.order_customer_id"
+            --split-by order_id
             
-video 44 -- apache sqoop -- sqoop import -- delimiters and handling nulls
+video 45 --> apache sqoop -- sqoop import -- delimiters and handling nulls
 Example Sqoop command:--
             sqoop import \
             --connect jdbc:mysql://ms.itversity.com:3306/hr_db \
