@@ -238,7 +238,17 @@ Example Sqoop command:--
             --null-non-string -1 \
             --fields-terminated-by "\t" \
             --lines-terminated-by ":"
-            
+
+
+video 46 --> Sqoop import - increment upload      
+       1. using --query operator and --append operator with this. (the challange here is that we need to explicitly define --split-by clause even if we have index column in table. as sqoop will not work otherwise.)
+       2. using --where operator in sqoop command it self. this can be used for increment load or filter data
+       3. sqoop alternative important operators -->
+              --> "--check-column" --> column used to determine incremental import
+              --> "incremental" (mode) --> value can be append or lastmodified
+              --> "last-value" --> max value of the check column from previous import
+       ***** --> if we create sqoop job then it will automatically maintain last-value for every run.
+       
 video 47 -- Sqoop command for Hive import --
        sqoop import \
        --connect jdbc:mysql://ms.itversity.com:3306/retail_db \
@@ -261,8 +271,28 @@ sqoop import \
      --hive-table orders \
      --hive-overwrite \
      --num-mappers 2
-            
-video 50 -->
+     
+     
+ ***** --> to get the details of my HIVE database directory. I can run below command:
+       --> Below command needs to be run in HIVE environment.
+       --> describe formatted table_name;
+**** --> default delimiter in HIVE import is "^A" (cntl+A) charachter.
+       --> In exam we might need to change the delimiter of file and make it in needed format.
+
+video 48 --> sqoop import - manage hive tables
+       --> Hive import different scenarios for sqoop import
+              --> we might need to append data. This is the default behaviour mode for sqoop import for hive.
+              --> we might need to overwite data. we can use "--hive-overwrite" operator of sqoop import. this operator can't be used with "--create-hive-table" operator.
+              --> if the target is already created, need to raise exception and error out. this can be done using "--create-hive-table" operator. 
+
+video 49 --> sqoop import -- import all tables
+       limitation --> 
+              1. "--warehous-dir" is manadatory
+              2. Better to use "--autoreset-to-one-mapper" --> to avoid any issue related to index column
+              3. can't use these few aurguments, --query, --columns, --where
+              4. incremental import not possible
+              
+video 50 --> this query is used to perform some operation on top of imported data,
        Question : Create Hive table "Daily_Revenue". based on the data fetched from other tables.
        Command: --> 
               create table daily_revenue_test as
@@ -274,12 +304,13 @@ video 50 -->
 
        Notes:--> In above query where clause works fine in hive with Group By clause. But recommendation is to use having clause with Group By clause.
 
-video 51 --> Sqoop export -- create hive table
-       mysql command for creating table in retail_export --> 
+video 53 --> Sqoop export from hive directory -- with specified delimiters 
+
+       mysql command for creating table in retail_export DB --> 
               create table daily_revenue_dkothari
               (order_date varchar(30), revenue float);
      
-       sqoop export command-->
+       sqoop export command--> 
               sqoop export \
                      --connect jdbc:mysql://ms.itversity.com:3306/retail_export \
                      --username retail_user \
@@ -288,7 +319,8 @@ video 51 --> Sqoop export -- create hive table
                      --export-dir /apps/hive/warehouse/dkothari_sqoop_import.db/daily_revenue \
                      --input-fields-terminated-by "\001"  
 
-Notes:--> Here, input field of hdfs file is terminated by ASCII char "\001". This is used to identify each field for export.
+Notes:--> Here, delimiter in the Hive directoryis denoted by ASCII char "\001". This is used to identify each field for export.
+       --> it can be understood by practice.
 
 video 53 --> 
        mysql demo table --> 
@@ -296,7 +328,7 @@ video 53 -->
               (revenue float, order_date varchar(30), description varchar(200));
      
       sqoop export command -->
-              --column aurgument is very important. The order of column names in column aurgument should be same as source table                                 structure (which hdfs directory or hive table). Below is example:
+              --column aurgument is very important. The order of column names in column aurgument should be same as source table                                 structure (compare to hdfs directory or hive table). Below is example:
               
               sqoop export \
                      --connect jdbc:mysql://ms.itversity.com:3306/retail_export \
@@ -304,11 +336,15 @@ video 53 -->
                      --password itversity \
                      --table daily_revenue_dkothari_demo \
                      --export-dir /apps/hive/warehouse/dkothari_sqoop_import.db/daily_revenue \
-                     --columns order_date, revenue \
+                     --columns order_date, revenue \ (these are target table column names and it order as per mysql target table)
                      --input-fields-terminated-by "\001" \
                      --num-mappers 1
 
-video 54 --> sqoop update/ upsert/merge 
+video 56 --> sqoop export -- update/ upsert/merge 
+       1. "--update-key" is the operator that can be used to update the records in table at the time of export.
+       2. "--update-mode" --> can be "updateonly" (default) or "allowinsert"
+       
+       
 video 59 --> command to initiate the spark-shell
        spark-shell --master yarn --conf spark.ui.port=12654 (any 5 digit port no from 10000 to 65535)
       
