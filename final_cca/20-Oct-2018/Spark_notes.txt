@@ -1,3 +1,43 @@
 video series link --> https://www.youtube.com/watch?v=uAMqRgIrWI0&index=57&list=PLf0swTFhTI8rDQXfH8afWtGgpOTnhebDx
 
 video 58 --> Spark - core API introduction
+Problem Statement --> Get Daily revenue by product considering completed and closed orders.
+                  --> Data needs to be sorted ascending order by date and descending order by revenue computed for each product for each day.
+                                    
+Video 59 --> Intro to Spark 
+  --> Spark is distributed computing framework
+  --> bunch of APIs to process data
+  --> Higher level modul such as DataFrame/SQL, Streaming, MLLib, and more
+  --> Well integrated with Python, scala, Java, etc
+  --> Spark uses HDFS APIs to deal with file syatems
+  --> spark can run against any distributed or cloud based file system, like HDFS, S3, or Azure Blob
+
+Video 60 --> We are going to use Spark 1.6
+  spark 1.6.0 and spark 2.x.x has major difference be carefull while you use them
+
+video 61 --> 
+  command to launch spark shell -->
+    --> spark-shell --master yarn --conf spark.ui.port=12675
+    --> sc and sqlContext are the implicit variables that gets launched when you launch spark shell
+      --> sc and sqlContext are nothing but webservices, there would be a port assoiciated with it, thats why we define port number while launch spark shell in multi-host cluster. Every host will get its own port number
+    --> spark-shell = scala + spark dependecies + implicit variables sc and sqlContext
+
+spark 1.6 documentation --> https://spark.apache.org/docs/1.6.0/programming-guide.html#transformations
+
+    --> below are few important conf aurguments for launching spark shell
+    --> "--num-executor" --> (default 2) number of executor to launch for process. which mean this number of JVM will run in env.
+    --> "--executor-memory" --> memory per executor (eg. 1000M, 2G) (default 1G)
+    
+    conf file details and location -->
+      /etc/spark/conf/spark-default.conf
+      /etc/spark/conf/spark-env.sh
+   
+   you can have only one spark context (sc) running at any given time.
+   command to stop currently running sparkContext -->
+              sc.stop
+    to initialize or start a new sparkContext now --> //initialize programmatically
+       import.org.apache.spark.{sparkConf, sparkContext}
+       val conf = new sparkConf().setAppName("Daily Revenue").master("yarn-client")
+       val sc = new sparkContext(conf)
+       
+       
