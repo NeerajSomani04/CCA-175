@@ -387,12 +387,13 @@ video 59 --> command to initiate the spark-shell
 
 video 60 --> Spark RDD (Resilient Distributed Dataset) -- imp to understand RDD
        RDD --> extension of list dataset. It is in-memory and distributed dataset.
+       Resilient --> fault - taulrant
        
        //Validating files from HDFS file system
        hadoop fs -ls /user/dkothari/retail_db/orders
        
        //For simple dataset like list we use index to fetch the data at any specific location. for example, 
-              val l = (1 to 100).toList ---> this is a command to create list in scala
+              val l = (1 to 100).toList ---> this is a command to create list (collection) in scala
               l(5) --> in this way we can fetch record at any specific location in list.
               
               Question:- 
@@ -407,8 +408,7 @@ video 60 --> Spark RDD (Resilient Distributed Dataset) -- imp to understand RDD
         Question:-
               how to get range of values in scala RDD. 
               How to fetch last record in the RDD, if I don't know size. or How to get size of RDD.
-       
-       
+              Answer:- you can use RDDname.count to get total number of records and then read only that specific record.
                      
        //Read data from local file system
        val productsRaw = scala.io.Source.fromFile("/data/retail_db/products/part-00000").getLines.toList 
@@ -425,18 +425,24 @@ Lazy Evaluation --> spark will do lazy evaluation and create DAG till the progra
 
 its not good practice to use foreach function on RDD directly. foreach function should be used on scala collection like Array or list.
 
+RddName.collect() --> this API is used to get all the element of dataset. But thos API should be avoided. As it can create memory issues.
+ --> foreach() API needs to be used on Array scala collection and not on RDD directly
+
 video 62 --> Reading different file format
 
-       In spark, sparkContext doesn't have any functions to read data directly from different file formats. Hence, we need to use sqlContext API and sqlContext provide various functions to read data from different file format. Although, sqlContext also doesn't support avro file format.
+       In spark, sparkContext doesn't have any functions to read data directly from different file formats. Hence, we need to use sqlContext API and sqlContext provide various functions to read data from different file format. 
+       Although, sqlContext also doesn't support avro file format directly, but we can include some configuration inorder to read avro file using sqlContext. We will see this later.
        
        //command to read data from different file format
        sqlContext.read.json 
        sqlContext.read.parquet
        sqlContext.read.orc
        
-       sqlContext.read and sqlContext.load --> both of these commands create spark Data Frame.
+       sqlContext.read and sqlContext.load --> both of these commands used to create spark Data Frame.
        
        // Difference between RDD and Dataframe is, RDD is just distributed dataset, while Dataframe is structured distributed dataset.                     Dataframe is strctured more like a database table.
+              Hence, DataFrame = RDD + structured like table
+              
        val ordersDF = sqlContext.read.json("/user/dkothari/retail_db_json/orders")
        
        //command to preview the data
@@ -476,7 +482,7 @@ video 64 --> spark transformations -- String manipulations
 
 video 65 --> Spark -- Row level transformations (map function)
         // few frequently used API for this:
-              map, flatMap, mapPartitions, mapPartitionsWithIndex
+              map, flatMap, mapPartitions, mapPartitionsWithIndex, filter
         
      Exercise:- Extract date from orders data (which is in "1,2013-07-25 00:00:00.0,11599,CLOSED" format) and convert "2013-07-25 00:00:00.0" date into 20130725 as Int format.
      Solution:- //commands below
@@ -489,6 +495,9 @@ video 65 --> Spark -- Row level transformations (map function)
                })
               
         val orderItems = sc.textFile("/user/dkothari/retail_db/order_items")
+        
+        // below command is used to create RDD as key-value pair, so that we can use that for join. As join use key to join two RDD.
+        
         val orderItemsPairRDD = orderItems.map ( orderItem => {
               (orderItem.split(",")(1).toInt, orderItem)
               })
@@ -498,13 +507,13 @@ video 66 --> Spark -- Row level transformations (flatMap function)
        val l = List("Hello", "How are you doing", "let us perform word count", "As part of the word count problem", "we will see how many times each word repeat")
        val l_rdd = sc.parallelize(l)
        //Below command will split each record of RDD and then again split each record with " " (space char)) //
-       val l_flatMap = l_rdd.flatMap( ele => ele.split(" ")) //this command run on each input item and split them into one or more
+       val l_flatMap = l_rdd.flatMap( ele => ele.split(" ")) //this command run on each input item and split them into one or more. This command will convert each item of type String to String only.
        val word_count = l_flatMap.map( word => (word,1)).countByKey
        
        //try to run below command to understand the diffenece between map and flatMap
-       val l_map = l_rdd.map( ele => ele.split(" ")) //this command run on each input item and create each output
+       val l_map = l_rdd.map( ele => ele.split(" ")) //this command run on each input item and create each output but in the form of "Array" and not in type of "String" which was the case in flatMap API. We need to apply some API to convert that Array to List and then read them.
        
-video 67 -- spark -- filter function
+video 67 -- spark -- filter function (it will pass the record which satisfy the condition and not otherwise)
        // row level filtering:
        val orderFiltered = orders.filter(order => order.split(",")(3) == "COMPLETE")
        orderFiltered.count // this command is used to get the count of records in RDD
@@ -520,10 +529,14 @@ video 67 -- spark -- filter function
        orders.map(order => order.split(",")(3)).distinct
        
 video 68 -- spark -- join function
-       // join also support leftOuterJoin , rightOuterJoin, fullOuterJoin
-       // joining orders and order_items data
+       // When called on datasets of type (K, V) and (K, W), returns a dataset of (K, (V, W)) pairs with all pairs of elements for each key. Outer joins are supported through leftOuterJoin, rightOuterJoin, and fullOuterJoin.
+       
+       // joining orders and order_items data example below
+       
        val orders = sc.textFile("/user/dkothari/retail_db/orders")
        val orderItems = sc.textFile("/user/dkothari/retail_db/order_items")
+       
+       // making order and orderItem in the form of (Key, value) pair. Where both should contain same key in-order to join.
        val ordersMap = orders.map(order => { 
               (order.split(",")(0).toInt, order.split(",")(1).substring(0,10))
               })
@@ -545,11 +558,12 @@ video 69 -- spark -- join // outerJoin
        val orderItemsMap = orderItems.map( orderItem => {
               (orderItem.split(",")(1).toInt, orderItem)
               })
-       val ordersLeftOuterJoin = ordersMap.leftOuterJoin(orderItemsMap)
-       val ordersLeftOuterJoinFilter = ordersLeftOuterJoin.filter( oi => oi._2._2 == None)
-       val ordersWithNoOrderItems = ordersLeftOuterJoinFilter.map( o => o._2._1)
+   val ordersLeftOuterJoin = ordersMap.leftOuterJoin(orderItemsMap)
+   val ordersLeftOuterJoinFilter = ordersLeftOuterJoin.filter( oi => oi._2._2 == None) // "None" is special type value in scala for "NULL"
+   val ordersWithNoOrderItems = ordersLeftOuterJoinFilter.map( o => o._2._1)
   
-video 71 -- spark -- Aggregations -- using Actions APIs
+video 71 -- spark -- Aggregations -- using Actions APIs 
+       (aggregation is nothiing but perform some data operation like, sum, max, min, etc)
       
        Exercise statment:- get the count of orders by order status 
        val orders = sc.textFile("/user/dkothari/retail_db/orders")
@@ -561,6 +575,11 @@ video 71 -- spark -- Aggregations -- using Actions APIs
        val orderItems = sc.textFile("/user/dkothari/retail_db/order_items")
        val orderItemsRevenue = orderItems.map( oi => oi.split(",")(4).toFloat)
        val orderItemsRevenueTotal = orderItemsRevenue.reduce((total, revenue) => total+revenue)
+       
+       // to get the max revenue among all orders
+       val orderItemsMaxRevenue = orderItemsRevenue.reduce((max, revenue) => 
+       { if (max < revenue) revenue else max
+       })
        
 video 72 -- spark -- Aggregations -- combiner
       // differenece between groupByKey, reduceByKey, aggregateByKey APIs
