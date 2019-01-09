@@ -1,0 +1,5 @@
+to launch jupyter notebook on itversiy labs --> hostname:8000 then a window will prompt for username and password.
+
+http://gw03.itversity.com:8000
+
+then create folder and enjoy jupyter functionalities.
