@@ -97,3 +97,11 @@ Difference between managed and external table
 -- External table's metadata is maintained in Hive. When it is dropped, only metadata is deleted, the source data still remains.
 */
 
+Hive important table terms:
+
+partition by --> 
+Sort by --> sort the rows before feeding to the reducer.
+Distribute by --> to distribute the rows among reducers. It ensures each of N reducers gets non-overlapping ranges of column. 
+Cluster by --> It ensures sorting orders of values present in multiple reducers
+order by
+group by
