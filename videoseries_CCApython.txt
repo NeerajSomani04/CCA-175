@@ -1,0 +1,10 @@
+video series link
+
+https://www.youtube.com/watch?v=ScsRa6kyomY&index=16&list=PLf0swTFhTI8rT3ApjBqt338MCO0ZvReFt
+
+video 01 Python Fundamentals - Introduction (for Spark)
+
+python doesn't compile code but its an interprer based programming language. 
+REPL --> READ, EVALUATE, PRINT and LOOP
+
+video 02 - Python basic programming constructs
