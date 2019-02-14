@@ -161,7 +161,80 @@ orderItems.first()
 to view top 10 records of RDD --> 
 for i in orderItems.take(10): print(i)
 
-07 Apache Spark Core APIs - Create RDD using parallelize
+07 Apache Spark Core APIs - Create RDD using parallelize function
+
+read data from local file system:
+
+ProductsRaw = open("/data/retail_db/products/part-00000").read().splitlines()
+
+above command will give us list object
+
+Below command will be used to create RDD from above created list:
+
+ProductsRDD = sc.parallelize(ProductsRaw)
+productsRDD.first() --> this command is used to fetch first record from RDD
+
+08 Apache Spark Core APIs - Read data from different file formats
+
+Data Frames -- (Distributed collection with structure)
+API provided by SqlContext
+supported file formats -- avro, json, parquet, orc
+previewing the data --> show
+
+ In spark, sparkContext doesn't have any functions to read data directly from different file formats. Hence, we need to use sqlContext API and sqlContext provide various functions to read data from different file format. 
+       Although, sqlContext also doesn't support avro file format directly, but we can include some configuration inorder to read avro file using sqlContext. We will see this later.
+       
+       //command to read data from different file format
+       sqlContext.read.json 
+       sqlContext.read.parquet
+       sqlContext.read.orc
+       
+       
+       sqlContext.read and sqlContext.load --> both of these commands used to create spark Data Frame.
+       
+       // Difference between RDD and Dataframe is, RDD is just distributed dataset, while Dataframe is structured distributed dataset.                     Dataframe is strctured more like a database table.
+              Hence, DataFrame = RDD + structured like table
+       
+       load and json are two ways to read data from hdfs and create Data frames
+       
+       ordersDF_read = sqlContext.read.json("/user/dkothari/retail_db_json/orders")
+       ordersDF_read.show() --> this command can be used to preview the data
+       
+       ordersDF_load = sqlContext.load("/user/dkothari/retail_db_json/orders", "json")
+       ordersDF_load.show() -->
+       
+ video 09 Apache Spark Core APIs - Row level transformations - String manipulation
+ video 10 Apache Spark Core APIs - Row level transformations - using map
+ 
+ again lets understand how this can be done in RDD
+ 
+ orders = sc.textFile("/user/dkothari/retail_db/orders") --> this will create RDD
+ 
+ below command can be used to perform some string operations on RDD
+ for example, get the order_date from RDD and convert them into YYYYMMDD format
+ 
+ OrdersMapDate = orders.map(lambda rec: int(rec.split(",")[1].split(" ")[0].replace("-","")))
+ 
+ 19 Spark SQL - Create Data Frame and Register Temp Table
+ 
+ Orders = sc.textFile("/data/retail_db/orders/part-00000")
+ 
+ Below if one way to create dataframe out of RDD
+ 
+ from pyspark.sql import Row
+ OrdersDF = orders.map(lambda rec: Row(order_id=int(rec.split(",")[0]), order_date=rec.split(",")[1])).toDF()
+ 
+ Below if another way to create dataframe out of RDD
+ 
+ OrdersDF = orders.map(lambda rec: Row(int(rec.split(",")[0]), rec.split(",")[1])).toDF(schema=["order_id", "order_date"])
+ 
+ 
+ 
+ 
+       
+       
+       
+
 
 
 
