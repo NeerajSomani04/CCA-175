@@ -152,8 +152,16 @@ pyspark --master yarn --conf spark.ui.port=12654
 
 06 Apache Spark Core APIs - Create RDD from files using textFile
 
+orders = sc.textFile("/user/dkothari/retail_db/orders")
+orderItems = sc.textFile("/user/dkothari/retail_db/order_items")
 
+to view the first record in RDD -->
+orderItems.first()
 
+to view top 10 records of RDD --> 
+for i in orderItems.take(10): print(i)
+
+07 Apache Spark Core APIs - Create RDD using parallelize
 
 
 
