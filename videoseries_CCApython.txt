@@ -7,4 +7,102 @@ video 01 Python Fundamentals - Introduction (for Spark)
 python doesn't compile code but its an interprer based programming language. 
 REPL --> READ, EVALUATE, PRINT and LOOP
 
-video 02 - Python basic programming constructs
+exit() or Ctrl+D is used to come out of python prompt
+ctrl+l --> to clear the screen
+
+video 02 - Python basic programming constructs (decalring variables, invoking functions)
+how to write function and for loop, while loop was discussed
+
+03 Python Fundamentals - Functions and lambda functions
+
+below is sample function that shows how can we yuse lambda function:
+
+def sum(func, lb, ub):
+  total = 0
+  while(lb <= ub):
+    total += func(lb)
+    lb += 1
+  return total
+
+to use this function now we can run below commands with lambda or even with any other function:
+
+sum(lambda i: i * i, 1, 10) --> this will print the sum of squares
+
+04 Python Fundamentals - Collections (list, set, dictionary, tuple)
+
+list --> mutable, can have duplicate values, also values are in ordered format
+set --> mutable, no duplicate, order of values is not confirmed
+tuple --> immutable, can have duplicate, ordered values
+dictionary --> mutable, key-value pair format, key should be unique across dictionary
+
+help(list) or help(set) , etc commands can be used to get the available list of APIs like append
+
+list123.append('test') --> this command will append 'test' value in list123 list
+list123.pop('test') --> is used to delete 'test' value
+set123.add('test') --> this command will add 'test' value in set123 set
+
+index, count, intersection, union, difference are few other important APIs that we should be aware of.
+
+list = [1,2,3,4,5,6,7,8]
+list[1:4] will print --> [2, 3, 4]
+list[-1] will print --> [8]
+
+dictionary --> key - value pair form
+dict = {'1':'value1', '2':'value2'}
+
+dict.keys() -->  this command will only return key of dictionary collection
+dict.values() --> will return only values
+dict.items() --> will return key-value pair in the form of tuple
+
+has_key, get are few other API functions that can be used with dictionary
+
+05 Python Fundamentals - Map, filter and Reduce APIs 
+map --> this API is used to perform the trasformation on each element of each row
+filter --> this API is used to perform any filteration of data set
+reduce --> this API is used to perform the aggregation activity on dataset
+
+below is one example for these API:
+l = list(range(1,100)) --> this will create a list of element from 1 to 99
+
+f = list(filter(lambda i: i%2 ==0, l)) --> using this f list will contain only even elements, means from 2 to 98 even numbers
+m = list(map(lambda i: i * i, f)) --> will return list of square of each element
+from functools import reduce
+r = reduce(lambda total, element: total + element, m)
+
+06 Scala or Python - Setup Data Set for basic I/O operations 
+this video is to download dataset from github 
+
+on lab all data-sets are available at path -- /data/retail_db
+
+07 Python Fundamentals - IO Operations and processing data from files
+
+to navigate to directory --> cd /data/retail_db/order_items
+
+tail part-00000 ---> this command is used to see few records of file
+
+below command to open the file and read records of the file in python shell -->
+
+OrderItemsFile = open("/data/retail_db/order_items/part-00000", "r") --> this will return file object
+OrderItemsRead = OrderItemsFile.read() --> this will return a str (string object)
+OrderItems = OrderItemsRead.splitlines() --> this will return list object and we can perform all list operations
+len(OrderItems] --> this will provide me number of records in file
+OrderItems[-10:-1] --> this will return last 10 records from the list
+
+Now we can perform any list operations on this. for example, map, reduce, filter
+
+OrderItemsFilter = list(filter(lambda rec: int(rec.split(",")[1]) == 68880, OrderItems))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
