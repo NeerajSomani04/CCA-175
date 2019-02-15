@@ -10,3 +10,11 @@ df.show()
 sqlContext.setConf(“spark.sql.avro.compression.codec”,“snappy”)
 sqlContext.setConf(“spark.sql.parquet.compression.codec”,“gzip”) (or snappy)
 sqlContext.setConf(“spark.sql.xxxxx.compression.codec”,“uncompressed”) --> very important to know how to reset. if not you can open new spark shell for every problem to be on the safer side so that you dont mix up compression/no compression
+
+someDF.registerTempTable(“temptablename”)
+sqlContext.sql(“select * from temptablename”).show
+var someDF=sqlContext.sql(“select * from temptablename”)
+someDF.write.avro / someDF.write.parquet
+someDF.saveAsTable(“hivetablename”)
+
+someDF=sqlContext.sql(“select xxxxxx dbname.tablename”)
