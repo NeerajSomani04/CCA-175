@@ -217,19 +217,23 @@ previewing the data --> show
  
  19 Spark SQL - Create Data Frame and Register Temp Table
  
- Orders = sc.textFile("/data/retail_db/orders/part-00000")
+ Orders = sc.textFile("/user/dkothari/retail_db/orders/part-00000")
  
  Below if one way to create dataframe out of RDD
  
  from pyspark.sql import Row
- OrdersDF = orders.map(lambda rec: Row(order_id=int(rec.split(",")[0]), order_date=rec.split(",")[1])).toDF()
+ OrdersDF = Orders.map(lambda rec: Row(order_id=int(rec.split(",")[0]), order_date=rec.split(",")[1])).toDF()
  
  Below if another way to create dataframe out of RDD
  
  OrdersDF = orders.map(lambda rec: Row(int(rec.split(",")[0]), rec.split(",")[1])).toDF(schema=["order_id", "order_date"])
  
+ Below command is used to register the Data Frame as temp table:
  
+ OrdersDF.registerTempTable("OrdersDF_table")
  
+ Below command is used to view records from this table.
+ sqlContext.sql("select * from OrdersDF_table").show(truncate=False)
  
        
        
