@@ -235,6 +235,24 @@ previewing the data --> show
  Below command is used to view records from this table.
  sqlContext.sql("select * from OrdersDF_table").show(truncate=False)
  
+ 20 Spark SQL - Write Spark SQL Application for data processing
+ 
+ Now we can use SQL queries to join tables and generate results
+ Below command will create only 2 partition while processing the data
+ sqlContext.setConf("spark.sql.shuffle.partitions","2")
+ 
+ 21 Spark SQL - Write Spark SQL Application - save output to Hive
+ 
+ Once you have DB and table created in Hive as per needed specifications, then you can use various DF commands to write data to Hive tables.
+ 
+ for example,:
+ daily_revenue_per_products_df.insertInto("HiveDBName.HiveTableName")
+ 
+ 22 Spark SQL - Data Frame Operations
+ 
+ 
+ 
+ 
        
        
        
