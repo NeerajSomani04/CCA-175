@@ -1,0 +1,12 @@
+Below command used to launch pyspark shell in Cloudera or itevrsity lab
+
+pyspark --master yarn --packages com.databricks:spark-avro_2.10:2.0.1 --conf spark.ui.port=12891
+
+below code to read avro file in a data frame
+
+df = sqlContext.read.format(“com.databricks.spark.avro”).load(“hdfs_file.avro”)
+df.show()
+
+sqlContext.setConf(“spark.sql.avro.compression.codec”,“snappy”)
+sqlContext.setConf(“spark.sql.parquet.compression.codec”,“gzip”) (or snappy)
+sqlContext.setConf(“spark.sql.xxxxx.compression.codec”,“uncompressed”) --> very important to know how to reset. if not you can open new spark shell for every problem to be on the safer side so that you dont mix up compression/no compression
