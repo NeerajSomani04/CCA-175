@@ -1,0 +1,107 @@
+Few examples from DurgaSir videos ---
+
+#list databases from source db
+sqoop list-databases \
+--connect jdbc:mysql://quickstart.cloudera:3306 \
+--username retail_dba \
+--password cloudera
+
+#run select count on source db
+sqoop eval \
+--connect jdbc:mysql://quickstart.cloudera:3306/retail_db \
+--username retail_dba \
+--password cloudera \
+--query "SELECT COUNT(*) FROM orders"
+
+#fetch order_items records using --warehouse-dir option
+
+sqoop import --connect jdbc:mysql://ms.itversity.com:3306/retail_db --username retail_user --password itversity \
+--table order_items \
+--warehouse-dir /user/dkothari/16Feb2019_CCA/sqoop_practice
+
+hdfs dfs -tail /user/dkothari/16Feb2019_CCA/sqoop_practice/order_items/part-m-00000
+
+#fetch order_items records using --target-dir option (this oprtion create the needed target directory)
+
+sqoop import --connect jdbc:mysql://ms.itversity.com:3306/retail_db --username retail_user --password itversity \
+--table order_items \
+--target-dir /user/dkothari/16Feb2019_CCA/sqoop_practice/order_items_2
+
+#delete existing target dir and overwrite
+sqoop import \
+--connect jdbc:mysql://quickstart.cloudera:3306/retail_db \
+--username retail_dba \
+--password cloudera \
+--table order_items \
+--warehouse-dir /user/cloudera/sqoop_demos/tables \
+--delete-target-dir
+
+#import table with no PK (must use -m 1 or --split-by)
+
+sqoop import \
+--connect jdbc:mysql://quickstart.cloudera:3306/retail_db \
+--username retail_dba \
+--password cloudera \
+--table order_items_nopk \
+--num-mappers 1 \
+--warehouse-dir /user/cloudera/sqoop_demos/tables
+
+sqoop import \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+--username retail_user \
+--password itversity \
+--query "select * from order_items_nopk where order_item_product_price between 100 and 200 and \$CONDITIONS order by order_item_product_price limit 7" \
+--delete-target-dir \
+-m 1 \
+--target-dir /user/dkothari/16Feb2019_CCA/sqoop_practice/order_items_nopk_where
+
+***--TABLE + --COLUMNS OR --QUERY***
+sqoop import \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+--username retail_user \
+--password itversity \
+--table order_items \
+--columns order_item_id,order_item_product_id,order_item_product_price \
+--where 'order_item_product_price between 100 and 200' \
+--target-dir /user/dkothari/16Feb2019_CCA/sqoop_practice/order_items_where_argument
+
+
+
+#specifying file formats: 
+text (default) - text format --> 
+sequence - binary file format --> --as-sequencefile
+avro - binary json format --> --as-avrodatafile
+parquet - binary columnar format --> --as-parquetfile
+
+#specifying compression:
+# cd /etc/hadoop/conf
+# vim core-site.xml or vim hdfs-site.xml
+
+    gzip - org.apache.hadoop.io.compress.GzipCodec
+    bzip2 - org.apache.hadoop.io.compress.BZip2Codec
+    LZO - com.hadoop.compression.lzo.LzopCodec
+    Snappy - org.apache.hadoop.io.compress.SnappyCodec
+    Deflate - org.apache.hadoop.io.compress.DeflateCodec
+
+--boundary-query aurgument is used for creating split while importing data.
+
+#sqoop boundary query import
+sqoop import \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+--username retail_user \
+--password itversity \
+--table order_items \
+--target-dir /user/dkothari/16Feb2019_CCA/sqoop_practice/order_items_boundary \
+--boundary-query 'select min(order_item_id), max(order_item_id) from order_items where order_item_id > 99999'    
+
+#import sqoop all tables from source schema to hdfs
+sqoop import-all-tables \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+--username retail_user \
+--password itversity \
+--warehouse-dir /user/dkothari/16Feb2019_CCA/sqoop_practice/retail_db \
+--autoreset-to-one-mapper 
+
+
+#sqoop export hive table to RDBMS
+
