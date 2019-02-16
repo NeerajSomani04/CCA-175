@@ -251,8 +251,13 @@ previewing the data --> show
  22 Spark SQL - Data Frame Operations
  
  
- 
- 
+----------------------------------------------
+
+http://discuss.itversity.com/t/failed-cca175-on-15-sep-2018-this-is-why/14941/4
+
+Let’s say your DF has 3 columns (cust_id, cust_fname, cust_lname) and we are asked to use | as the delimiter then as can do as follows.
+
+df.as(“c”).selectExpr(“concat_ws(’|’, c.*) as result”).write.text(“folder_path”)
        
        
        
