@@ -33,4 +33,9 @@ val productsRDD = sc.textFile("/user/dkothari/16Feb2019_CCA/arun_problems/attemp
 productsRDD.take(10).foreach(println)
 
 
-val filteredRDD = productsRDD.map(x => {var d = x.split('|');   (d(0).toInt, d(1).toString, d(4).toFloat)}).filter(x => (x._3 < 100.00))
+val filteredRDD = productsRDD.map(x => {var d = x.split('|');   (d(0).toInt, d(1).toInt, d(4).toFloat)}).filter(x => (x._3 < 100.00))
+val filteredDF = filteredRDD.toDF("product_id", "product_category_id", "product_price")
+
+filteredDF.registerTempTable("productsTemp")
+
+sqlContext.sql()
