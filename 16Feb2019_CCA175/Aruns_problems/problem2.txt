@@ -1,0 +1,36 @@
+problem 2 -->
+
+1.
+sqoop import \
+--connect jdbc:mysql://ms.itversity.com/retail_db \
+--username retail_user \
+--password itversity \
+--table products \
+--target-dir /user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem2/products \
+--fields-terminated-by '|' \
+--as-textfile \
+--num-mappers 4 
+
+hdfs dfs -tail /user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem2/products/part-m-00000
+
+2.
+hdfs dfs -mkdir /user/dkothari/16Feb2019_CCA/arun_problems/attempt1/products 
+
+hdfs dfs -cp /user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem2/products/* /user/dkothari/16Feb2019_CCA/arun_problems/attempt1/products
+
+3. (remember to provide proper permission if you are moving the files in exam) 
+hdfs dfs -chmod 755 /user/dkothari/16Feb2019_CCA/arun_problems/attempt1/products/*
+
+4. 
+
+product_price < 100
+for each product_category --> higest value in the product_price
+for each product_category --> average value in the product_price
+for each product_category --> min value in the product_price
+total_products --> count of distinct product_id
+
+val productsRDD = sc.textFile("/user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem2/products")
+productsRDD.take(10).foreach(println)
+
+
+val filteredRDD = productsRDD.map(x => {var d = x.split('|');   (d(0).toInt, d(1).toString, d(4).toFloat)}).filter(x => (x._3 < 100.00))
