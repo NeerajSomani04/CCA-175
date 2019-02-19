@@ -27,6 +27,8 @@ Note for above commands:- Snappy compressed avro files will not have â€œsnappyâ€
 launch spark shell using below command 
 
 spark-shell --master yarn --conf spark.ui.port=12666 --packages com.databricks:spark-avro_2.10:2.0.1
+
+
 import com.databricks.spark.avro._
 sqlContext.setConf("spark.sql.avro.compression.codec","snappy")
 
@@ -38,7 +40,7 @@ pyspark --master yarn --conf spark.ui.port=12765 --packages com.databricks:spark
 val ordersDF = sqlContext.read.avro("/user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem1/orders")
 val orderItemsDF = sqlContext.read.avro("/user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem1/order-items")
 
-4. 
+4. a
 val joinedDF = ordersDF.join(orderItemsDF, $"order_id" === $"order_item_order_id")
 val selectDF = joinedDF.withColumn("order_date", to_date(from_unixtime($"order_date"/1000))).select("order_id", "order_date", "order_status", "order_item_subtotal")
 
@@ -46,6 +48,23 @@ import org.apache.spark.sql.functions._ // this command is required only if it i
 
 val aggDF = selectDF.groupBy("order_date", "order_status").agg(countDistinct("order_id").alias("total_orders"), round(sum("order_item_subtotal"),2).alias("total_amount"))
 
-val finalDF = aggDF.sort($"order_date".desc, $"order_status", $"total_amount".desc, $"total_orders")
+val DataFrameResultDF = aggDF.sort($"order_date".desc, $"order_status", $"total_amount".desc, $"total_orders")
 
+4. b 
+ordersDF.registerTempTable("ordersTemp")
+orderItemsDF.registerTempTable("OrderItemsTemp")
 
+val SqlResultDF = sqlContext.sql("""select cast(from_unixtime(order_date/1000) as date) as order_date, order_status, count(distinct order_id) as total_orders, sum(order_item_subtotal) as total_amount from ordersTemp join OrderItemsTemp on ordersTemp.order_id = orderItemsTemp.order_item_order_id group by cast(from_unixtime(order_date/1000) as date), order_status order by order_date desc, order_status, total_amount desc, total_orders""")
+
+4. c
+Not able to perform this in RDD yet
+
+5.
+sqlContext.setConf("spark.sql.parquet.compression.codec","gzip")
+DataFrameResultDF.write.parquet("/user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem1/result4a-gzip")
+SqlResultDF.write.parquet("/user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem1/result4b-gzip")
+
+6. 
+sqlContext.setConf("spark.sql.parquet.compression.codec","snappy")
+DataFrameResultDF.write.parquet("/user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem1/result4a-snappy")
+SqlResultDF.write.parquet("/user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem1/result4b-snappy")
