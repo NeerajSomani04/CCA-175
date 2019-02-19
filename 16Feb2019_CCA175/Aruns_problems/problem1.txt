@@ -68,3 +68,42 @@ SqlResultDF.write.parquet("/user/dkothari/16Feb2019_CCA/arun_problems/attempt1/p
 sqlContext.setConf("spark.sql.parquet.compression.codec","snappy")
 DataFrameResultDF.write.parquet("/user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem1/result4a-snappy")
 SqlResultDF.write.parquet("/user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem1/result4b-snappy")
+
+7. 
+DataFrameResultDF.map(x => x(0) + "," + x(1) + "," + x(2) + "," + x(3)).saveAsTextFile("/user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem1/result4a-csv")
+
+SqlResultDF.map(x => x(0) + "," + x(1) + "," + x(2) + "," + x(3)).saveAsTextFile("/user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem1/result4b-csv")
+
+Notes -->
+below is one example, how we can implement compression logic on RDD -->
+sc.saveAsTextFile(path, classOf(org.apache.hadoop.io.compress.SnappyCodec"))
+
+8.
+mysql -u retail_user -h ms.itversity.com -p
+password: itversity
+
+use retail_export; // this command is used to connect to correct DB
+
+create table dkothari_result_arunproblem1(order_date varchar(255) not null, order_status varchar(1000) not null, total_orders int, total_amount decimal(10,2), constraint pk_order_result primary key (order_date,order_status));
+
+sqoop eval \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_export \
+--username retail_user \
+--password itversity \
+--query "describe dkothari_result_arunproblem1"
+
+sqoop export \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_export \
+--username retail_user \
+--password itversity \
+--table dkothari_result_arunproblem1 \
+--export-dir /user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem1/result4a-csv \
+--input-fields-terminated-by ','
+
+to verify the count from hdfs files -->
+hdfs dfs -cat /user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem1/result4a-csv/* | wc -l
+
+to verify the count from Dataframe -->
+DataFrameResultDF.count
+
+
