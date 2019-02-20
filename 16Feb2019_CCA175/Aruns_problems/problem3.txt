@@ -24,6 +24,13 @@ select * from orders_sqoop as X where X.order_date in (select temp1.order_date f
 4. same SQL as above
 
 5. 
-create external table orders_avro(order_id int, order_date timestamp, order_customer_id int, order_status string) stored as avro partitioned by ( cast(from_unixtime(order_date/1000) as date)
+create external table orders_avro(order_id int, order_date date, order_customer_id int, order_status string) partitioned by (order_month string) stored as avro;
+
+Insert overwrite table orders_avro partition (order_month) select order_id, to_date(from_unixtime(cast(order_date/1000 as int))) as order_date, order_customer_id, order_status, substr(to_date(from_unixtime(cast(order_date/1000 as int))), 1, 7) as order_month from orders_sqoop;
+
+select order_id, to_date(from_unixtime(cast(order_date/1000 as int))), order_customer_id, order_status, substr(from_unixtime(cast(order_date/1000 as int)),1,7) as order_month from default.orders_sqoop;
+
+select cast(order_date/1000 as int) from orders_sqoop limit 5;
 
 
+select order_id, cast(from_unixtime(order_date/1000) as date) as order_date, order_customer_id, order_status, substr(cast(from_unixtime(order_date/1000) as date), 1, 7) as order_month from orders_sqoop;
