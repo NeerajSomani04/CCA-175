@@ -38,4 +38,17 @@ val filteredDF = filteredRDD.toDF("product_id", "product_category_id", "product_
 
 filteredDF.registerTempTable("productsTemp")
 
-sqlContext.sql()
+val DataFrameResultDF = filteredDF.groupBy($"product_category_id").agg(max("product_price").alias("high_product_price"), countDistinct("product_id").alias("total_products"), round(avg("product_price"),2).alias("avg_product_price"), min("product_price").alias("min_product_price")).sort("product_category_id")
+
+DataFrameResultDF.show
+
+val sqlresultDF = sqlContext.sql("""select product_category_id, count(distinct product_id) as total_products, max(product_price) as high_product_price, cast(avg(product_price) as decimal(10,2)) as avg_product_price, min(product_price) as min_product_price from productsTemp group by product_category_id order by product_category_id""")
+
+Not able to perform this activity by RDD
+
+5.
+import com.databricks.spark.avro._
+sqlContext.setConf("spark.sql.avro.compression.codec","snappy")
+
+DataFrameResultDF.write.avro("/user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem2/products/result-df")
+sqlresultDF.write.avro("/user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem2/products/result-sql")
