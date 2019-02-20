@@ -1,0 +1,41 @@
+problem 5
+
+prerequsites -->
+create table dkothari_arunproblem5_products_replica as select * from products;
+
+Alter table dkothari_arunproblem5_products_replica add primary key (product_id);
+
+Alter table dkothari_arunproblem5_products_replica add column (product_grade int, product_sentiment varchar(100));
+
+update dkothari_arunproblem5_products_replica set product_grade = 1  where product_price > 500;
+update dkothari_arunproblem5_products_replica set product_sentiment  = 'WEAK'  where product_price between 300 and  500;
+
+1.
+sqoop import \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_export \
+--username retail_user \
+--password itversity \
+--table dkothari_arunproblem5_products_replica \
+--target-dir /user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem5/products-replica-text \
+--where product_id between 1 and 1000 \
+--fields-terminated-by '|' \
+--null-string "NOT-AVAILABLE" \
+--null-non-string "-1" \
+--num-mappers 3 \
+--autoreset-to-one-mapper 
+
+another approach -->
+sqoop import \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_export \
+--username retail_user \
+--password itversity \
+--target-dir /user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem5/products-replica-text \
+--query "select * from dkothari_arunproblem5_products_replica where product_id between 1 and 1000 and \$CONDITIONS" \
+--split-by product_id \
+--fields-terminated-by '|' \
+--null-string "NOT-AVAILABLE" \
+--null-non-string "-1" \
+--num-mappers 3  
+
+
+
