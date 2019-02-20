@@ -13,4 +13,17 @@ sqoop import-all-tables \
 --warehouse-dir /user/hive/warehouse/dkothari_arunproblem3_retail_stage.db 
 
 2.
-create external table orders_sqoop(order_id int, order_date timestamp, order_customer_id int, order_status string) row format delimited fields terminated by stored as avrodatafile location '/user/hive/warehouse/dkothari_arunproblem3_retail_stage.db/orders';
+create database dkothari_arunproblem3_retail_stage;
+use dkothari_arunproblem3_retail_stage;
+
+create external table orders_sqoop(order_id int, order_date timestamp, order_customer_id int, order_status string) stored as avro location '/user/hive/warehouse/dkothari_arunproblem3_retail_stage.db/orders' tblproperties('avro.schema.url'='/user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem3/orders.avsc');
+
+3. 
+select * from orders_sqoop as X where X.order_date in (select temp1.order_date from (select Y.order_date, count(1) as order_count from orders_sqoop Y group by Y.order_date order by order_count desc limit 1) as temp1);
+
+4. same SQL as above
+
+5. 
+create external table orders_avro(order_id int, order_date timestamp, order_customer_id int, order_status string) stored as avro partitioned by ( cast(from_unixtime(order_date/1000) as date)
+
+
