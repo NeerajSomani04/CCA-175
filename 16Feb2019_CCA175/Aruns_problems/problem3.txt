@@ -1,0 +1,16 @@
+problem3 -->
+
+1. 
+sqoop import-all-tables \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+--username retail_user \
+--password itversity \
+--num-mappers 4 \
+--autoreset-to-one-mapper \
+--as-avrodatafile \
+--compress \
+--compression-codec 'org.apache.hadoop.io.compress.SnappyCodec' \
+--warehouse-dir /user/hive/warehouse/dkothari_arunproblem3_retail_stage.db 
+
+2.
+create external table orders_sqoop(order_id int, order_date timestamp, order_customer_id int, order_status string) row format delimited fields terminated by stored as avrodatafile location '/user/hive/warehouse/dkothari_arunproblem3_retail_stage.db/orders';
