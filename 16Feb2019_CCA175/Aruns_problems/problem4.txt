@@ -1,0 +1,78 @@
+problem4 -->
+
+1.
+sqoop import \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+--username retail_user \
+--password itversity \
+--table orders \
+--target-dir /user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem4/text \
+--num-mappers 4 \
+--autoreset-to-one-mapper \
+--as-textfile \
+--fields-terminated-by '\t'
+
+2.
+sqoop import \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+--username retail_user \
+--password itversity \
+--table orders \
+--target-dir /user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem4/avro \
+--num-mappers 4 \
+--autoreset-to-one-mapper \
+--as-avrodatafile
+
+3. 
+sqoop import \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+--username retail_user \
+--password itversity \
+--table orders \
+--target-dir /user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem4/parquet \
+--num-mappers 4 \
+--autoreset-to-one-mapper \
+--as-parquetfile
+
+hdfs dfs -tail /user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem4/parquet/2821ae11-826c-423b-843d-5f7394e2d718.parquet
+
+4. 
+val firstDF = sqlContext.read.avro("/user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem4/avro")
+sqlContext.setConf("spark.sql.parquet.compression.codec","snappy")
+firstDF.write.parquet("/user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem4/parquet-snappy-compress")
+
+firstDF.map(x => x(0) + "," + x(1) + "," + x(2) + "," + x(3)).saveAsTextFile("/user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem4/text-gzip-compress", classOf[org.apache.hadoop.io.compress.GzipCodec])
+
+firstDF.map(x => x(0) + "," + x(1) + "," + x(2) + "," + x(3)).saveAsTextFile("/user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem4/text-snappy-compress", classOf[org.apache.hadoop.io.compress.SnappyCodec])
+
+5.
+val tempDF = sqlContext.read.parquet("/user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem4/parquet-snappy-compress")
+
+sqlContext.setConf("spark.sql.parquet.compression.codec","uncompressed")
+
+import org.apache.spark.sql.SaveMode
+tempDF.write.mode(SaveMode.Overwrite).parquet("/user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem4/parquet-no-compress")
+
+sqlContext.setConf("spark.sql.avro.compression.codec","snappy")
+tempDF.write.avro("/user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem4/avro-snappy")
+
+6.
+
+val tempDF2 = sqlContext.read.avro("/user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem4/avro-snappy")
+
+sqlContext.setConf("spark.sql.json.compression.codec","uncompressed")
+tempDF2.write.json("/user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem4/json-no-compress")
+
+sqlContext.setConf("spark.sql.json.compression.codec","gzip")
+
+// below command didn't work properly
+
+tempDF2.write.json("/user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem4/json-gzip")
+
+// above command didn't work properly hence used below command
+tempDF2.toJSON.saveAsTextFile("/user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem4/json-gzip2", classOf[org.apache.hadoop.io.compress.GzipCodec])
+
+7.
+val tempDF3 = sqlContext.read.json(
+
+
