@@ -1,0 +1,20 @@
+problem6 -->
+
+1. 
+create database dkothari_arunproblem6;
+
+sqoop import-all-tables \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+--username retail_user \
+--password itversity \
+--autoreset-to-one-mapper \
+--hive-import \
+--hive-database dkothari_arunproblem6 \
+--create-hive-table \
+--hive-overwrite
+
+2.
+spark-shell --master yarn --conf spark.ui.port=12675 --packages com.databricks:spark-avro_2.10:2.0.1
+
+val FirstDF = sqlContext.sql("""select d.department_id, p.product_id, p.product_price, dense_rank() over(partition by d.department_id order by p.product_price) as product_denserank_by_price from dkothari_arunproblem6.departments d join dkothari_arunproblem6.categories c on c.category_department_id = d.department_id join dkothari_arunproblem6.products p on p.product_category_id = c.category_id order by d.department_id, product_rank_by_price desc""")
+
