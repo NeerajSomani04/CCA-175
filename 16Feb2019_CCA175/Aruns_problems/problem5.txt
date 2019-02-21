@@ -16,15 +16,15 @@ sqoop import \
 --username retail_user \
 --password itversity \
 --table dkothari_arunproblem5_products_replica \
---target-dir /user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem5/products-replica-text \
---where product_id between 1 and 1000 \
+--target-dir /user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem5/products-replica-text2 \
+--where "product_id between 1 and 1000" \
 --fields-terminated-by '|' \
 --null-string "NOT-AVAILABLE" \
 --null-non-string "-1" \
---num-mappers 3 \
---autoreset-to-one-mapper 
+--num-mappers 3
 
 another approach -->
+
 sqoop import \
 --connect jdbc:mysql://ms.itversity.com:3306/retail_export \
 --username retail_user \
@@ -37,5 +37,31 @@ sqoop import \
 --null-non-string "-1" \
 --num-mappers 3  
 
+2. 
+sqoop import \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_export \
+--username retail_user \
+--password itversity \
+--table dkothari_arunproblem5_products_replica \
+--target-dir /user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem5/products-replica-text-part1 \
+--fields-terminated-by '*' \
+--null-non-string "-1000" \
+--null-string "NA" \
+--where "product_id <= 1111" \
+--num-mappers 2
 
+3.
+sqoop import \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_export \
+--username retail_user \
+--password itversity \
+--table dkothari_arunproblem5_products_replica \
+--target-dir /user/dkothari/16Feb2019_CCA/arun_problems/attempt1/problem5/products-replica-text-part2 \
+--fields-terminated-by '*' \
+--null-non-string "-1000" \
+--null-string "NA" \
+--where "product_id >= 1111" \
+--num-mappers 5
 
+4. 
+This is sqoop merge problem, need to learn sepeartely
