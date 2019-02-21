@@ -98,7 +98,7 @@ sqoop export \
 --password itversity \
 --table dkothari_arunproblem5_products_external \
 --export-dir /apps/hive/warehouse/dkothari_arunproblem5.db/products_hive \
---input-fields-terminated-by '|' \
+--input-fields-terminated-by '\001' \
 --input-null-string "null" \
 --input-null-non-string "null"
 
