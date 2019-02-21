@@ -82,12 +82,12 @@ sqoop import \
 --password itversity \
 --table dkothari_arunproblem5_products_replica \
 --hive-import \
---create-hive-table \
 --hive-table dkothari_arunproblem5.products_hive \
 --hive-overwrite \
 --fields-terminated-by '|' \
 --null-non-string "-1000" \
---null-string "NA"
+--null-string "NA" \
+--create-hive-table 
 
 8.
 create table dkothari_arunproblem5_products_external  (product_id int(11) primary Key, product_grade int(11), product_category_id int(11), product_name varchar(100), product_description varchar(100), product_price float, product_impage varchar(500), product_sentiment varchar(100));
