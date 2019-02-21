@@ -65,3 +65,55 @@ sqoop import \
 
 4. 
 This is sqoop merge problem, need to learn sepeartely
+
+5.
+This is sqoop incremental load job which we don't need to know for certification
+
+6. 
+create database dkothari_arunproblem5;
+
+use dkothari_arunproblem5;
+
+create table products_hive  (product_id int, product_category_id int, product_name string, product_description string, product_price float, product_imaage string,product_grade int,  product_sentiment string);
+
+sqoop import \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_export \
+--username retail_user \
+--password itversity \
+--table dkothari_arunproblem5_products_replica \
+--hive-import \
+--create-hive-table \
+--hive-table dkothari_arunproblem5.products_hive \
+--hive-overwrite \
+--fields-terminated-by '|' \
+--null-non-string "-1000" \
+--null-string "NA"
+
+8.
+create table dkothari_arunproblem5_products_external  (product_id int(11) primary Key, product_grade int(11), product_category_id int(11), product_name varchar(100), product_description varchar(100), product_price float, product_impage varchar(500), product_sentiment varchar(100));
+
+sqoop export \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_export \
+--username retail_user \
+--password itversity \
+--table dkothari_arunproblem5_products_external \
+--export-dir /apps/hive/warehouse/dkothari_arunproblem5.db/products_hive \
+--input-fields-terminated-by '|' \
+--input-null-string "null" \
+--input-null-non-string "null"
+
+
+--------
+
+sqoop export \
+--connect "jdbc:mysql://quickstart.cloudera:3306/retail_db" \
+--username "retail_dba" \
+--password "cloudera" \
+--table products_external
+--export-dir /user/hive/warehouse/problem5.db/products_hive/ \
+--input-fields-terminated-by '\001' \
+--input-null-non-string "null" \
+--input-null-string "null" \
+--update-mode allowinsert \
+--update-key product_id \
+--columns "product_id,product_category_id,product_name,product_description,product_price,product_impage,product_grade,product_sentiment" \
