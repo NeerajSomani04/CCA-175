@@ -1,6 +1,20 @@
 Exercise 3 -->
 
-val CrimeRDD = sc.textFile("/public/crime/csv")
+val crimeRDD = sc.textFile("/public/crime/csv")
 
-val filterRDD = CrimeRDD.filter(x => { val t = x.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1); t(0) != "ID"}).filter(x => { val t = x.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1); t(7) == "RESIDENCE"})
+val crimeDF = crimeRDD.filter(x => { val t = x.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1); t(0) != "ID"}).filter(x => { val t = x.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1); t(7) == "RESIDENCE"}).map(x => { val t = x.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1); (t(1), t(5))}).toDF("case_num", "crime_type")
+
+crimeDF.registerTempTable("crimeTemp")
+
+val finalDF1 = sqlContext.sql("""select crime_type, count(case_num) as total_incidents from crimeTemp group by crime_type order by total_incidents desc limit 3""")
+
+finalDF1.write.json("/user/dkothari/16Feb2019_CCA/sparkExercise/solution03/RESIDENCE_AREA_CRIMINAL_TYPE_DATA")
+
+val finalDF2 = crimeDF.groupBy("crime_type").agg(countDistinct("case_num").alias("total_incidents")).orderBy("total_incidents".desc).limit(3)
+
+hdfs dfs -tail /user/dkothari/16Feb2019_CCA/sparkExercise/solution03/RESIDENCE_AREA_CRIMINAL_TYPE_DATA/part-r-00000-25f48cee-20af-41c4-b72d-be41808b4a2e
+
+
+
+
 
