@@ -1,0 +1,6 @@
+Exercise 6 -->
+
+
+dkothari_retail_db_txt
+
+val tempDF = sqlContext.sql("""select order_customer_id, order_item_subtotal, order_date from dkothari_retail_db_spark_exercise06.orders o join dkothari_retail_db_spark_exercise06.order_items oi on o.order_id = oi.order_item_order_id""")
