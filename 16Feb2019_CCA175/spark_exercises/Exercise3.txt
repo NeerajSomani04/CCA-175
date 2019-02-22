@@ -1,0 +1,6 @@
+Exercise 3 -->
+
+val CrimeRDD = sc.textFile("/public/crime/csv")
+
+val filterRDD = CrimeRDD.filter(x => { val t = x.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1); t(0) != "ID"}).filter(x => { val t = x.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1); t(7) == "RESIDENCE"})
+
