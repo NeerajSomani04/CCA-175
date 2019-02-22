@@ -1,0 +1,5 @@
+Exercise2 -->
+
+val ordersRDD = scala.io.Source.fromFile("/data/retail_db/orders")
+
+val customersRDD = Scala.io.Source("/data/retail_db/customers")
