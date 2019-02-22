@@ -1,0 +1,12 @@
+Exercise4 -->
+
+hdfs dfs -copyFromLocal /data/nyse /user/dkothari/nyse_temp
+
+val nyseRDD = sc.textFile("/user/dkothari/nyse_temp/nyse")
+
+val nyseMap = nyseRDD.map(x => {val t = x.split(","); (t(0),t(1),t(2).toFloat, t(3).toFloat, t(4).toFloat, t(5).toFloat, t(6).toInt)})
+val nyseDF = nyseMap.toDF("stockticker", "transactiondate", "openprice", "highprice", "lowprice", "closeprice", "volume")
+
+sqlContext.setConf("spark.sql.parquet.compression.codec","uncompressed")
+nyseDF.write.mode(SaveMode.Overwrite).parquet("/user/dkothari/16Feb2019_CCA/sparkExercise/solution04/nyse_parquet")
+
