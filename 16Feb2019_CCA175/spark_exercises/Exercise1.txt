@@ -1,0 +1,15 @@
+1.
+
+val crimeRDD = sc.textFile("/public/crime/csv/crime_data.csv").filter(x => x.split(",")(0).toString != "ID")
+
+val crimeMapDF = crimeRDD.map(x => (x.split(",")(2).split(" ")(0).substring(6,10)+x.split(",")(2).split(" ")(0).substring(0,2), x.split(",")(5))).toDF("Month","Primary_Type")
+
+crimeMapDF.registerTempTable("CrimeTemp")
+
+val tempDF = sqlContext.sql("""select Month, Primary_Type, count(distinct Primary_Type) as crime_count from CrimeTemp group by Month, Primary_Type order by month, crime_count desc""")
+
+val FinalRDD = tempDF.map(x => x(0) + "\t" + x(1) + "\t" + x(2))
+
+FinalRDD.saveAsTextFile("/user/dkothari/16Feb2019_CCA/sparkExercise/solution01/crimes_by_type_by_month", classOf[org.apache.hadoop.io.compress.GzipCodec])
+
+
