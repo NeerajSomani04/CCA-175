@@ -1,5 +1,19 @@
 Exercise2 -->
 
-val ordersRDD = scala.io.Source.fromFile("/data/retail_db/orders")
+val ordersList = scala.io.Source.fromFile("/data/retail_db/orders/part-00000").getLines.toList
+val ordersRDD = sc.parallelize(ordersList)
 
-val customersRDD = Scala.io.Source("/data/retail_db/customers")
+val customersList = scala.io.Source.fromFile("/data/retail_db/customers/part-00000").getLines.toList
+val customersRDD = sc.parallelize(customersList)
+
+val ordersDF = ordersRDD.map(x => x.split(",")(2).toInt).toDF("order_customer_id")
+val customersDF = customersRDD.map(x => (x.split(",")(0).toInt, x.split(",")(1), x.split(",")(2))).toDF("cust_id","cust_fname", "cust_lname")
+
+ordersDF.registerTempTable("ordersTemp")
+customersDF.registerTempTable("custTemp")
+
+val FinalDF = sqlContext.sql("""select cust_lname, cust_fname from custTemp c left outer join ordersTemp o on o.order_customer_id=c.cust_id where o.order_customer_id is null order by cust_lname, cust_fname""")
+
+
+val joinDF = customersDF.join(ordersDF, "order_customer_id" = "cust_id", "leftOuter")
+
