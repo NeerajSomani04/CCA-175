@@ -14,6 +14,6 @@ customersDF.registerTempTable("custTemp")
 
 val FinalDF = sqlContext.sql("""select cust_lname, cust_fname from custTemp c left outer join ordersTemp o on o.order_customer_id=c.cust_id where o.order_customer_id is null order by cust_lname, cust_fname""")
 
+FinalDF.map(x => x(0) + "," + x(1)).saveAsTextFile("/user/dkothari/16Feb2019_CCA/sparkExercise/solution02/inactive_customers")
 
-val joinDF = customersDF.join(ordersDF, "order_customer_id" = "cust_id", "leftOuter")
 
