@@ -1,0 +1,4 @@
+Exercise 05 -->
+
+val finalDF = sqlContext.sql(""" select order_date from retail_db.orders """) 
+
