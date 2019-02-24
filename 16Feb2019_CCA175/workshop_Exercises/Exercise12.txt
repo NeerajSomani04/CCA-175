@@ -1,0 +1,36 @@
+Exercise 12 -->
+
+sqoop import-all-tables \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+--username retail_user \
+--password itversity \
+--autoreset-to-one-mapper \
+--warehouse-dir /user/dkothari/16Feb2019_CCA/Workshop_Exercises/retail_db \
+--as-avrodatafile 
+
+
+sqoop import-all-tables \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+--username retail_user \
+--password itversity \
+--autoreset-to-one-mapper \
+--as-textfile \
+--hive-import \
+--hive-database dkothari_workshop_exercise12 \
+--hive-overwrite \
+--create-hive-table
+
+sqoop import-all-tables \
+--connect jdbc:mysql://ms.itversity.com:3306/retail_db \
+--username retail_user \
+--password itversity \
+--autoreset-to-one-mapper \
+--as-textfile \
+--fields-terminated-by '|' \
+--hive-import \
+--hive-database dkothari_workshop_exercise12_text \
+--hive-overwrite \
+--create-hive-table \
+--compress \
+--compression-codec "snappy"
+
