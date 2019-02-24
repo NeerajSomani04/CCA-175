@@ -1,4 +1,11 @@
 Exercise 05 -->
 
-val finalDF = sqlContext.sql(""" select order_date from retail_db.orders """) 
+val ordersRDD = sc.textFile("/user/dkothari/retail_db/orders")
+val ordersDF = ordersRDD.map(x => (x.split(",")(0).toInt, x.split(",")(1).split(" ")(0))).toDF("Order_id", "Order_date")
+
+val orderItemsRDD = sc.textFile("/user/dkothari/retail_db/order_items")
+val orderItemsDF = orderItemsRDD.map(x => (x.split(",")(1).toInt, x.split(",")(1).toFloat)).toDF("order_item_OI", "order_subtotal")
+
+
+
 
