@@ -1,0 +1,30 @@
+Exercise 13 -->
+
+create hive database for this problem:
+
+create database dkothari_workshop_exercise13
+
+sqoop import \
+--connect jdbc:mysql://ms.itversity.com:3306/nyse \
+--username nyse_user \
+--password itversity \
+--table stocks_eod \
+--hive-import \
+--hive-database dkothari_workshop_exercise13 \
+--create-hive-table \
+--as-textfile \
+--fields-terminated-by '|' \
+--num-mappers 1
+
+below statement for creating table in Mysql:
+drop table dkothari_stocks_revenue_monthly_Feb2019;
+create table dkothari_stocks_revenue_monthly_Feb2019 (stockticker varchar(100), trademonth varchar(20), monthly_volume bigint);
+
+sqoop export \
+--connect jdbc:mysql://ms.itversity.com:3306/nyse_export \
+--username nyse_user \
+--password itversity \
+--table dkothari_stocks_revenue_monthly_Feb2019 \
+--export-dir /apps/hive/warehouse/dkothari_workshop_exercise13.db/stocks_revenue_monthly \
+--input-fields-terminated-by '\001' \
+-m 1
