@@ -1,0 +1,7 @@
+Exercise 14 -->
+
+create database dkothari_Feb2019_stage;
+create database dkothari_Feb2019_final;
+
+
+create external table orders (order_id int, order_date timestamp, order_customer_id int, order_status string) row format delimited fields terminated by ',' stored as text location("/public/retail_db/orders");  
