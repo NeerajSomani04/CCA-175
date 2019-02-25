@@ -1,0 +1,29 @@
+Exercise 2 -->
+
+val ordersRDD = sc.textFile("/data/retail_db/orders")
+
+val ordersList = scala.io.Source.fromFile("/data/retail_db/orders/part-00000").getLines().toList
+val ordersRDD = sc.parallelize(ordersList)
+val ordersDF = ordersRDD.map(x => (x.split(",")(2))).toDF("order_cust_id")
+
+val customersList = scala.io.Source.fromFile("/data/retail_db/customers/part-00000").getLines().toList
+val customersRDD = sc.parallelize(customersList)
+val customersDF = customersRDD.map(x => (x.split(",")(0), x.split(",")(1), x.split(",")(2))).toDF("cust_id", "cust_fname", "cust_lname")
+
+val joinedDF = customersDF.join(ordersDF, $"order_cust_id" === $"cust_id", "leftOuter")
+
+joinedDF.registerTempTable("joinedTemp)
+
+val finalDF = sqlContext.sql("""select distinct cust_lname, cust_fname from joinedTemp where order_cust_id is null order by cust_lname, cust_fname """)
+
+finalDF.repartition(1).map(x => x(0) + "," + x(1)).saveAsTextFile("/user/dkothari/vnc_problems/problem2/solution")
+
+hdfs dfs -tail /user/dkothari/vnc_problems/problem2/solution/part-00000
+
+below is solution using DataFrame -->
+
+val filterDF2 = joinedDF.filter(joinedDF.col("order_cust_id").isNull).distinct.orderBy($"cust_lname", $"cust_fname").select($"cust_lname", $"cust_fname")
+
+
+
+
