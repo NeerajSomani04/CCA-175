@@ -4,4 +4,15 @@ create database dkothari_Feb2019_stage;
 create database dkothari_Feb2019_final;
 
 
-create external table orders (order_id int, order_date timestamp, order_customer_id int, order_status string) row format delimited fields terminated by ',' stored as text location("/public/retail_db/orders");  
+create external table IF NOT EXISTS orders (order_id int, order_date timestamp, order_customer_id int, order_status string) row format delimited fields terminated by ',' stored as textfile tblproperties('textfile.compress'='GZIP'); 
+
+
+create external table IF NOT EXISTS orders_parquet (order_id int, order_date timestamp, order_customer_id int, order_status string) row format delimited fields terminated by ',' stored as parquet tblproperties('parquet.compress'='GZIP'); 
+
+
+load data inpath '/user/dkothari/retail_db/orders' into table orders;
+
+load data inpath '/user/dkothari/retail_db/orders' into table orders_parquet;
+
+
+
