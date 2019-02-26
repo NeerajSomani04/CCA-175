@@ -1,0 +1,8 @@
+Exercise 16 -->
+
+val nyseRDD =  sc.textFile("/public/nyse")
+val nyseDF = nyseRDD.map(x => {val t = x.split(","); (t(0), t(1).toInt, t(2).toFloat, t(3).toFloat, t(4).toFloat, t(5).toFloat, t(6).toInt)}).toDF
+
+val finalDF = nyseDF.orderBy($"_2", $"_7".desc)
+
+finalDF.repartition(1).map(x => x(0) + ":" + x(1) + ":" + x(2) + ":" + x(3) + ":" +  x(4) + ":" + x(5) + ":" + x(6)).saveAsTextFile("/user/dkothari/vnc_problems/problem16/solution")
