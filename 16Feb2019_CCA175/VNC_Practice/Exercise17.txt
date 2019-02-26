@@ -1,0 +1,14 @@
+Exercise 17 -->
+
+val nyseRDD = sc.textFile("/public/nyse")
+nyseRDD.map(x => (x.split(",")(0))).toDF("nyse_tick").registerTempTable("nyse_temp")
+
+val symTemp = sc.textFile("/public/nyse_symbols")
+val header = symTemp.first
+symTemp.filter(x => x != header).map(x => (x.split("\t")(0))).toDF("sym_tick").registerTempTable("sym_temp")
+
+val finalDF = sqlContext.sql("""select distinct nyse_tick from nyse_temp left outer join sym_temp on nyse_tick = sym_tick where sym_tick is null""")
+
+import com.databricks.spark.avro._
+
+finalDF.repartition(1).write.avro("/user/dkothari/vnc_problems/problem17/solution")
