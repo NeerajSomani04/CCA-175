@@ -1,0 +1,18 @@
+Exercise 18 -->
+
+val nyseRDD = sc.textFile("/public/nyse")
+val nyseMap = nyseRDD.map(x => {val t = x.split(","); (t(0), t(1).toInt, t(2).toFloat, t(3).toFloat, t(4).toFloat, t(5).toFloat, t(6).toInt)})
+val nyseDF = nyseMap.toDF
+
+val nyse_symbolTempRDD = sc.textFile("/public/nyse_symbols")
+val header = nyse_symbolTempRDD.first
+val nyse_symMap = nyse_symbolTempRDD.filter(x => x != header).map(x => (x.split("\t")(0), x.split("\t")(1)))
+val nyse_symDF = nyse_symMap.toDF("stock_tick", "stock_name")
+
+val nyseJoin = nyse_symDF.join(nyseDF, nyseDF("_1") === nyse_symDF("stock_tick")).registerTempTable("nyseTemp")
+
+val test = sqlContext.sql(""" select * from nyseTemp """)
+
+test.repartition(1).map(x => x(0) + "," + x(1) + "," + x(3) + "," + x(4) + "," + x(5) + "," + x(6) + "," + x(7) + "," + x(8)).saveAsTextFile("/user/dkothari/vnc_problems/problem18/solution")
+
+
