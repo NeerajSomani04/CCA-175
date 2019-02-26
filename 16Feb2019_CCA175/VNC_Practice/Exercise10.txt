@@ -1,0 +1,12 @@
+Exercise 10 -->
+
+val h1bRDD = sc.textFile("/public/h1b/h1b_data")
+val header = h1bRDD.first
+
+val h1bFilter = h1bRDD.filter(x => x!= header).filter(x => x.split("\0")(7) != NA)
+
+val h1bDF = h1bFilter.map(x => (x.split("\0")(1), x.split("\0")(7).toInt)).toDF("Employer_name", "year")
+
+val finalDF = h1bDF.groupBy($"year").agg(count($"Employer_name").alias("Number_of_LCAs"))
+
+finalDF.map(x => x(0) + "\0" + x(1)).repartition(1).saveAsTextFile("/user/dkothari/vnc_problems/problem10/solution")
