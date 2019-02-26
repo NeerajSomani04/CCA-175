@@ -1,0 +1,25 @@
+Exercise 14 -->
+
+table for mysql db (h1b_export):
+
+create table h1b_data_dkothari (
+ID int,
+case_status varchar(50),
+employer_name varchar(100),
+soc_name varchar(100),
+job_title varchar(100),
+full_time_position varchar(50),
+prevailing_wage float,
+year int,
+worksite varchar(50),
+logitude varchar(50),
+latitude varchar(50));
+
+sqoop export \
+--connect jdbc:mysql://ms.itversity.com:3306/h1b_export \
+--username h1b_user \
+--password itversity \
+--export-dir /public/h1b/h1b_data_to_be_exported \
+--table h1b_data_dkothari \
+--input-null-string 'NA' \
+--input-fields-terminated-by '\001'
