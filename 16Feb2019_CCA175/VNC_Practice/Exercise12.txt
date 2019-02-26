@@ -9,6 +9,8 @@ val h1bDF = h1bFilter.map(x => (x.split("\0")(1), x.split("\0")(2), x.split("\0"
 
 h1bDF.registerTempTable("h1bTemp")
 
-val finalDF = sqlContext.sql("""select employer_name, count(distinct employer_name) as lca_count from h1bTemp where year = 2016 and status in ('WITHDRAWN', 'CERTIFIED-WITHDRAWN', 'DENIED') group by employer order by lca_count desc limit 5""")
+val finalDF = sqlContext.sql("""select employer_name, count(employer_name) as lca_count from h1bTemp where year = 2016 and status in ('WITHDRAWN', 'CERTIFIED-WITHDRAWN', 'DENIED') group by employer_name order by lca_count desc limit 5""")
+
+sqlContext.setConf("spark.sql.parquet.compression.codec","Uncompressed")
 
 finalDF.write.parquet("/user/dkothari/vnc_problems/problem12/solution")
