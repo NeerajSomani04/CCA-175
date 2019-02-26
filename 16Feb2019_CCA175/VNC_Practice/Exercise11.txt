@@ -1,0 +1,4 @@
+Exercise 11 -->
+
+val h1bRDD = sc.textFile("/public/h1b/h1b_data")
+
