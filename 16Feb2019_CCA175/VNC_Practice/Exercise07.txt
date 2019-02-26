@@ -1,0 +1,4 @@
+Exercise 07 -->
+
+val ordersRDD = sc.textFile("/public/retail_db/orders")
+val ordersMap = ordersRDD.map(x => (x.split(",")(0).toInt, x.split(",")(1), x.split(",")(3))).toDF("order_id","order_date","order_status")
