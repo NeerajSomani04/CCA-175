@@ -1,0 +1,11 @@
+Exercise 08 -->
+
+val ordersRDD = sc.textFile("/public/retail_db/orders")
+
+val ordersFilter = ordersRDD.filter(x => x.split(",")(3) == "PENDING_PAYMENT")
+
+val ordersDF = ordersFilter.map(x => (x.split(",")(0).toInt, x.split(",")(1), x.split(",")(2).toInt, x.split(",")(3))).toDF("order_id","order_date","order_customer_id","order_status")
+
+val finalDF = ordersDF.orderBy($"order_id")
+
+finalDF.repartition(1).write.orc("/user/dkothari/vnc_problems/problem8/solution")
