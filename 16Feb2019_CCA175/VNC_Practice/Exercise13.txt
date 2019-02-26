@@ -1,0 +1,19 @@
+Exercise 13 -->
+
+table for hive :
+
+Create database if not exist dkothari;
+
+create external table h1b_data_dkothari (
+ID int,
+case_status string,
+employer_name string,
+soc_name string,
+job_title string,
+full_time_position string,
+prevailing_wage double,
+year int,
+worksite string,
+logitude string,
+latitude string);
+
