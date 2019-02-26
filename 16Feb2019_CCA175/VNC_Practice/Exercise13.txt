@@ -1,8 +1,19 @@
 Exercise 13 -->
 
+val h1bRDD = sc.textFile("/public/h1b/h1b_data_noheader")
+
+val h1bFilter = h1bRDD.filter(x => x.split("\0")(6) != "NA").filter(x => x.split("\0")(7) != "NA")
+
+val h1bMap = h1bFilter.map(x => {val t = x.split("\0"); (t(0).toInt, t(1), t(2), t(3), t(4), t(5), t(6).toFloat, t(7).toInt, t(8), t(9), t(10))})
+
+
+h1bMap.map(x => x._1 + "\t" + x._2 + "\t" +  x._3 + "\t" + x._4 + "\t" +  x._5 + "\t" + x._6 + "\t" +  x._7 + "\t" + x._8 + "\t" +  x._9 + "\t" + x._10 + "\t" + x._11).saveAsTextFile("/user/dkothari/vnc_problems/problem13/solution")
+
 table for hive :
 
 Create database if not exist dkothari;
+
+drop table h1b_data_dkothari;
 
 create external table h1b_data_dkothari (
 ID int,
@@ -15,5 +26,9 @@ prevailing_wage double,
 year int,
 worksite string,
 logitude string,
-latitude string);
+latitude string) row format delimited fields terminated by '\t' stored as textfile location '/user/dkothari/vnc_problems/problem13/solution';
+
+Note --> we can't use load command as load will move the original data source files. 
+
+load data '/user/dkothari/vnc_problems/problem13/solution' overwrite into table h1b_data_dkothari;
 
