@@ -1,0 +1,12 @@
+Exercise 19 -->
+
+val h1bRDD = sc.textFile("/public/h1b/h1b_data_noheader")
+
+val h1bMap = h1bRDD.map(x => ((x.split("\0")(2)), x.split("\0")(7))).filter(x => x._2 != "NA")
+
+h1bMap.toDF("emp_name", "year").registerTempTable("h1bTemp")
+
+val h1bDF = sqlContext.sql("select year, count(distinct emp_name) as lca_count from h1bTemp group by year")
+
+h1bDF.repartition(1).map(x => x(0) + "\t" + x(1)).saveAsTextFile("/user/dkothari/vnc_problems/problem19/solution")
+
