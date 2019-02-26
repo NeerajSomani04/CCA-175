@@ -1,0 +1,14 @@
+Exercise 12 -->
+
+val h1bRDD = sc.textFile("/public/h1b/h1b_data")
+val header = h1bRDD.first
+
+val h1bFilter = h1bRDD.filter(x => x != header).filter(x => x.split("\0")(6) != "NA")
+
+val h1bDF = h1bFilter.map(x => (x.split("\0")(1), x.split("\0")(2), x.split("\0")(7).toInt)).toDF("status", "employer_name", "year")
+
+h1bDF.registerTempTable("h1bTemp")
+
+val finalDF = sqlContext.sql("""select employer_name, count(distinct employer_name) as lca_count from h1bTemp where year = 2016 and status in ('WITHDRAWN', 'CERTIFIED-WITHDRAWN', 'DENIED') group by employer order by lca_count desc limit 5""")
+
+finalDF.write.parquet("/user/dkothari/vnc_problems/problem12/solution")
