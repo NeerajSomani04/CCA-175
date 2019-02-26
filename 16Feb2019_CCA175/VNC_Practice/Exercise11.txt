@@ -1,4 +1,12 @@
 Exercise 11 -->
 
 val h1bRDD = sc.textFile("/public/h1b/h1b_data")
+val header = h1bRDD.first
 
+val h1bFilter = h1bRDD.filter(x => x != header).filter(x => x.split("\0")(7) != "NA")
+
+val h1bDF = h1bFilter.map(x => (x.split("\0")(1), x.split("\0")(7).toInt)).toDF("status","year")
+
+val finalDF = h1bDF.filter($"year" === 2016).groupBy($"status").agg(count($"status").alias("count")).withColumn("year", lit(2016)).select("year", "status", "count")
+
+finalDF.repartition(1).write.json("/user/dkothari/vnc_problems/problem11/solution")
