@@ -1,0 +1,20 @@
+Exercise 20 --> 
+
+/user/dkothari/vnc_problems/problem20/solution
+
+sqoop eval \
+--connect jdbc:mysql://ms.itversity.com:3306/h1b_db \
+--username h1b_user \
+--password itversity \
+--query "select EMPLOYER_NAME, CASE_STATUS, count(1) as total_count from h1b_data group by EMPLOYER_NAME, CASE_STATUS order by EMPLOYER_NAME, total_count desc "
+
+
+sqoop import \
+--connect jdbc:mysql://ms.itversity.com:3306/h1b_db \
+--username h1b_user \
+--password itversity \
+--query "select EMPLOYER_NAME, CASE_STATUS, count(1) as total_count from h1b_data group by EMPLOYER_NAME, CASE_STATUS order by EMPLOYER_NAME, total_count desc "
+--target-dir /user/dkothari/vnc_problems/problem20/solution \
+--autoreset-to-one-mapper \
+--as-textfile \
+--fields-terminated-by '\t'
