@@ -1,0 +1,17 @@
+Exercise 15 --->
+
+sqoop eval \
+--connect jdbc:mysql://ms.itversity.com:3306/h1b_db \
+--username h1b_user \
+--password itversity \
+--query "select * from h1b_data where case_status = 'CERTIFIED' limit 10"
+-m 1
+
+sqoop import \
+--connect jdbc:mysql://ms.itversity.com:3306/h1b_db \
+--username h1b_user \
+--password itversity \
+--query "select * from h1b_data where case_status = 'CERTIFIED' and \$CONDITIONS" \
+-m 1 \
+--target-dir /user/dkothari/vnc_problems/problem15/solution \
+--as-avrodatafile
