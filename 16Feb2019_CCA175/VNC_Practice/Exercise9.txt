@@ -1,0 +1,9 @@
+Exercise 9 -->
+
+val h1bRDD = sc.textFile("/public/h1b/h1b_data")
+
+val header = h1bRDD.first
+
+val H1bFilter = h1bRDD.filter(x => x != header)
+
+H1bFilter.saveAsTextFile("/user/dkothari/vnc_problems/problem9/solution", classOf[org.apache.hadoop.io.compress.SnappyCodec])
