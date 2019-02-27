@@ -1,0 +1,6 @@
+Exercise 4 -->
+
+val nyseRDD = sc.textFile("/user/dkothari/data/nyse")
+
+val nyseDF = nyseRDD.map(x => { val t = x.split(","); (t(0),t(1), t(2).toFloat, t(3).toFloat, t(4).toFloat, t(5).toFloat, t(6).toInt)}).toDF(
+
