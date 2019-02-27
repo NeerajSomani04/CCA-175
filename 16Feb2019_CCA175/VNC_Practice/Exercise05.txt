@@ -1,0 +1,8 @@
+Exercise 5 -->
+
+val wordRDD = sc.textFile("/public/randomtextwriter")
+
+val wordDF = wordRDD.flatMap(x => x.split(" ")).map(x => (x,1)).toDF("word","one")
+
+wordDF.groupBy($"word").agg(count($"one").alias("count")).write.parquet("/user/dkothari/vnc_problems/problem5/solution")
+
