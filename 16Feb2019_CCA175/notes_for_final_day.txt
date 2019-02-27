@@ -1,0 +1,14 @@
+Notes -->
+
+cntl + --> this command can be used to enlarge mozilla browser with bigger font
+cntl - shift + --> this command can be used to increase font size of terminal window
+
+cntl + c --> in browser for copying
+cntl + shift + v --> in terminal for paste
+
+sqoop import \
+--connect jdbc:mysql://gateway/problem1 \
+--username cloudera \
+--password cloudera \
+--table customer \
+--target-dir /user/cert/problem1/solution/
