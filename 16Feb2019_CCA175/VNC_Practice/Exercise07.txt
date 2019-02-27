@@ -1,4 +1,15 @@
 Exercise 07 -->
 
 val ordersRDD = sc.textFile("/public/retail_db/orders")
-val ordersMap = ordersRDD.map(x => (x.split(",")(0).toInt, x.split(",")(1), x.split(",")(3))).toDF("order_id","order_date","order_status")
+ordersRDD.map(x => (x.split(",")(0).toInt, x.split(",")(1), x.split(",")(3))).toDF("order_id","order_date","order_status").registerTempTable("ordersTemp")
+
+
+val orderItemsRDD = sc.textFile("/public/retail_db/order_items")
+orderItemsRDD.map(x => (x.split(",")(1).toInt, x.split(",")(2), x.split(",")(4))).toDF("order_item_order_id","order_item_product_id","order_item_subtotal").registerTempTable("orderItemsTemp")
+
+val productsRDD = sc.textFile("/public/retail_db/products")
+productsRDD.map(x => (x.split(",")(0).toInt, x.split(",")(1), x.split(",")(2))).toDF("product_id","product_category_id","product_name").registerTempTable("productsTemp")
+
+val tempDF1 = sqlContext.sql(""" select cast(o.order_date as date) as order_date, temp1.order_revenue, p.product_name, p.product_category_id from (select order_id, round(sum(order_item_subtotal),2) as order_revenue from ordersTemp join orderItemsTemp on order_id = order_item_order_id where cast(order_date as date) = '2013-07-26' and order_status in ('CLOSED', 'COMPLETE') group by order_id) as temp1 join ordersTemp o on o.order_id = temp1.order_id join orderItemsTemp oi on oi.order_item_order_id = o.order_id join productsTemp p on p.product_id = order_item_product_id order by temp1.order_revenue desc limit 5""")
+
+tempDF1.map(x => x(0) + ":" + x(1) + ":" + x(2) + ":" + x(3)).repartition(1).saveAsTextFile("/user/dkothari/vnc_problems/problem7/solution")
