@@ -2,5 +2,7 @@ Exercise 4 -->
 
 val nyseRDD = sc.textFile("/user/dkothari/data/nyse")
 
-val nyseDF = nyseRDD.map(x => { val t = x.split(","); (t(0),t(1), t(2).toFloat, t(3).toFloat, t(4).toFloat, t(5).toFloat, t(6).toInt)}).toDF(
+val nyseDF = nyseRDD.map(x => { val t = x.split(","); (t(0),t(1), t(2).toFloat, t(3).toFloat, t(4).toFloat, t(5).toFloat, t(6).toInt)}).toDF("stockticker", "transactiondate", "openprice", "highprice","lowprice","closeprice","volume")
 
+sqlContext.setConf("spark.sql.parquet.compression.codec","uncompressed")
+nyseDF.write.parquet("/user/dkothari/vnc_problems/problem4/solution")
