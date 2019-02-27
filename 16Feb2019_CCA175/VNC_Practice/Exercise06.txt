@@ -1,0 +1,8 @@
+Exercise 6 -->
+
+val ordersRDD = sc.textFile("/public/retail_db/orders")
+ordersRDD.map(x => (x.split(",")(0).toInt, x.split(",")(2).toInt)).toDF("order_id","order_customer_id").registerTempTable("ordersTemp")
+
+
+val customersRDD = sc.textFile("/public/retail_db/customers")
+customersRDD.map(x => (x.split(",")(0).toInt, x.split(",")(1), x.split(",")(2), x.split(",")(7))).toDF("cust_id","cust_fname","cust_lname","cust_state").registerTempTable("custTemp")
