@@ -1,0 +1,27 @@
+sqoop import \
+--connect jdbc:mysql://localhost/retail_db \
+--username retail_dba \
+--password cloudera \
+--target-dir /user/cloudera/jays_problems/problem1 \
+--query "select order_id, order_date, order_status from orders where order_status = 'COMPLETE' and \$CONDITIONS" \
+--fields-terminated-by '\t' \
+--as-textfile \
+--split-by order_id
+
+sqoop eval \
+--connect jdbc:mysql://localhost/retail_db \
+--username retail_dba \
+--password cloudera \
+--query "describe orders"
+
+---- below statement is to import from orders_no_pk table ----
+
+sqoop import \
+--connect jdbc:mysql://localhost/retail_db \
+--username retail_dba \
+--password cloudera \
+--target-dir /user/cloudera/jays_problems/problem1_orders_no_pk \
+--query "select order_id, order_date, order_status from orders_no_pk where order_status = 'COMPLETE' and \$CONDITIONS" \
+--fields-terminated-by '\t' \
+--as-textfile \
+--split-by order_id
