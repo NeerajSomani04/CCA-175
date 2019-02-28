@@ -1,0 +1,21 @@
+first i need to create hive database:
+
+create database retail_db;
+
+sqoop import-all-tables \
+--connect jdbc:mysql://localhost/retail_db \
+--username retail_dba \
+--password cloudera \
+--hive-import \
+--create-hive-table \
+--hive-database retail_db \
+--autoreset-to-one-mapper
+
+
+val tempDF = sqlContext.sql(""" select order_status, count(order_id) as order_count from retail_db.orders group by order_status order by order_count desc""")
+
+import com.databricks.spark.avro._
+
+sqlContext.setConf("spark.sql.avro.compression.codec","snappy")
+
+tempDF.write.avro("/user/cloudera/jays_problems/problem4-avro-snappy")
