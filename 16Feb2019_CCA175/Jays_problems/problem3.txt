@@ -1,0 +1,10 @@
+create table orders_export_temp (order_id int, order_date datetime, order_customer_id int, order_status varchar(50));
+
+
+sqoop export \
+--connect jdbc:mysql://localhost/retail_db \
+--username retail_dba \
+--password cloudera \
+--table orders_export_temp \
+--export-dir /user/cloudera/jays_problems/problem2 \
+--input-fields-terminated-by '\t' 
