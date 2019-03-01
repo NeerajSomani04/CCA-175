@@ -1,0 +1,9 @@
+sqlContext.read.parquet("/user/cloudera/jays_problems/problem7/order_items").registerTempTable("OTtemp")
+
+import com.databricks.spark.avro._
+
+sqlContext.read.avro("/user/cloudera/jays_problems/problem7/products").registerTempTable("productsTemp")
+
+val finalDF = sqlContext.sql(""" select from productsTemp left outer join OTtemp on product_id = order_item_product_id 
+(select )""")
+
