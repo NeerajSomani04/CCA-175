@@ -18,5 +18,20 @@ sqoop import \
 
 
 val orderRDD = sc.textFile("/user/cloudera/jays_problems/problem6/orders")
-val orderFilter = orderRDD.filter(x => x.split("\t")(3) == "CLOSED").filter(x => x.split("\t")(3) == "COMPLETE").map(x => (x.split("\t")(0).toInt
+val orderDF = orderRDD.filter(x => x.split("\t")(3) == "CLOSED" || x.split("\t")(3) == "COMPLETE").map(x => (x.split("\t")(0).toInt)).toDF("order_id")
+
+val orderItemsRDD = sc.textFile("/user/cloudera/jays_problems/problem6/order-items")
+val orderItemsDF = orderItemsRDD.map(x => (x.split("\t")(0).toInt, x.split("\t")(1).toInt, x.split("\t")(4).toFloat, x.split("\t")(5).toFloat)).toDF("order_item_id", "order_item_order_id", "order_item_subtotal", "order_item_product_price")
+
+val tempDF1 = orderDF.join(orderItemsDF, $"order_id"===$"order_item_order_id").groupBy($"order_id").agg(round(sum($"order_item_subtotal"),2).alias("order_total"))
+
+val finalDF = tempDF1.join(orderItemsDF, $"order_id"===$"order_item_order_id").select("order_id", "order_item_id", "order_item_product_price", "order_item_subtotal", "order_total")
+
+finalDF.saveAsTable("retail_db.jays_problem6", "orc")
+
+below is alternative way 
+
+import org.apache.spark.sql.SaveMode
+
+finalDF.write.format("orc").mode(SaveMode.Overwrite).saveAsTable("retail_db.jays_problem6")
 
