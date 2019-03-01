@@ -1,0 +1,23 @@
+sqoop import \
+--connect jdbc:mysql://localhost/retail_db \
+--username retail_dba \
+--password cloudera \
+--table order_items \
+--target-dir /user/cloudera/jays_problems/problem7/order_items/ \
+--as-parquetfile 
+
+
+sqoop import \
+--connect jdbc:mysql://localhost/retail_db \
+--username retail_dba \
+--password cloudera \
+--table products \
+--target-dir /user/cloudera/jays_problems/problem7/products \
+--as-avrodatafile 
+
+
+val orderItemsDF = sqlContext.read.parquet("/user/cloudera/jays_problems/problem7/order_items")
+
+val productsDF = sqlContext.read.avro("/user/cloudera/jays_problems/problem7/products")
+
+val finalDF = orderItemsDF.join(productsDF, $"order_item_product_id" === $"product_id")
