@@ -14,8 +14,9 @@ sqoop import \
 --password cloudera \
 --table orders \
 --as-parquetfile \
---compression-codec "snappy" \
---target-dir /user/cloudera/jays_problems/problem5-parquet-snappy
+--compress \
+--compression-codec=Gzip \
+--target-dir /user/cloudera/jays_problems/problem5_temp_gzip
 
 
 val DF1 = sqlContext.read.avro("/user/cloudera/jays_problems/problem5-avro-snappy")
