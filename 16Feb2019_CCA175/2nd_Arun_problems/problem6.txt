@@ -1,0 +1,14 @@
+create database problem6;
+
+sqoop import-all-tables \
+--connect jdbc:mysql://localhost/retail_db \
+--username retail_dba \
+--password cloudera \
+--hive-import \
+--hive-database problem6 \
+--create-hive-table \
+
+val hc = org.apache.spark.sql.hive.HiveContext(sc)
+
+val DF1 = sqlContext.sql(""" select department_id from department d join categories c on c.category_department_id = d.department_id join """)
+
