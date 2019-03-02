@@ -1,0 +1,35 @@
+sqoop eval \
+--connect jdbc:mysql://localhost/retail_db \
+--username retail_dba \
+--password cloudera \
+--query "show tables"
+
+sqoop import \
+--connect jdbc:mysql://localhost/retail_db \
+--username retail_dba \
+--password cloudera \
+--table products_replica \
+--fields-terminated-by '|' \
+--null-non-string "-1" \
+--null-string "NOT-AVAILABLE" \
+--target-dir /user/cloudera/problem5/products-text \
+--where "product_id >= 1 or product_id <= 1000" \
+--num-mappers 3 \
+
+
+sqoop import \
+--connect "jdbc:mysql://quickstart.cloudera:3306/retail_db" \
+--username retail_dba \
+--password cloudera \
+--table products_replica \
+--target-dir /user/cloudera/problem5/products-text \
+--fields-terminated-by '|' \
+--lines-terminated-by '\n' \
+--null-non-string -1 \
+--null-string "NOT-AVAILABLE" \
+-m 3 \
+--where "product_id between 1 and 1000" \
+--outdir /home/cloudera/sqoop1 \
+--boundary-query "select min(product_id), max(product_id) from products_replica where product_id between 1 and 1000";
+
+
