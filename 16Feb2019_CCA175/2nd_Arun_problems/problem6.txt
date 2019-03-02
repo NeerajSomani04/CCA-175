@@ -5,10 +5,21 @@ sqoop import-all-tables \
 --username retail_dba \
 --password cloudera \
 --hive-import \
---hive-database problem6 \
+--hive-database arunproblem6_2nd \
 --create-hive-table \
 
-val hc = org.apache.spark.sql.hive.HiveContext(sc)
 
-val DF1 = sqlContext.sql(""" select department_id from department d join categories c on c.category_department_id = d.department_id join """)
+val hc = new org.apache.spark.sql.hive.HiveContext(sc)
+
+
+val DF1 = sqlContext.sql(""" select d.department_id, p.product_id, p.product_price, dense_rank() over(partition by d.department_id, p.product_id order by p.product_price) as product_rank_by_price from arunproblem6.departments d join arunproblem6.categories c on c.category_department_id = d.department_id join arunproblem6.products p on c.category_id = p.product_category_id order by d.department_id, product_rank_by_price desc """)
+
+
+val DF2 = DF1.filter($"product_price" < 100)
+
+DF2.registerTempTable("df2_temp")
+
+DF2.saveAsTable("arunproblem6.result3_5")
+
+sqlContext.sql("create table arunproblem6.result3_5_2 as select * from df2_temp");
 
